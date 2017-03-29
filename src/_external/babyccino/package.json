@@ -1,0 +1,25 @@
+{
+  "name": "babyccino",
+  "version": "0.1.0",
+  "description": "A very useful testrunner leaning heavily on webpack",
+  "main": "index.js",
+  "scripts": {
+    "test": "webpack-dev-server --hot --inline"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jauco/babyccino.git"
+  },
+  "keywords": [
+    "test",
+    "tdd",
+    "webpack",
+    "testrunner"
+  ],
+  "author": "Jauco Noordzij <code@jauco.nl>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jauco/babyccino/issues"
+  },
+  "homepage": "https://github.com/jauco/babyccino#readme"
+}

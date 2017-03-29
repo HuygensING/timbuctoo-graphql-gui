@@ -1,0 +1,15 @@
+FROM node:7.7.4-alpine
+########################################################################################################################
+# Don't forget to update the Dockerfile as well!
+########################################################################################################################
+
+WORKDIR /
+COPY ./package.json /package.json
+COPY ./yarn.lock /yarn.lock
+#store all packages locally so we have a bigger chance of having a reproducable build
+RUN yarn install
+
+
+WORKDIR /app
+#expects to be called with . mounted under /app
+CMD ["node", "./fileserver/index.js", "development"]

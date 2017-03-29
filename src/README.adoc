@@ -1,0 +1,22 @@
+_external
+  babyccino
+  router.js
+  storybook-actions-replacer.js //gets an actions object and a partial Links object and replaces everything in actions with an Action item except for Links)
+actions (all actions, used pages)
+  $actionName.js
+  $actionName.test.js
+components (all react classes + storybooks for the components using 1 Knobs view and a bunch of withInfo views)
+  $componentName.js
+  $componentName.story.js
+pages
+  $pagename
+    actions.js (loads the actions in an action tree that maps to the actions loaded from ../../actions)
+    gui.js (contains react tree, sets up action listeners)
+    index.js (contains router callback, merges store and actions u)
+    store.js (contains intial redux store, merged with actions + reducers)
+    storybook.js (contains the stories for the different redux states (created by dispatching events), also creates a storybook tree for actions tree using actions replacer)
+reducers (all reducers, used under pages, uses immutable.js for updates)
+  $reducer.js
+  $reducer.test.js
+static/
+index.js (runs router and joins everything together)
