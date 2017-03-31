@@ -1,0 +1,10 @@
+{
+    "extends": "tslint:recommended",
+    "rules": {
+        "only-arrow-functions": [false],
+        "promise-function-async": true,
+        "space-before-function-paren": [true, {"anonymous": "always", "named": "never", "asyncArrow": "always"}],
+        "await-promise": true,
+        "trailing-comma": [true, {"multiline": "always"}]
+    }
+}

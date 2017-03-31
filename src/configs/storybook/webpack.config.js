@@ -8,7 +8,8 @@ module.exports = function(config, ENV) {
   });
 
   config.module.loaders.push({test: /\.(tsx|ts)$/, loaders: ['awesome-typescript-loader']});
-  config.module.loaders.push({ enforce: "pre", test: /\.js$/, loader: "source-map-loader" });
+  config.module.preLoaders = config.module.preLoaders || [];
+  config.module.preLoaders.push({enforce: "pre", test: /\.js$/, loader: "source-map-loader"});
 
   config.devtool = "source-map"
   config.resolve = {

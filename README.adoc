@@ -12,6 +12,10 @@
 - [ ] `git push origin master`
 - [ ] start hacking :)
 
+== vscode configuration
+
+- [ ] install the tslint extension
+
 == todo / features
 - [x] uses yarn for npm install so we have less chance of irreproducable bugs between team members
 - [x] buildbase container that contains all packages so we can be certain that a build can still be done 5 years from now.
@@ -20,7 +24,7 @@
 - [x] express base site
   - [x] index file that links to the three different js-apps
   - [x] storybook dev middleware +
-      test: docker-compose up, open browser on http://localhost:8001/build/storybook/ and edit the components/test.story.tsx [<- note! typescript] watch if it updates automatically
+      test: docker-compose up, open browser on http://localhost:8080/build/storybook/ and edit the components/test.story.tsx [<- note! typescript] watch if it updates automatically
   - [x] unittest dev middleware (HMR) +
       test: docker-compose up, open browser on http://localhost:8080/build/tests.html and edit the actions/theModule.test.ts [<- note! typescript] watch if it updates automatically
   - [x] app dev middleware (HMR) +
@@ -43,23 +47,20 @@
   * [x] with https (and no funky chrome changes because it's self-signed, document what the user needs to do)
 - typescript error report
   * compilation
-    ** [ ] storybook
-    ** [ ] unittests
-    ** [ ] full app
+    ** [x] storybook
+    ** [x] unittests
+    ** [x] full app
   * hmr
-    ** [ ] storybook
-    ** [ ] unittests
-    ** [ ] full app
+    ** [x] storybook
+    ** [x] unittests
+    ** [x] full app
 - tslint report
   * in vscode
   * compilation
-    ** [ ] storybook
-    ** [ ] unittests
-    ** [ ] full app
-  * hmr
-    ** [ ] storybook
-    ** [ ] unittests
-    ** [ ] full app
+    ** [x] storybook
+    ** [x] unittests
+    ** [x] full app
+  * *NOTE:* I can't get hmr reporting (tslint-loader) to work.
 
 
 - [ ] storybook with knobs

@@ -33,7 +33,9 @@ CMD ["node", "./fileserver/index.js", "development"]
 COPY ./src /app/src
 COPY ./package.json /app/package.json
 COPY ./tsconfig.json /app/tsconfig.json
+COPY ./tslint.json /app/tslint.json
 
+RUN /node_modules/.bin/tslint -t codeFrame -c tslint.json --project tsconfig.json --type-check
 RUN /node_modules/.bin/webpack -p --config /app/src/configs/webpack/webpack.config.js
 
 #this image is built using --squash so this will reduce the size of the image by removing all dependencies
