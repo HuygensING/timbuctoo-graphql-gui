@@ -19,11 +19,11 @@
 - [x] put node_modules at the root so everyone uses the same node_modules (without downloading) but we can mount the entire app module and we can override a module if we want to by doing a local npm/yarn install
 - [x] express base site
   - [x] index file that links to the three different js-apps
-  - [x] storybook dev middleware
+  - [x] storybook dev middleware +
       test: docker-compose up, open browser on http://localhost:8001/build/storybook/ and edit the components/test.story.tsx [<- note! typescript] watch if it updates automatically
-  - [x] unittest dev middleware (HMR)
+  - [x] unittest dev middleware (HMR) +
       test: docker-compose up, open browser on http://localhost:8080/build/tests.html and edit the actions/theModule.test.ts [<- note! typescript] watch if it updates automatically
-  - [x] app dev middleware (HMR)
+  - [x] app dev middleware (HMR) +
       test: docker-compose up, open browser on http://localhost:8080/build/index.html and edit the actions/theModule.test.ts [<- note! typescript] watch if it updates automatically
   - [x] static file serving
 - [x] compilation + prod static file server
@@ -40,26 +40,26 @@
     - [x] HMR (3)
     - [x] compiled
 - [x] proxy through browsersync
-  - [x] with https (and no funky chrome changes because it's self-signed, document what the user needs to do)
+  * [x] with https (and no funky chrome changes because it's self-signed, document what the user needs to do)
 - typescript error report
-  - compilation
-    - [ ] storybook
-    - [ ] unittests
-    - [ ] full app
-  - hmr
-    - [ ] storybook
-    - [ ] unittests
-    - [ ] full app
+  * compilation
+    ** [ ] storybook
+    ** [ ] unittests
+    ** [ ] full app
+  * hmr
+    ** [ ] storybook
+    ** [ ] unittests
+    ** [ ] full app
 - tslint report
-  - in vscode
-  - compilation
-    - [ ] storybook
-    - [ ] unittests
-    - [ ] full app
-  - hmr
-    - [ ] storybook
-    - [ ] unittests
-    - [ ] full app
+  * in vscode
+  * compilation
+    ** [ ] storybook
+    ** [ ] unittests
+    ** [ ] full app
+  * hmr
+    ** [ ] storybook
+    ** [ ] unittests
+    ** [ ] full app
 
 
 - [ ] storybook with knobs
@@ -67,18 +67,18 @@
 - [ ] simple router (test pushState with scroll position)
 - [ ] remote urls are configured using env-variables
 - [ ] can be proxied under subfolder (is configured using env-variable)
-  - [ ] test base tag with 
-    - pushState
-    - css urls
-    - script urls
-    - image urls
-    - images/css loaded via react
+  * [ ] test base tag with 
+    ** pushState
+    ** css urls
+    ** script urls
+    ** image urls
+    ** images/css loaded via react
 
 - [ ] ci run on saucelabs
 - [ ] vscode debugger support (chrome)
 - caching
-  - [ ] js compiled with hash and served with infinite cache header (both in dev and prod mode)
-  - [ ] base html knows the hashes and is served with hash based etag
+  * [ ] js compiled with hash and served with infinite cache header (both in dev and prod mode)
+  * [ ] base html knows the hashes and is served with hash based etag
 - [ ] https://www.npmjs.com/package/finalhandler
 - [ ] log all requests as json to the console in prod mode
 - [x] fast container shutdown
