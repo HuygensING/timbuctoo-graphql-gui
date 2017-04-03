@@ -10,6 +10,8 @@
 - [ ] edit package.json and fill in the administrative fields (name, licence etc.)
 - [ ] `git commit -am "Start [projectname] using scaffold from [this repo]"`
 - [ ] `git push origin master`
+- [ ] `docker-compose up`
+- [ ] `npm install`
 - [ ] start hacking :)
 
 == vscode configuration
@@ -74,6 +76,7 @@
     ** script urls
     ** image urls
     ** images/css loaded via react
+- [ ] present vscode typeings to the user without having to run npm install on the user's pc
 
 - [ ] ci run on saucelabs
 - [ ] vscode debugger support (chrome)
@@ -86,6 +89,7 @@
 - [ ] storybook alle .story files laten includen
 - [ ] refresh if storybook config changes
 - [ ] refresh if webpack config changes
+
 
 Not gonna do for now: 
 
