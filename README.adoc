@@ -62,7 +62,7 @@
     ** [x] full app
   * *NOTE:* I can't get hmr reporting (tslint-loader) to work.
 
-
+- [ ] fix that node_modules should have parts available outside container and parts inside container (c++ libs should be compiled in container, vscode should be able to reach typings outside container)
 - [ ] storybook with knobs
 - [ ] storybook with documentation
 - [ ] simple router (test pushState with scroll position)
