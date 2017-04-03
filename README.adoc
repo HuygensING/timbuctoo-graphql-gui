@@ -75,7 +75,7 @@
     ** image urls
     ** images/css loaded via react
 
-- [ ] ci run on saucelabs
+- [x] ci run on saucelabs
 - [ ] vscode debugger support (chrome)
 - caching
   * [ ] js compiled with hash and served with infinite cache header (both in dev and prod mode)

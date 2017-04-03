@@ -11,7 +11,8 @@
 #
 # this results in a *much* bigger container, but this build is also *much* more likely to succeed
 ########################################################################################################################
-FROM node:7.7.4-alpine
+#sauce-connect doesn't work with alpines libc
+FROM node:7.7.4
 ########################################################################################################################
 # Don't forget to update the Dockerfile as well!
 ########################################################################################################################
@@ -19,24 +20,33 @@ FROM node:7.7.4-alpine
 WORKDIR /
 COPY ./package.json /package.json
 COPY ./yarn.lock /yarn.lock
-#store all packages locally so we have a bigger chance of having a reproducable build
+
+#node-gyp is required for building gemini, but yarn has a problem with it that is fixed by installing it explicitly
+RUN yarn global add node-gyp
 RUN yarn install
 
 
 WORKDIR /app
 #expects to be called with . mounted under /app
-CMD ["node", "./fileserver/index.js", "development"]
+CMD ["./fileserver/launch.sh","development"]
 
 ########################################################################################################################
 # End of Dockerfile.buildbase copy
 ########################################################################################################################
 COPY ./src /app/src
+COPY ./src/static /app/static
+COPY ./fileserver /app/fileserver
+
 COPY ./package.json /app/package.json
 COPY ./tsconfig.json /app/tsconfig.json
 COPY ./tslint.json /app/tslint.json
 
+#lint
 RUN /node_modules/.bin/tslint -t codeFrame -c tslint.json --project tsconfig.json --type-check
+#compile
 RUN /node_modules/.bin/webpack -p --config /app/src/configs/webpack/webpack.config.js
+#run unittests and gui tests
+RUN ./fileserver/launch.sh dockerbuild
 
 #this image is built using --squash so this will reduce the size of the image by removing all dependencies
 #that are only needed at build time
@@ -58,8 +68,5 @@ RUN yarn add \
 
 RUN yarn cache clean
 RUN yarn clean
-
-COPY ./src/static /app/static
-COPY ./fileserver /app/fileserver
 
 CMD ["node", "./fileserver/index.js"]

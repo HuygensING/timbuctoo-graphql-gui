@@ -7,12 +7,12 @@ services:
       dockerfile: Dockerfile.buildbase
       context: .
     environment:
-      - jsApp_prefix=/
-      - debug_server=true
+      - SAUCE_USERNAME=$SAUCE_USERNAME
+      - SAUCE_ACCESS_KEY=$SAUCE_ACCESS_KEY
     ports:
-      - "8080:8080"
-      - "3001:3001"
-      - "8082:8082"
-      - "5858:5858"
+      - "8080:8080" #development site
+      - "8081:8081" #development without browsersync proxy
+      - "3001:3001" #browsersync gui
+      - "8083:8083" #gemini gui
     volumes: 
       - .:/app

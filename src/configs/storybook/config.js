@@ -1,9 +1,7 @@
 __webpack_public_path__ = "/storybook/";
 
-import { configure } from '@kadira/storybook';
+import { configure, storiesOf } from "@kadira/storybook";
 
-function loadStories() {
-  require('../../app/components/test.story');
-}
-
-configure(loadStories, module);
+configure(function () {
+  require('../../app/components/test.story').default({storiesOf, action})
+}, module);

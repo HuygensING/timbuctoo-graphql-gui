@@ -1,0 +1,38 @@
+rootUrl: http://localhost:8081
+gridUrl: http://ondemand.saucelabs.com:80/wd/hub
+
+#The env variables SAUCE_USERNAME and SAUCE_ACCESS_KEY are expected
+
+browsers:
+  # safari:
+  #   desiredCapabilities:
+  #     browserName: safari
+  #     platform: macOS 10.12
+  #     version: "10.0"
+
+  IE:
+    desiredCapabilities:
+      browserName: internet explorer
+      platform: Windows 7
+      version: "11.0"
+
+  Edge:
+    desiredCapabilities:
+      browserName: MicrosoftEdge
+      platform: Windows 10
+      version: "14.14393"
+
+  chrome:
+    desiredCapabilities:
+      browserName: chrome
+      version: "48.0"
+
+  firefox:
+    desiredCapabilities:
+      browserName: firefox
+      version: "45.0"
+
+system:
+  parallelLimit: 5
+  plugins:
+    sauce: {}
