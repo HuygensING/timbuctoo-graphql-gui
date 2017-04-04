@@ -7,7 +7,8 @@ function makeUrl(storyKind, selectedStory) {
 
 function initSuites(folderName) {
   var inputFolder = path.join(__dirname, "tsc-output", "app", folderName);
-  if (!fs.exists(inputFolder)) {
+  if (!fs.existsSync(inputFolder)) {
+    console.log("could not find " + inputFolder)
     return
   }
   var components = {};
