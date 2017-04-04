@@ -2,10 +2,12 @@
 
 function updateDevDirNodeModules() {
   #update node_modules in container
+  echo "Updating modules..."
   cp /app/yarn.lock /yarn.lock
   cp /app/package.json /package.json
   (cd / && yarn install)
   cp /yarn.lock /app/yarn.lock
+  echo "done"
   #sync to folder in mounted path
   #in background because there is no reason why we should block starting the debug server 
   #until this is finished (this is very slow on the mac virtualized docker)
@@ -18,6 +20,7 @@ function launchTs() {
     /node_modules/.bin/tsc -p ./src/configs/gemini/tsconfig.json --watch &> tsc.log &
     tsPid=$!
     while ! grep -vq "Compilation complete" tsc.log; do 
+      echo "waiting until typescript compiler has run"
       sleep 1;
     done
   else 
@@ -29,9 +32,11 @@ function launchTs() {
 function launchServer() {
   node ./fileserver/index.js $1 &> server.log &
   serverPid=$!
-  while ! grep -vq "Server available" server.log; do 
+  while ! grep -vq "Server available" server.log; do
+    echo "waiting until server is available"
     sleep 1;
   done
+  echo "Server launched at https://localhost:8080"
 }
 
 function launchGeminiAndWait() {
@@ -46,6 +51,8 @@ function launchGeminiAndWait() {
 }
 
 function killBackgroundJobs() {
+  rm /app/server.log
+  rm /app/tsc.log
   kill -TERM $tsPid $serverPid $geminiPid
   wait $tsPid $serverPid $geminiPid
 }
@@ -54,8 +61,8 @@ trap 'killBackgroundJobs' TERM INT
 
 if [ "$1" = "development" ]; then
   updateDevDirNodeModules
-  launchTs watch
   launchServer development
+  launchTs watch
   launchGeminiAndWait development
 elif [ "$1" = "dockerbuild" ]; then
   launchTs
