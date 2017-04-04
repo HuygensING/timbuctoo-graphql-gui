@@ -5,6 +5,7 @@ function updateDevDirNodeModules() {
   cp /app/yarn.lock /yarn.lock
   cp /app/package.json /package.json
   (cd / && yarn install)
+  cp /yarn.lock /app/yarn.lock
   #sync to folder in mounted path
   #in background because there is no reason why we should block starting the debug server 
   #until this is finished (this is very slow on the mac virtualized docker)
