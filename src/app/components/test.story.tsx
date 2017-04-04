@@ -9,7 +9,7 @@ export default function ({
   }: any) {
   storiesOf("Button", module)
     .add("with text", () => (
-      <button className="foo">{knobs.text("Name", "Arunoda Susiripala")}</button>
+      <button className="foo">{knobs.text("Name", "Hello Button")}</button>
     ))
     .add("with textas", () => (
       <button>asdaHello Button</button>
