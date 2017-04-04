@@ -68,8 +68,13 @@
 - [x] fix that node_modules should have parts available outside container and parts inside container (c++ libs should 
       be compiled in container, vscode should be able to reach typings outside container)
 - [ ] storybook with knobs
-- [ ] storybook with documentation
+- [ ] storybook with source code shown and optional info tag
 - [ ] simple router (test pushState with scroll position)
+- [ ] vscode debugger support (chrome)
+- [ ] storybook alle .story files laten includen
+- [ ] run commands using same userid as host system so that created files get the right owner
+
+=== production ready
 - [ ] remote urls are configured using env-variables
 - [ ] can be proxied under subfolder (is configured using env-variable)
   * [ ] test base tag with 
@@ -78,16 +83,11 @@
     ** script urls
     ** image urls
     ** images/css loaded via react
-
-- [ ] vscode debugger support (chrome)
 - caching
   * [ ] js compiled with hash and served with infinite cache header (both in dev and prod mode)
   * [ ] base html knows the hashes and is served with hash based etag
 - [ ] https://www.npmjs.com/package/finalhandler
 - [ ] log all requests as json to the console in prod mode
-- [ ] storybook alle .story files laten includen
-- [ ] refresh if storybook config changes
-- [ ] refresh if webpack config changes
 
 Not gonna do for now: 
 
@@ -95,6 +95,8 @@ Not gonna do for now:
 - [ ] storybook for user documentation?
 - [ ] chrome live edit support?
 - [ ] make http:// redirect to https://
+- [ ] refresh if storybook config changes
+- [ ] refresh if webpack config changes
 
 = folder layout
 See README's at lower levels for an explanation of what each folder does.
