@@ -1,5 +1,16 @@
 #!/bin/bash
 
+function updateDevDirNodeModules() {
+  #update node_modules in container
+  cp /app/yarn.lock /yarn.lock
+  cp /app/package.json /package.json
+  (cd / && yarn install)
+  #sync to folder in mounted path
+  #in background because there is no reason why we should block starting the debug server 
+  #until this is finished (this is very slow on the mac virtualized docker)
+  rsync --archive --delete /node_modules /app/node_modules &
+}
+
 function launchTs() {
   rm -r ./src/configs/gemini/tsc-output
   if [ "$1" == "watch" ]; then
@@ -41,6 +52,7 @@ function killBackgroundJobs() {
 trap 'killBackgroundJobs' TERM INT
 
 if [ "$1" = "development" ]; then
+  updateDevDirNodeModules
   launchTs watch
   launchServer development
   launchGeminiAndWait development

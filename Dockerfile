@@ -5,7 +5,7 @@
 # Copying the statements here allows us to do a `docker build --squash` that results in a much smaller executable 
 # container
 #
-# if a build does not work, you might want to try to replace these lines with
+# if a build does not work, you might want to try to replace the lines that were copied from Dockerfile.buildbase with
 #
 #     FROM huygensing/scaffold:buildbase
 #
@@ -13,18 +13,17 @@
 ########################################################################################################################
 #sauce-connect doesn't work with alpines libc
 FROM node:7.7.4
-########################################################################################################################
-# Don't forget to update the Dockerfile as well!
-########################################################################################################################
 
 WORKDIR /
-COPY ./package.json /package.json
-COPY ./yarn.lock /yarn.lock
-
 #node-gyp is required for building gemini, but yarn has a problem with it that is fixed by installing it explicitly
 RUN yarn global add node-gyp
-RUN yarn install
+RUN apt-get update && apt-get install -y \
+  rsync && \
+  rm -rf /var/lib/apt/lists/*
 
+COPY ./package.json /package.json
+COPY ./yarn.lock /yarn.lock
+RUN yarn install
 
 WORKDIR /app
 #expects to be called with . mounted under /app

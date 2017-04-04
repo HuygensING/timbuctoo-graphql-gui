@@ -10,6 +10,7 @@
 - [ ] edit package.json and fill in the administrative fields (name, licence etc.)
 - [ ] `git commit -am "Start [projectname] using scaffold from [this repo]"`
 - [ ] `git push origin master`
+- [ ] `docker-compose up`
 - [ ] start hacking :)
 
 == vscode configuration
@@ -62,7 +63,10 @@
     ** [x] full app
   * *NOTE:* I can't get hmr reporting (tslint-loader) to work.
 
-- [ ] fix that node_modules should have parts available outside container and parts inside container (c++ libs should be compiled in container, vscode should be able to reach typings outside container)
+- [x] fast container shutdown
+- [x] ci run on saucelabs
+- [x] fix that node_modules should have parts available outside container and parts inside container (c++ libs should 
+      be compiled in container, vscode should be able to reach typings outside container)
 - [ ] storybook with knobs
 - [ ] storybook with documentation
 - [ ] simple router (test pushState with scroll position)
@@ -75,14 +79,12 @@
     ** image urls
     ** images/css loaded via react
 
-- [x] ci run on saucelabs
 - [ ] vscode debugger support (chrome)
 - caching
   * [ ] js compiled with hash and served with infinite cache header (both in dev and prod mode)
   * [ ] base html knows the hashes and is served with hash based etag
 - [ ] https://www.npmjs.com/package/finalhandler
 - [ ] log all requests as json to the console in prod mode
-- [x] fast container shutdown
 - [ ] storybook alle .story files laten includen
 - [ ] refresh if storybook config changes
 - [ ] refresh if webpack config changes
