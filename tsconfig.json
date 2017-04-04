@@ -6,6 +6,7 @@
         "module": "commonjs",
         "target": "es5",
         "jsx": "react",
+        "strictNullChecks": true,
         "lib": ["dom", "es5", "scripthost", "es2015.promise"]
     },
     "include": [
