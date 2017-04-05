@@ -2,7 +2,6 @@ __webpack_public_path__ = "/storybook/";
 
 import { configure, setAddon, addDecorator, storiesOf, action, linkTo } from "@kadira/storybook";
 import { withKnobs, text, boolean, number, color, object, array, select, date } from '@kadira/storybook-addon-knobs';
-import infoAddon from '@kadira/react-storybook-addon-info';
 import React from 'react';
 
 setAddon(infoAddon);
