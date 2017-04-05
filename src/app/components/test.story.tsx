@@ -1,5 +1,5 @@
-import * as React from "react"
-declare const module: any
+import * as React from "react";
+declare const module: any;
 
 export default function ({
     storiesOf,

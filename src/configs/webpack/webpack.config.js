@@ -7,7 +7,7 @@ var extraModules = process.env.NODE_ENV === "development" ?
 
 module.exports = {
   entry: {
-    "app": ["./src/app/index.ts"].concat(extraModules),
+    "app": ["./src/app/index"].concat(extraModules),
     "tests": ["./src/_external/babyccino"].concat(extraModules),
   },
   output: {
