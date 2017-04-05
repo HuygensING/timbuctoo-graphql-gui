@@ -14,8 +14,11 @@ function it(ctx, text, f) {
       return
     }
     if (result && typeof result.then === 'function') {
-      return result.then(function() {
-        return ctx.tests.push(undefined), function (e) {
+      return result.then(
+        function() {
+          ctx.tests.push(undefined);
+        },
+        function (e) {
           ctx.tests.push(f)
           if (e && e.message && e.stack) {
             log(ctx, text + '\n' + getExpectCaller(e))
@@ -23,7 +26,7 @@ function it(ctx, text, f) {
             log(ctx, text + '\n' + 'promise rejected with a non error argument', arguments)
           }
         }
-      })
+      );
     } else {
       ctx.tests.push(undefined)
     }
