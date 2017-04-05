@@ -12,7 +12,7 @@ export interface DataItem  {
 export interface Metadata {
     __schema: {
         types: MetadataType[];
-    }
+    };
 }
 
 interface MetadataType {

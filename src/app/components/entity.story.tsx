@@ -1211,23 +1211,17 @@ const dataWithNonLeafFields = {
 };
 
 
-storiesOf("Button", module)
-  .add("with text", () => (
-    <button>Hello Button</button>
-  ))
-  .add("with some emoji", () => (
-    <button onClick={action("clicked")}>😀 😎 👍 💯</button>
-  ))
-  .add("entity without specific components", () => (
+storiesOf("Entity", module)
+  .add("without specific components", () => (
     <Entity data={data.data} metadata={metadata.data} componentMappings={{}}></Entity>
   ))
-  .add("entity with custom component", () => (
+  .add("with custom component", () => (
     <Entity data={data.data} metadata={metadata.data} componentMappings={componentMappings}></Entity>
   ))
-  .add("entity with non-leaf fields", () => (
+  .add("with non-leaf fields", () => (
     <Entity data={dataWithNonLeafFields.data} metadata={metadata.data} componentMappings={componentMappings}></Entity>
   ))
-  .add("entity with non-leaf fields with custom components", () => (
+  .add("with non-leaf fields with custom components", () => (
     <Entity data={dataWithNonLeafFields.data} metadata={metadata.data} componentMappings={nonLeafCustomComponents}>
     </Entity>
   ));
