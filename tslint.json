@@ -5,6 +5,8 @@
         "promise-function-async": true,
         "space-before-function-paren": [true, {"anonymous": "always", "named": "never", "asyncArrow": "always"}],
         "await-promise": true,
-        "trailing-comma": [true, {"multiline": "always"}]
+        "trailing-comma": [true, {"multiline": "always"}],
+        "object-literal-sort-keys": false,
+        "interface-name": ["never-prefix"]
     }
 }
