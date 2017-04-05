@@ -2,6 +2,7 @@ import { action, storiesOf } from "@kadira/storybook";
 import * as React from "react";
 import Entity from "./entity";
 import {Metadata} from "./entity";
+import {DataItem} from "./entity";
 declare const module: any; // when webpack compiles it provides a module variable
 
 
@@ -1101,6 +1102,10 @@ const componentMappings = {
   "String": StringElement
 };
 
+const nonLeafCustomComponents = {
+  "Droid": DroidElement
+}
+
 const data = {
   "data": {
     "human": {
@@ -1221,6 +1226,10 @@ storiesOf("Button", module)
   ))
   .add("entity with non-leaf fields", () => (
     <Entity data={dataWithNonLeafFields.data} metadata={metadata.data} componentMappings={componentMappings}></Entity>
+  ))
+  .add("entity with non-leaf fields with custom components", () => (
+    <Entity data={dataWithNonLeafFields.data} metadata={metadata.data} componentMappings={nonLeafCustomComponents}>
+    </Entity>
   ));
 
 function StringElement(props: {propName: string, value: any}) {
@@ -1229,5 +1238,27 @@ function StringElement(props: {propName: string, value: any}) {
       {props.propName}: <b>{props.value}</b>
       <br/>
     </span>
+  );
+}
+
+function DroidElement(props: {propName: string, value: any}) {
+  const properties: JSX.Element[] = [];
+  
+  for(let key in props.value) {
+    if(props.value[key] != null) {
+      const value = props.value[key];      
+      if(typeof value != "object" && key !== "__typename") {
+        properties.push(
+          <span>
+            {key}: {props.value[key]}
+          </span>
+        );
+      }
+    }
+  }
+  return (
+    <div style={{paddingLeft: "20px"}}>
+      <u>{properties}</u>
+    </div>
   );
 }

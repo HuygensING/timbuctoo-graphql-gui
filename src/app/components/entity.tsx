@@ -4,7 +4,7 @@ interface Data {
    [key: string]: DataItem;
 }
 
-interface DataItem  {
+export interface DataItem  {
     [key: string]: DataItem | string | number | boolean | null | undefined | DataItem[] | string[] | number[];
     __typename: string;
 }
@@ -89,12 +89,22 @@ function renderDataItem(datatItem: DataItem, metadata: Metadata, componentMappin
             const value = datatItem[propKey];
             // TODO render subitems by using the metadata to discover the type
             if (isDataItem(value)) {
-                properties.push(renderDataItem(value, metadata, componentMappings));
+                if (componentMappings[typeName]) {
+                    const renderFunction = componentMappings[typeName];
+                    properties.push(renderFunction({propName: propKey, value}));
+                } else {
+                    properties.push(renderDataItem(value, metadata, componentMappings));
+                }
             } else if (value instanceof Array) {
                 const arrayItems: JSX.Element[] = [];
                 for (const item of value) {
                     if (isDataItem(item)) {                        
-                        arrayItems.push(renderDataItem(item, metadata, componentMappings));
+                        if (componentMappings[item.__typename]) {
+                            const renderFunction = componentMappings[item.__typename];
+                            arrayItems.push(renderFunction({propName: propKey, value: item}));
+                        } else {
+                            arrayItems.push(renderDataItem(item, metadata, componentMappings));
+                        }
                     }
                 }
                 properties.push((
@@ -133,7 +143,7 @@ function getTypeOfField(fieldName: string, metadataType: MetadataType) : GraphQl
     return {kind: ""};
 }
 
-function getRenderFunction (fieldType: GraphQlType, componentMappings: ComponentMappings):
+function getRenderFunction(fieldType: GraphQlType, componentMappings: ComponentMappings):
     (props: {propName: string, value: any}) => React.ReactElement<any>  {
     if (fieldType.name != null && componentMappings[fieldType.name] != null) {
         return componentMappings[fieldType.name];
@@ -153,6 +163,6 @@ function getRenderFunction (fieldType: GraphQlType, componentMappings: Component
     - [x] rendert een leaf field als tekst
     - [x] rendert een leaf field als de componentMapping if provided, anders als tekst
     - [x] rendert een non-leaf field recursief
-    - [ ] rendert een non-leaf field als de componentMapping if provided, anders recursief
+    - [x] rendert een non-leaf field als de componentMapping if provided, anders recursief
     - [ ] voeg  defaultLeaffield en defaultNonLeaffield properties toe
 */
