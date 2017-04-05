@@ -12,6 +12,7 @@ services:
     ports:
       - "8080:8080" #development site
       - "8081:8081" #development without browsersync proxy
+      - "8082:8082" #browsersync protocol
       - "3001:3001" #browsersync gui
       - "8083:8083" #gemini gui
     volumes: 
