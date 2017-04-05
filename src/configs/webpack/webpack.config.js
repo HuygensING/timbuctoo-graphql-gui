@@ -27,7 +27,7 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      "babyccinoPath": JSON.stringify(path.resolve("./src/app")),
+      "babyccinoPath": JSON.stringify(path.resolve("./src")),
       "babyccinoRegex": "/\\.test$/",
     }),
     new webpack.HotModuleReplacementPlugin()
