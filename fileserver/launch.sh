@@ -1,17 +1,9 @@
 #!/bin/bash
 
 function updateDevDirNodeModules() {
-  #update node_modules in container
   echo "Updating modules..."
-  cp /app/yarn.lock /yarn.lock
-  cp /app/package.json /package.json
-  (cd / && yarn install)
-  cp /yarn.lock /app/yarn.lock
+  yarn install --prefer-offline
   echo "done"
-  #sync to folder in mounted path
-  #in background because there is no reason why we should block starting the debug server 
-  #until this is finished (this is very slow on the mac virtualized docker)
-  rsync --archive --delete /node_modules /app/node_modules &
 }
 
 function launchTs() {
