@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDom from "react-dom";
 import {applyMiddleware, combineReducers, createStore} from "redux";
-import {Router} from "./actions/router";
+import {Router} from "../_external/router";
 import {Gui} from "./components";
 import {reducer, Store} from "./reducers";
 
