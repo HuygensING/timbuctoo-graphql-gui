@@ -1,5 +1,13 @@
 import * as React from "react";
-import {assertNever, ComponentType, Data, DataItem, getType, Metadata, MetadataType} from "../support/graphqlHelpers";
+import {
+  assertNever,
+  Data,
+  DataItem,
+  FieldMetadataType,
+  Metadata,
+  MetadataType,
+  unwrapNonNull,
+} from "../support/graphqlHelpers";
 interface ComponentMappings {
   [key: string]: {
     default: Component,
@@ -20,13 +28,9 @@ export function Entity(props: {data: Data, metadata: Metadata, componentMappings
   const data = props.data;
   const subComponents: JSX.Element[] = [];
   for (const key in data) {
-    if (data[key] != null) {
+    if (data.hasOwnProperty(key)) {
       const dataItem: DataItem = data[key];
-      const renderFunction: Component = getComponentFromMappings(
-        {name: dataItem.__typename, type: "object"}, 
-        props.componentMappings,
-      );
-      subComponents.push(renderFunction(
+      subComponents.push(renderFunctionOrDefault(dataItem.__typename, props.componentMappings, DefaultObjectComponent)(
         {data: dataItem, metadata: props.metadata, componentMappings: props.componentMappings},
       ));
     }
@@ -39,33 +43,25 @@ function DefaultScalarComponent(props: ComponentArguments): JSX.Element {
   return <span>{value}<br/></span>;
 }
 
-function DefaultListComponent(props: ComponentArguments): JSX.Element {
+function ListComponent(props: ComponentArguments, subtype: FieldMetadataType): JSX.Element {
   const propElements: JSX.Element[] = [];
   const value = props.data;
-  if (value != null && value instanceof Array) {
-    for (const key in value) {
-      if (value[key] != null) {
-        const item = value[key];
-      }
-    }
+  if (value && typeof value.map === "function") {
+    // this is either a list of leaf nodes, objects, or lists.
+    // we don't do lists of lists in this component
+    return <ul>{value.map((item: any) => <li>{renderField({...props, data: item}, subtype)}</li>)}</ul>;
+  } else {
+    console.error("data of type list is not an array!", value);
+    return <ul></ul>;
   }
 
-
-  return <ul>{propElements}</ul>;
 }
 
 function DefaultObjectComponent(props: ComponentArguments): JSX.Element {
-  const properties = renderDataItem(props);
-  const propElements: JSX.Element[] = [];
-  
-  for (const key in properties) {
-      if (properties[key] != null) {
-        propElements.push(<span>{key}: {properties[key]}</span>);
-      }
-  }
+  const properties = renderItemFields(props);
 
   return (<div>
-    {propElements}
+    {Object.keys(properties).sort().map((key) => <span>{key}: {properties[key]}</span>)}
   </div>);
 }
 
@@ -73,58 +69,70 @@ function DefaultCompositeComponent(subComponents: JSX.Element[]): JSX.Element {
   return <div>{subComponents}</div>;
 }
 
-function getComponentFromMappings(type: ComponentType, mappings: ComponentMappings): Component {
-  if (type.type !== "list" && type.name in mappings) {
-    return mappings[type.name].default;
+function getMetadata(typeName: string, metadata: Metadata): MetadataType | null {
+  const matchingMetadata = metadata.__schema.types.filter((item) => item.name === typeName);
+  if (matchingMetadata.length === 0) {
+    console.error("No field metadata found for: " + typeName);
+    return null;
+  } else if (matchingMetadata.length > 1) {
+    console.error(`type '${typeName} appears more then once in the metadata array`, metadata);
+    return matchingMetadata[0];
   } else {
-    switch (type.type) {
-      case "leaf":
-        return DefaultScalarComponent;
-      case "list":
-        return DefaultListComponent;
-      case "object":
-        return DefaultObjectComponent;
-      default:
-        assertNever(type.type);
-    }
+    return matchingMetadata[0];
   }
-  console.error("We should never get here");
-  return DefaultScalarComponent;
 }
 
-function renderDataItem({data, metadata, componentMappings}: ComponentArguments): {[key: string]: JSX.Element} {
+export function renderItemFields({data, metadata, componentMappings}: ComponentArguments): 
+    {[key: string]: JSX.Element} {
   const properties: {[key: string]: JSX.Element} = {};
-  const typeName: string = data.__typename;
-  const matchingMetadata = metadata.__schema.types.filter((item) => item.name === typeName);
+  const metaDataType = getMetadata(data.__typename, metadata);
 
-  if (matchingMetadata.length > 0) { 
-    const metaDataType: MetadataType = matchingMetadata[0];
-    if (metaDataType.fields !== null) {
-      for (const propKey in data) {
-        if (propKey === "__typename") {
-          continue;
-        }
-        const fieldMetadataMatches = metaDataType.fields.filter((field) => field.name === propKey);
-        if (fieldMetadataMatches.length > 0) {
-          const fieldMetadata = fieldMetadataMatches[0];
-          const renderComponent = getComponentFromMappings(getType(fieldMetadata.type), componentMappings);
-          properties[propKey] = renderComponent({data: data[propKey], metadata, componentMappings});
-        } else {
-          console.error("No field metadata found for: " + propKey);
-        }
+  if (metaDataType && metaDataType.fields != null) {
+    for (const propKey in data) {
+      if (propKey === "__typename") {
+        continue;
+      }
+      const fieldMetadataMatches = metaDataType.fields.filter((field) => field.name === propKey);
+      if (fieldMetadataMatches.length > 0) {
+        properties[propKey] = renderField({
+          data: data[propKey],
+          metadata,
+          componentMappings,
+        }, fieldMetadataMatches[0].type);
+      } else {
+        console.error("No field metadata found for: " + propKey);
       }
     }
-  } else {
-    console.error("No metadata found for: " + typeName);
   }
 
   return properties;
 }
 
-/*
-  - [x] rendert een leaf field als tekst
-  - [x] rendert een leaf field als de componentMapping if provided, anders als tekst
-  - [x] rendert een non-leaf field recursief
-  - [x] rendert een non-leaf field als de componentMapping if provided, anders recursief
-  - [ ] voeg  defaultLeaffield en defaultNonLeaffield properties toe
-*/
+/**
+ * renders the data given: data object, fieldName, metadata object of parent
+ */
+function renderField(props: ComponentArguments, fieldMetadata: FieldMetadataType): JSX.Element {
+  const unwrapped = unwrapNonNull(fieldMetadata);
+  switch (unwrapped.kind) {
+    case "ENUM":
+    case "SCALAR":
+      return renderFunctionOrDefault(unwrapped.name, props.componentMappings, DefaultScalarComponent)(props);
+    case "OBJECT":
+    case "UNION":
+    case "INTERFACE":
+      return renderFunctionOrDefault(props.data.__typename, props.componentMappings, DefaultObjectComponent)(props);
+    case "LIST":
+      return ListComponent(props, unwrapped.ofType);
+    default:
+      assertNever(unwrapped);
+      return <span className="should not appear"></span>;
+  }
+}
+
+function renderFunctionOrDefault(key: string, mappings: ComponentMappings, defaultComponent: Component): Component {
+  if (key in mappings) {
+    return mappings[key].default;
+  } else {
+    return defaultComponent;
+  }
+}

@@ -14,56 +14,139 @@ export interface Metadata {
   };
 }
 
-export interface MetadataType {
+export type MetadataType =
+  ObjectMetadataType |
+  InterfaceMetadataType |
+  EnumMetadataType |
+  ScalarMetadataType |
+  UnionMetadataType |
+  ListMetadataType |
+  NonNullMetadataType |
+  InputObjectMetadataType;
+
+export type FieldMetadataType =
+  FieldMetadataTypeExceptNonNull |
+  NonNullMetadataType;
+
+export type FieldMetadataTypeExceptNonNull =
+  ObjectMetadataTypeInField |
+  InterfaceMetadataTypeInField |
+  EnumMetadataTypeInField |
+  ScalarMetadataType |
+  UnionMetadataType |
+  ListMetadataType;
+
+interface MetadataField {
   name: string;
-  kind: string;
-  enumValues: EnumValue[] | null;
-  fields: MetadataField[] | null;
+  type: FieldMetadataType;
 }
 
 interface EnumValue {
   name: string;
 }
 
-interface MetadataField {
+export interface ObjectMetadataType {
   name: string;
-  type: NonNestedFieldType | ListFieldType | NonNullFieldType;
-}
+  kind: "OBJECT";
+  fields: MetadataField[];
 
-interface NonNestedFieldType {
-  name: string;
-  kind: "SCALAR" | "ENUM" | "OBJECT" | "INTERFACE" | "UNION";
+  enumValues?: null;
   ofType?: null;
 }
 
-interface ListFieldType {
+export interface InterfaceMetadataType {
+  name: string;
+  kind: "INTERFACE";
+  fields: MetadataField[];
+
+  enumValues?: null;
+  ofType?: null;
+}
+
+export interface ObjectMetadataTypeInField {
+  name: string;
+  kind: "OBJECT";
+
+  ofType?: null;
+}
+export interface InterfaceMetadataTypeInField {
+  name: string;
+  kind: "INTERFACE";
+
+  ofType?: null;
+}
+
+export interface EnumMetadataTypeInField {
+  name: string;
+  kind: "ENUM";
+
+  ofType?: null;
+}
+
+export interface ScalarMetadataType {
+  name: string;
+  kind: "SCALAR";
+
+  fields?: null;
+  enumValues?: null;
+  ofType?: null;
+}
+
+export interface UnionMetadataType {
+  name: string;
+  kind: "UNION";
+
+  fields?: null;
+  enumValues?: null;
+  ofType?: null;
+}
+
+export interface EnumMetadataType {
+  name: string;
+  kind: "ENUM";
+  enumValues: EnumValue[];
+
+  fields?: null;
+  ofType?: null;
+}
+
+export interface ListMetadataType {
   name?: null;
   kind: "LIST";
-  ofType: NonNestedFieldType | ListFieldType | NonNullFieldType;
+  ofType: FieldMetadataType;
+
+  fields?: null;
+  enumValues?: null;
 }
 
-interface NonNullFieldType {
+export interface NonNullMetadataType {
   name?: null;
   kind: "NON_NULL";
-  ofType: NonNestedFieldType | ListFieldType | NonNullFieldType;
+  ofType: FieldMetadataType;
+
+  fields?: null;
+  enumValues?: null;
 }
 
-export interface ComponentType {
+export interface InputObjectMetadataType {
   name: string;
-  type: "leaf" | "object" | "list";
-  ofType?: ComponentType;
+  kind: "INPUT_OBJECT";
+
+  fields?: null;
+  enumValues?: null;
 }
 
-export function getType(fieldType: NonNestedFieldType | ListFieldType | NonNullFieldType): ComponentType {
-  if (fieldType.kind === "LIST") {
-    const ofType = getType(fieldType.ofType)
-    return {type: "list", name: ofType.name, ofType};
-  } else if (fieldType.kind === "SCALAR") {
-    return {type: "leaf", name: fieldType.name};
-  } else if (fieldType.kind === "NON_NULL") {
-    return getType(fieldType.ofType);
+
+export interface TypeInfo {
+  typeName: string;
+  typeClass: "leaf" | "object" | "list";
+}
+
+export function unwrapNonNull(fieldType: FieldMetadataType): FieldMetadataTypeExceptNonNull {
+  if (fieldType.kind === "NON_NULL") {
+    return unwrapNonNull(fieldType.ofType);
   } else {
-    return {name: fieldType.name, type: "object"};
+    return fieldType;
   }
 }
 

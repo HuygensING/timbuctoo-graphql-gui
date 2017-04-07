@@ -1,8 +1,7 @@
 import * as React from "react";
 import {Data, DataItem, Metadata} from "../support/graphqlHelpers";
-import {ComponentArguments, Entity} from "./entity";
+import {ComponentArguments, Entity, renderItemFields} from "./entity";
 declare const module: any; // when webpack compiles it provides a module variable
-
 
 /*
 {
@@ -27,8 +26,8 @@ declare const module: any; // when webpack compiles it provides a module variabl
               ofType {
                 name
                 kind
-              }  
-            }            
+              }
+            }
           }
         }
       }
@@ -123,7 +122,7 @@ const metadata: {data: Metadata} = {
             },
             {
               name: "JEDI",
-            }
+            },
           ],
           fields: null,
         },
@@ -476,7 +475,7 @@ const metadata: {data: Metadata} = {
             },
             {
               name: "FOOT",
-            }
+            },
           ],
           fields: null,
         },
@@ -848,7 +847,7 @@ const metadata: {data: Metadata} = {
             },
             {
               name: "NON_NULL",
-            }
+            },
           ],
           fields: null,
         },
@@ -1146,7 +1145,7 @@ const metadata: {data: Metadata} = {
             },
             {
               name: "INPUT_FIELD_DEFINITION",
-            }
+            },
           ],
           fields: null,
         },
@@ -1158,13 +1157,16 @@ const metadata: {data: Metadata} = {
 const componentMappings = {
   String: {
     default: StringElement,
-    options: [],
+    options: [StringElement],
   },
 };
 
 const nonLeafCustomComponents = {
-  Droid: DroidElement,
-}
+  Droid: {
+    default: DroidElement,
+    options: [DroidElement],
+  },
+};
 
 const data: {data: Data} = {
   data: {
@@ -1199,8 +1201,8 @@ const dataWithNonLeafFields = {
             {
               name: "R2-D2",
               __typename: "Droid",
-            }
-          ]
+            },
+          ],
         },
         {
           name: "Leia Organa",
@@ -1263,13 +1265,12 @@ const dataWithNonLeafFields = {
               __typename: "Human",
             },
           ],
-        }
+        },
       ],
       __typename: "Human",
     },
   },
 };
-
 
 export default function ({
     storiesOf,
@@ -1285,12 +1286,12 @@ export default function ({
       <Entity data={data.data} metadata={metadata.data} componentMappings={componentMappings}></Entity>
     ))
     .add("with non-leaf fields", () => (
-      <Entity data={dataWithNonLeafFields.data} metadata={metadata.data} componentMappings={componentMappings}></Entity>
+      <Entity data={dataWithNonLeafFields.data} metadata={metadata.data} componentMappings={{}}></Entity>
     ))
-    /*.add("with non-leaf fields with custom components", () => (
+    .add("with non-leaf fields with custom components", () => (
       <Entity data={dataWithNonLeafFields.data} metadata={metadata.data} componentMappings={nonLeafCustomComponents}>
       </Entity>
-    ))*/
+    ))
     ;
   }
 
@@ -1303,24 +1304,11 @@ function StringElement(props: ComponentArguments) {
   );
 }
 
-function DroidElement(props: {propName: string, value: any}) {
-  const properties: JSX.Element[] = [];
-  
-  for(let key in props.value) {
-    if(props.value[key] != null) {
-      const value = props.value[key];      
-      if(typeof value != "object" && key !== "__typename") {
-        properties.push(
-          <span>
-            {key}: {props.value[key]}
-          </span>,
-        );
-      }
-    }
-  }
-  return (
-    <div style={{paddingLeft: "20px"}}>
-      <u>{properties}</u>
-    </div>
-  );
+function DroidElement(props: ComponentArguments) {
+  const properties = renderItemFields(props);
+
+  return (<div style={{border: "thin black solid"}}>
+    <div>🤖</div>
+    {Object.keys(properties).sort().map((key) => <span>{key}: {properties[key]}</span>)}
+  </div>);
 }
