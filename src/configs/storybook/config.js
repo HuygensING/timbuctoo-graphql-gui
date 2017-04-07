@@ -4,7 +4,6 @@ import { configure, setAddon, addDecorator, storiesOf, action, linkTo } from "@k
 import { withKnobs, text, boolean, number, color, object, array, select, date } from '@kadira/storybook-addon-knobs';
 import React from 'react';
 
-setAddon(infoAddon);
 // addDecorator(sourceDecorator);
 addDecorator(withKnobs);
 
