@@ -36,15 +36,15 @@ export default function (describe: any, it: any) {
         routes: {
           catchAll: "/*a",
         },
-      }, "/foo");
+      }, "/foo", {});
       assertThat(() => spies.onNavigateAgain.length === 0, "onNavigateAgain should not be called by a new router");
       assertThat(
-        () => spies.onNoMatchFound.length === 0, 
-        "onNoMatchFound should not be called by a new router if the route matches"
+        () => spies.onNoMatchFound.length === 0,
+        "onNoMatchFound should not be called by a new router if the route matches",
       );
       assertThat(
-        () => spies.onNavigateNew.length === 1, 
-        "onNavigateNew should be called once by a new router if the route matches"
+        () => spies.onNavigateNew.length === 1,
+        "onNavigateNew should be called once by a new router if the route matches",
       );
     });
     it("calls onNoMatchFound when initialized without a valid url", function () {
@@ -55,7 +55,7 @@ export default function (describe: any, it: any) {
         routes: {
           route: "/test",
         },
-      }, "/somethingElse");
+      }, "/somethingElse", {});
       assertThat(() => spies.onNavigateAgain.length === 0, "onNavigateAgain should not be called by a new router");
       assertThat(
         () => spies.onNoMatchFound.length === 1,
@@ -75,7 +75,7 @@ export default function (describe: any, it: any) {
           route1: "/test",
           route2: "/test2",
         },
-      }, "/test");
+      }, "/test", {});
       router.saveState({bla: 1});
       router.onUrl("/test2");
       resetSpies();
@@ -106,7 +106,7 @@ export default function (describe: any, it: any) {
           route1: "/test",
           route2: "/test2",
         },
-      }, "/test");
+      }, "/test", {});
       // router.saveState({bla: 1});
       router.onUrl("/test2");
       resetSpies();
@@ -133,7 +133,7 @@ export default function (describe: any, it: any) {
         routes: {
           route1: "/edit/:collection/:id",
         },
-      }, "/edit/myCollection/2");
+      }, "/edit/myCollection/2", {});
       assertThat(
         () => deepEquals(spies.onNavigateNew[0], ["route1", {collection: "myCollection", id: "2"}]),
         "onNavigateNew should be called with the router arguments",
@@ -149,7 +149,7 @@ export default function (describe: any, it: any) {
           route2: "/edit/:collection/:id/extra",
           alsoMatches: "/edit/:collection/:id/extra",
         },
-      }, "/edit/myCollection/2/extra");
+      }, "/edit/myCollection/2/extra", {});
       assertThat(
         () => spies.onNavigateNew[0][0] === "route2",
         "the first route that matches should be used",
