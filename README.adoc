@@ -64,10 +64,18 @@
     ** [x] full app
   * *NOTE:* I can't get hmr reporting (tslint-loader) to work.
 
-
-- [ ] storybook with knobs
-- [ ] storybook with documentation
+- [x] fast container shutdown
+- [x] ci run on saucelabs
+- [x] fix that node_modules should have parts available outside container and parts inside container (c++ libs should 
+      be compiled in container, vscode should be able to reach typings outside container)
+- [x] storybook with knobs
+- [x] storybook alle .story files laten includen
+- [ ] storybook with source code shown
 - [ ] simple router (test pushState with scroll position)
+- [ ] vscode debugger support (chrome)
+- [ ] run commands using same userid as host system so that created files get the right owner
+
+=== production ready
 - [ ] remote urls are configured using env-variables
 - [ ] can be proxied under subfolder (is configured using env-variable)
   * [ ] test base tag with 
@@ -76,19 +84,12 @@
     ** script urls
     ** image urls
     ** images/css loaded via react
-- [ ] present vscode typeings to the user without having to run npm install on the user's pc
 
-- [ ] ci run on saucelabs
-- [ ] vscode debugger support (chrome)
 - caching
   * [ ] js compiled with hash and served with infinite cache header (both in dev and prod mode)
   * [ ] base html knows the hashes and is served with hash based etag
 - [ ] https://www.npmjs.com/package/finalhandler
 - [ ] log all requests as json to the console in prod mode
-- [x] fast container shutdown
-- [ ] storybook alle .story files laten includen
-- [ ] refresh if storybook config changes
-- [ ] refresh if webpack config changes
 
 
 Not gonna do for now: 
@@ -97,6 +98,8 @@ Not gonna do for now:
 - [ ] storybook for user documentation?
 - [ ] chrome live edit support?
 - [ ] make http:// redirect to https://
+- [ ] refresh if storybook config changes
+- [ ] refresh if webpack config changes
 
 = folder layout
 See README's at lower levels for an explanation of what each folder does.

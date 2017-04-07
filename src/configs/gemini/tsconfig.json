@@ -1,17 +1,17 @@
 {
     "compilerOptions": {
-        "outDir": "./build/",
-        "sourceMap": true,
+        "outDir": "./tsc-output/",
+        "rootDir": "../../",
+        "sourceMap": false,
         "noImplicitAny": true,
-        "strictNullChecks": true,
         "module": "commonjs",
-        "target": "es5",
+        "target": "es6",
         "jsx": "react",
         "allowJs": true,
         "lib": ["dom", "es5", "scripthost", "es2015.promise"]
     },
     "include": [
-        "./src/_external/**/*",
-        "./src/app/**/*"
+        "../../app/**/*.story.tsx",
+        "../../app/**/*.story.ts"
     ]
 }

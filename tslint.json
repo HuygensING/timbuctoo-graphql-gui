@@ -6,7 +6,7 @@
         "space-before-function-paren": [true, {"anonymous": "always", "named": "never", "asyncArrow": "always"}],
         "await-promise": true,
         "trailing-comma": [true, {"multiline": "always"}],
-        "no-trailing-whitespace": false,
-        "interface-name": [true, "never-prefix"]
+        "interface-name": [true, "never-prefix"],
+        "object-literal-sort-keys": false
     }
 }

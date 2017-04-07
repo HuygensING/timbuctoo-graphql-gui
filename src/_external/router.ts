@@ -1,16 +1,62 @@
-//   The router is used to jump to a specific place in the app, discarding all temp data (which might be returned on popState) so all pop-opens are closed etc
-//   You must always be able to drop into a router position.
-//   useful positions:
-//     /:collection (collection overview, first item selected)
-//     /:collection/:item (on every item select, keeps track of unsaved changes)
+import * as Route from "route-parser";
 
-//   When you want to update the current state object you call replaceState (so you use this for storing the scroll position etc.)
-//     - [ ] we can use this for unsaved changes
+interface RouterArgs<Routes, State> {
+  routes: Routes; // fixme: unittest that validates the order of Object.keys
+  onNavigateNew: (routeName: keyof Routes, urlargs: {}) => void;
+  onNavigateAgain: (routeName: keyof Routes, state: State) => void;
+  onNoMatchFound: (url: string) => void;
+}
 
-// so each pushState and onBeforeUnload calls replaceState first to save the redux store and then cleans the redux store and starts the app using the url arguments
-// Router = {navigateTo(url: string), register(path:string, render: (arguments: object) => void, beforeOnloadmessage: () => string?)} //also registers onPopState and onBeforeUnload
+export class Router<T, Routes extends {[key in keyof T]: string}, State> {
+  private routes: Array<{name: keyof Routes, route: Route}>;
+  private currentUrl?: string;
+  private storedState: {[url: string]: {name: keyof Routes, state?: State}} = {};
 
-// each router page is a separate mini-app with it's own redux store etc (of course they can re-use code and components)
-// use Link objects that point to an external resource or to a router page object
+  // the last arg is for type inference
+  constructor(private config: RouterArgs<Routes, State>, initialUrl: string, state: State) {
+    this.routes = [];
+    for (const name in config.routes) {
+      if (config.routes.hasOwnProperty(name)) {
+        this.routes.push({name, route: new Route(config.routes[name])});
+      }
+    }
+    this.onUrl(initialUrl);
+  }
 
-// store full redux state when refreshing as well (should be handled by onBeforeUnload but test separately, also test with browsersync)
+  public onUrl(url: string) {
+    if (url in this.storedState && this.storedState[url].state !== undefined) {
+      const storedState = this.storedState[url];
+      // make typescript happy
+      if (storedState.state === undefined) {
+        throw new Error("This cannot happen. We check for it two lines above.");
+      }
+      this.config.onNavigateAgain(storedState.name, storedState.state);
+      this.currentUrl = url;
+    } else {
+      let matchedRoute: {name: keyof Routes, routeMatch: {[i: string]: string}} | null = null;
+      for (const routeHandler of this.routes) {
+        const routeMatch = routeHandler.route.match(url);
+        if (typeof routeMatch !== "boolean") {
+          matchedRoute = {name: routeHandler.name, routeMatch};
+          break;
+        }
+      }
+      if (matchedRoute !== null) {
+        this.config.onNavigateNew(matchedRoute.name, matchedRoute.routeMatch);
+        this.storedState[url] = {name: matchedRoute.name, state: undefined};
+        this.currentUrl = url;
+      } else {
+        this.config.onNoMatchFound(url);
+        this.currentUrl = undefined;
+      }
+    }
+  }
+
+  public saveState(state: State) {
+    if (this.currentUrl !== undefined) {
+      this.storedState[this.currentUrl].state = state;
+    } else {
+      console.error("Not saving state because we're not at a route");
+    }
+  }
+}

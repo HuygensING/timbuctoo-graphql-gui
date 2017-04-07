@@ -1,5 +1,4 @@
 #!/usr/bin/node
-debugger;
 //Nice and fast docker shutdown
 process.on('SIGTERM', function () {
   //gracefull shutdown is for pusillanimous people and statefull apps
@@ -49,7 +48,8 @@ app.use(function (err, req, res, next) {
 
 var server = require('http').createServer(app);
 server.listen(isDev ? 8081 : 8080, function () {
-  console.log("Server available on http://localhost:8080 (or whatever you bound port 8080 to in your docker-compose)");
+  console.log("Server available!");
+  console.log("on http://localhost:8080 (or whatever you bound port 8080 to in your docker-compose)");
 });
 
 
