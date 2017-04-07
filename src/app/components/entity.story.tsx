@@ -1,4 +1,3 @@
-import { action, storiesOf } from "@kadira/storybook";
 import * as React from "react";
 import {Data, DataItem, Metadata} from "../support/graphqlHelpers";
 import {ComponentArguments, Entity} from "./entity";
@@ -1272,21 +1271,28 @@ const dataWithNonLeafFields = {
 };
 
 
-storiesOf("Entity", module)
-  .add("without specific components", () => (
-    <Entity data={data.data} metadata={metadata.data} componentMappings={{}}></Entity>
-  ))
-  .add("with custom component", () => (
-    <Entity data={data.data} metadata={metadata.data} componentMappings={componentMappings}></Entity>
-  ))
-  .add("with non-leaf fields", () => (
-    <Entity data={dataWithNonLeafFields.data} metadata={metadata.data} componentMappings={componentMappings}></Entity>
-  ))
-  /*.add("with non-leaf fields with custom components", () => (
-    <Entity data={dataWithNonLeafFields.data} metadata={metadata.data} componentMappings={nonLeafCustomComponents}>
-    </Entity>
-  ))*/
-  ;
+export default function ({
+    storiesOf,
+    action,
+    linkTo,
+    knobs,
+  }: any) {
+  storiesOf("Entity", module)
+    .add("without specific components", () => (
+      <Entity data={data.data} metadata={metadata.data} componentMappings={{}}></Entity>
+    ))
+    .add("with custom component", () => (
+      <Entity data={data.data} metadata={metadata.data} componentMappings={componentMappings}></Entity>
+    ))
+    .add("with non-leaf fields", () => (
+      <Entity data={dataWithNonLeafFields.data} metadata={metadata.data} componentMappings={componentMappings}></Entity>
+    ))
+    /*.add("with non-leaf fields with custom components", () => (
+      <Entity data={dataWithNonLeafFields.data} metadata={metadata.data} componentMappings={nonLeafCustomComponents}>
+      </Entity>
+    ))*/
+    ;
+  }
 
 function StringElement(props: ComponentArguments) {
   return (
