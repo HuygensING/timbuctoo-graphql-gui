@@ -136,7 +136,6 @@ export interface InputObjectMetadataType {
   enumValues?: null;
 }
 
-
 export interface TypeInfo {
   typeName: string;
   typeClass: "leaf" | "object" | "list";

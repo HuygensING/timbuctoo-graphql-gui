@@ -15,7 +15,6 @@ interface ComponentMappings {
   };
 }
 
-// TODO remove fieldName parameter
 type Component = (props: ComponentArguments) => JSX.Element;
 
 export interface ComponentArguments {
@@ -82,7 +81,7 @@ function getMetadata(typeName: string, metadata: Metadata): MetadataType | null 
   }
 }
 
-export function renderItemFields({data, metadata, componentMappings}: ComponentArguments): 
+export function renderItemFields({data, metadata, componentMappings}: ComponentArguments):
     {[key: string]: JSX.Element} {
   const properties: {[key: string]: JSX.Element} = {};
   const metaDataType = getMetadata(data.__typename, metadata);
