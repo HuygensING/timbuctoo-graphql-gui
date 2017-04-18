@@ -1292,8 +1292,27 @@ export default function ({
       <Entity data={dataWithNonLeafFields.data} metadata={metadata.data} componentMappings={nonLeafCustomComponents}>
       </Entity>
     ))
+    .add("with custom default rendering of non-leaf fields", () => (
+      <Entity
+        data={dataWithNonLeafFields.data}
+        metadata={metadata.data}
+        componentMappings={{}}
+        defaultRelatedComponent={RelatedComponent}
+      >
+      </Entity>
+    ))
     ;
   }
+
+function RelatedComponent(props: ComponentArguments): JSX.Element {
+  const properties: JSX.Element[] = [];
+  for (const key in props.data) {
+      if (key.indexOf("__") !== 0 && props.data[key] != null && (typeof props.data[key] !== "object")) {
+        properties.push(<span><u>{key}</u>: <b><i>{props.data[key]}</i></b><br/></span>);
+      }
+  }
+  return <div>{properties}</div>;
+}
 
 function StringElement(props: ComponentArguments) {
   return (

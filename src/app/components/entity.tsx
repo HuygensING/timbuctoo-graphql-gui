@@ -21,16 +21,26 @@ export interface ComponentArguments {
   data: any;
   metadata: Metadata;
   componentMappings: ComponentMappings;
+  defaultRelatedComponent: Component;
 }
 
-export function Entity(props: {data: Data, metadata: Metadata, componentMappings: ComponentMappings}): JSX.Element {
+export function Entity(
+  props: {data: Data, metadata: Metadata, componentMappings: ComponentMappings, defaultRelatedComponent?: Component},
+): JSX.Element {
   const data = props.data;
   const subComponents: JSX.Element[] = [];
+  const defaultObjectComponent = props.defaultRelatedComponent != null ?
+    props.defaultRelatedComponent : DefaultObjectComponent;
   for (const key in data) {
     if (data.hasOwnProperty(key)) {
       const dataItem: DataItem = data[key];
       subComponents.push(renderFunctionOrDefault(dataItem.__typename, props.componentMappings, DefaultObjectComponent)(
-        {data: dataItem, metadata: props.metadata, componentMappings: props.componentMappings},
+        {
+          data: dataItem,
+          metadata: props.metadata,
+          componentMappings: props.componentMappings,
+          defaultRelatedComponent: defaultObjectComponent,
+        },
       ));
     }
   }
@@ -81,7 +91,7 @@ function getMetadata(typeName: string, metadata: Metadata): MetadataType | null 
   }
 }
 
-export function renderItemFields({data, metadata, componentMappings}: ComponentArguments):
+export function renderItemFields({data, metadata, componentMappings, defaultRelatedComponent}: ComponentArguments):
     {[key: string]: JSX.Element} {
   const properties: {[key: string]: JSX.Element} = {};
   const metaDataType = getMetadata(data.__typename, metadata);
@@ -97,6 +107,7 @@ export function renderItemFields({data, metadata, componentMappings}: ComponentA
           data: data[propKey],
           metadata,
           componentMappings,
+          defaultRelatedComponent,
         }, fieldMetadataMatches[0].type);
       } else {
         console.error("No field metadata found for: " + propKey);
@@ -119,7 +130,11 @@ function renderField(props: ComponentArguments, fieldMetadata: FieldMetadataType
     case "OBJECT":
     case "UNION":
     case "INTERFACE":
-      return renderFunctionOrDefault(props.data.__typename, props.componentMappings, DefaultObjectComponent)(props);
+      return renderFunctionOrDefault(
+        props.data.__typename,
+        props.componentMappings,
+        props.defaultRelatedComponent,
+    )(props);
     case "LIST":
       return ListComponent(props, unwrapped.ofType);
     default:
