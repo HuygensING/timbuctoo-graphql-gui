@@ -1301,17 +1301,32 @@ export default function ({
       >
       </Entity>
     ))
+    .add("with custom default scalar rendering", () => (
+      <Entity
+        data={dataWithNonLeafFields.data}
+        metadata={metadata.data}
+        componentMappings={{}}
+        defaultScalarComponent={ScalarComponent}/>
+    ))
     ;
-  }
+}
+
+function ScalarComponent(props: ComponentArguments): JSX.Element {
+  return <span style={{color: "red"}}>{props.data}<br/></span>;
+}
 
 function RelatedComponent(props: ComponentArguments): JSX.Element {
-  const properties: JSX.Element[] = [];
-  for (const key in props.data) {
-      if (key.indexOf("__") !== 0 && props.data[key] != null && (typeof props.data[key] !== "object")) {
-        properties.push(<span><u>{key}</u>: <b><i>{props.data[key]}</i></b><br/></span>);
-      }
-  }
-  return <div>{properties}</div>;
+  const customStyle = {
+    backgroundColor: "#EEE",
+  };
+
+  const properties: {[key: string]: JSX.Element} = renderItemFields(props);
+
+  return (
+    <div style={customStyle}>
+      {Object.keys(properties).sort().map((key) => <span>{key}: {properties[key]}</span>)}
+    </div>
+  );
 }
 
 function StringElement(props: ComponentArguments) {

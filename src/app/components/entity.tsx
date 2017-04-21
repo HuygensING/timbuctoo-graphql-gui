@@ -22,15 +22,22 @@ export interface ComponentArguments {
   metadata: Metadata;
   componentMappings: ComponentMappings;
   defaultRelatedComponent: Component;
+  defauldScalarComponent: Component;
 }
 
-export function Entity(
-  props: {data: Data, metadata: Metadata, componentMappings: ComponentMappings, defaultRelatedComponent?: Component},
-): JSX.Element {
+export function Entity(props: {
+    data: Data,
+    metadata: Metadata,
+    componentMappings: ComponentMappings,
+    defaultRelatedComponent?: Component,
+    defaultScalarComponent?: Component,
+  }): JSX.Element {
   const data = props.data;
   const subComponents: JSX.Element[] = [];
-  const defaultObjectComponent = props.defaultRelatedComponent != null ?
+  const defaultRelatedComponent = props.defaultRelatedComponent != null ?
     props.defaultRelatedComponent : DefaultObjectComponent;
+  const defauldScalarComponent = props.defaultScalarComponent != null ?
+    props.defaultScalarComponent : DefaultScalarComponent;
   for (const key in data) {
     if (data.hasOwnProperty(key)) {
       const dataItem: DataItem = data[key];
@@ -39,7 +46,8 @@ export function Entity(
           data: dataItem,
           metadata: props.metadata,
           componentMappings: props.componentMappings,
-          defaultRelatedComponent: defaultObjectComponent,
+          defaultRelatedComponent,
+          defauldScalarComponent,
         },
       ));
     }
@@ -91,8 +99,13 @@ function getMetadata(typeName: string, metadata: Metadata): MetadataType | null 
   }
 }
 
-export function renderItemFields({data, metadata, componentMappings, defaultRelatedComponent}: ComponentArguments):
-    {[key: string]: JSX.Element} {
+export function renderItemFields({
+  data,
+  metadata,
+  componentMappings,
+  defaultRelatedComponent,
+  defauldScalarComponent,
+}: ComponentArguments): {[key: string]: JSX.Element} {
   const properties: {[key: string]: JSX.Element} = {};
   const metaDataType = getMetadata(data.__typename, metadata);
 
@@ -108,6 +121,7 @@ export function renderItemFields({data, metadata, componentMappings, defaultRela
           metadata,
           componentMappings,
           defaultRelatedComponent,
+          defauldScalarComponent,
         }, fieldMetadataMatches[0].type);
       } else {
         console.error("No field metadata found for: " + propKey);
@@ -126,7 +140,7 @@ function renderField(props: ComponentArguments, fieldMetadata: FieldMetadataType
   switch (unwrapped.kind) {
     case "ENUM":
     case "SCALAR":
-      return renderFunctionOrDefault(unwrapped.name, props.componentMappings, DefaultScalarComponent)(props);
+      return renderFunctionOrDefault(unwrapped.name, props.componentMappings, props.defauldScalarComponent)(props);
     case "OBJECT":
     case "UNION":
     case "INTERFACE":
