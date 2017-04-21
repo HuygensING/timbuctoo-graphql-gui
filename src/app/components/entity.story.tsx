@@ -1,6 +1,6 @@
 import * as React from "react";
-import {Data, DataItem, Metadata} from "../support/graphqlHelpers";
-import {ComponentArguments, Entity, renderItemFields} from "./entity";
+import {Data, DataItem, FieldMetadataType, Metadata} from "../support/graphqlHelpers";
+import {ComponentArguments, Entity, renderField, renderItemFields} from "./entity";
 declare const module: any; // when webpack compiles it provides a module variable
 
 /*
@@ -1308,7 +1308,27 @@ export default function ({
         componentMappings={{}}
         defaultScalarComponent={ScalarComponent}/>
     ))
+    .add("with custom default list rendering", () => (
+      <Entity
+        data={dataWithNonLeafFields.data}
+        metadata={metadata.data}
+        componentMappings={{}}
+        defaultListComponent={ListComponent}/>
+    ))
     ;
+}
+
+function ListComponent(props: ComponentArguments, subtype: FieldMetadataType): JSX.Element {
+  const propElements: JSX.Element[] = [];
+  const value = props.data;
+  if (value && typeof value.map === "function") {
+    // this is either a list of leaf nodes, objects, or lists.
+    // we don't do lists of lists in this component
+    return <ol>{value.map((item: any) => <li>{renderField({...props, data: item}, subtype)}</li>)}</ol>;
+  } else {
+    console.error("data of type list is not an array!", value);
+    return <ol></ol>;
+  }
 }
 
 function ScalarComponent(props: ComponentArguments): JSX.Element {

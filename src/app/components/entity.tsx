@@ -16,6 +16,7 @@ interface ComponentMappings {
 }
 
 type Component = (props: ComponentArguments) => JSX.Element;
+type ListComponent = (props: ComponentArguments, subtype: FieldMetadataType) => JSX.Element;
 
 export interface ComponentArguments {
   data: any;
@@ -23,6 +24,7 @@ export interface ComponentArguments {
   componentMappings: ComponentMappings;
   defaultRelatedComponent: Component;
   defauldScalarComponent: Component;
+  defaultListComponent: ListComponent;
 }
 
 export function Entity(props: {
@@ -31,6 +33,7 @@ export function Entity(props: {
     componentMappings: ComponentMappings,
     defaultRelatedComponent?: Component,
     defaultScalarComponent?: Component,
+    defaultListComponent?: ListComponent,
   }): JSX.Element {
   const data = props.data;
   const subComponents: JSX.Element[] = [];
@@ -38,6 +41,8 @@ export function Entity(props: {
     props.defaultRelatedComponent : DefaultObjectComponent;
   const defauldScalarComponent = props.defaultScalarComponent != null ?
     props.defaultScalarComponent : DefaultScalarComponent;
+  const defaultListComponent = props.defaultListComponent != null ?
+    props.defaultListComponent : DefaultListComponent;
   for (const key in data) {
     if (data.hasOwnProperty(key)) {
       const dataItem: DataItem = data[key];
@@ -48,6 +53,7 @@ export function Entity(props: {
           componentMappings: props.componentMappings,
           defaultRelatedComponent,
           defauldScalarComponent,
+          defaultListComponent,
         },
       ));
     }
@@ -60,7 +66,7 @@ function DefaultScalarComponent(props: ComponentArguments): JSX.Element {
   return <span>{value}<br/></span>;
 }
 
-function ListComponent(props: ComponentArguments, subtype: FieldMetadataType): JSX.Element {
+function DefaultListComponent(props: ComponentArguments, subtype: FieldMetadataType): JSX.Element {
   const propElements: JSX.Element[] = [];
   const value = props.data;
   if (value && typeof value.map === "function") {
@@ -105,6 +111,7 @@ export function renderItemFields({
   componentMappings,
   defaultRelatedComponent,
   defauldScalarComponent,
+  defaultListComponent,
 }: ComponentArguments): {[key: string]: JSX.Element} {
   const properties: {[key: string]: JSX.Element} = {};
   const metaDataType = getMetadata(data.__typename, metadata);
@@ -122,6 +129,7 @@ export function renderItemFields({
           componentMappings,
           defaultRelatedComponent,
           defauldScalarComponent,
+          defaultListComponent,
         }, fieldMetadataMatches[0].type);
       } else {
         console.error("No field metadata found for: " + propKey);
@@ -135,7 +143,7 @@ export function renderItemFields({
 /**
  * renders the data given: data object, fieldName, metadata object of parent
  */
-function renderField(props: ComponentArguments, fieldMetadata: FieldMetadataType): JSX.Element {
+export function renderField(props: ComponentArguments, fieldMetadata: FieldMetadataType): JSX.Element {
   const unwrapped = unwrapNonNull(fieldMetadata);
   switch (unwrapped.kind) {
     case "ENUM":
@@ -150,7 +158,7 @@ function renderField(props: ComponentArguments, fieldMetadata: FieldMetadataType
         props.defaultRelatedComponent,
     )(props);
     case "LIST":
-      return ListComponent(props, unwrapped.ofType);
+      return props.defaultListComponent(props, unwrapped.ofType);
     default:
       assertNever(unwrapped);
       return <span className="should not appear"></span>;
