@@ -59,11 +59,12 @@ export function Entity(props: {
   for (const key in data) {
     if (data.hasOwnProperty(key)) {
       const dataItem: DataItem = data[key];
+      const renderConfiguration = getRenderConfiguration(key, props.renderConfiguration);
       const renderFunction = renderFunctionOrDefault(
         dataItem.__typename,
         props.componentMappings,
         DefaultObjectComponent,
-        props.renderConfiguration,
+        renderConfiguration,
       );
 
       subComponents.push(renderFunction(
@@ -74,7 +75,7 @@ export function Entity(props: {
           defaultRelatedComponent,
           defauldScalarComponent,
           defaultListComponent,
-          renderConfiguration: getRenderConfiguration(key, props.renderConfiguration),
+          renderConfiguration,
         },
       ));
     }

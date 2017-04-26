@@ -1282,6 +1282,26 @@ const renderConfiguration: RenderConfiguration = {
   },
 };
 
+const objectRenderConfiguration: RenderConfiguration = {
+  human: {
+    renderer: (props: ComponentArguments): JSX.Element => {
+      for (const key in props.data) {
+        if (props.data.hasOwnProperty(key)) {
+          return (
+            <div>
+              <span>
+                Custom root object rendering <br/>
+                {key}: {props.data[key]}
+              </span>
+            </div>
+          );
+        }
+      }
+      return <div>No data</div>;
+    },
+  },
+};
+
 export default function ({
     storiesOf,
     action,
@@ -1325,12 +1345,19 @@ export default function ({
         componentMappings={{}}
         defaultListComponent={ListComponent}/>
     ))
-    .add("with custom rendering of a specific field", () => (
+    .add("with custom rendering of a specific leaf field", () => (
       <Entity
         data={dataWithNonLeafFields.data}
         metadata={metadata.data}
         componentMappings={{}}
         renderConfiguration={renderConfiguration}/>
+    ))
+    .add("with custom rendering of a specific object field", () => (
+      <Entity
+        data={dataWithNonLeafFields.data}
+        metadata={metadata.data}
+        componentMappings={{}}
+        renderConfiguration={objectRenderConfiguration}/>
     ))
     ;
 }
