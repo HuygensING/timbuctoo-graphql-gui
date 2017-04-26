@@ -1302,6 +1302,16 @@ const objectRenderConfiguration: RenderConfiguration = {
   },
 };
 
+const listRenderConfiguration: RenderConfiguration = {
+  human: {
+    friends: {
+      friends: {
+        listRenderer: ListComponent,
+      },
+    },
+  },
+};
+
 export default function ({
     storiesOf,
     action,
@@ -1358,6 +1368,13 @@ export default function ({
         metadata={metadata.data}
         componentMappings={{}}
         renderConfiguration={objectRenderConfiguration}/>
+    ))
+    .add("with custom rendering of a specific list field", () => (
+      <Entity
+        data={dataWithNonLeafFields.data}
+        metadata={metadata.data}
+        componentMappings={{}}
+        renderConfiguration={listRenderConfiguration}/>
     ))
     ;
 }

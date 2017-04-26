@@ -19,11 +19,18 @@ interface ComponentRenderConfiguration {
   renderer: Component;
 }
 
+interface ListComponentRenderConfiguration {
+  listRenderer: ListComponent;
+}
+
 interface ObjectRenderConfiguration {
   [key: string]: RenderConfiguration;
 }
 
-export type RenderConfiguration = ComponentRenderConfiguration | ObjectRenderConfiguration;
+export type RenderConfiguration =
+  ComponentRenderConfiguration |
+  ObjectRenderConfiguration |
+  ListComponentRenderConfiguration;
 
 type Component = (props: ComponentArguments) => JSX.Element;
 type ListComponent = (props: ComponentArguments, subtype: FieldMetadataType) => JSX.Element;
@@ -198,7 +205,12 @@ export function renderField(props: ComponentArguments, fieldMetadata: FieldMetad
         props.renderConfiguration,
     )(props);
     case "LIST":
-      return props.defaultListComponent(props, unwrapped.ofType);
+      return listRenderFunctionOrDefault(
+        props.data.__typename,
+        props.componentMappings,
+        props.defaultListComponent,
+        props.renderConfiguration,
+      )(props, unwrapped.ofType);
     default:
       assertNever(unwrapped);
       return <span className="should not appear"></span>;
@@ -219,6 +231,29 @@ function renderFunctionOrDefault(
   } else {
     return defaultComponent;
   }
+}
+
+function listRenderFunctionOrDefault(
+  key: string,
+  mappings: ComponentMappings,
+  defaultComponent: ListComponent,
+  renderConfiguration?: RenderConfiguration,
+): ListComponent {
+  if (renderConfiguration != null && isListComponentRenderConfiguration(renderConfiguration)) {
+    return renderConfiguration.listRenderer;
+  }
+  if (key in mappings) {
+    return mappings[key].default;
+  } else {
+    return defaultComponent;
+  }
+}
+
+function isListComponentRenderConfiguration(renderConfiguration?: RenderConfiguration):
+  renderConfiguration is ListComponentRenderConfiguration {
+  // TODO: check if type of the renderer is Component
+  return renderConfiguration != null &&
+  renderConfiguration.hasOwnProperty("listRenderer");
 }
 
 function isComponentRenderConfiguration(renderConfiguration?: RenderConfiguration):
