@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Data, DataItem, FieldMetadataType, Metadata} from "../support/graphqlHelpers";
-import {ComponentArguments, Entity, renderField, renderItemFields} from "./entity";
+import {ComponentArguments, Entity, RenderConfiguration, renderField, renderItemFields} from "./entity";
 declare const module: any; // when webpack compiles it provides a module variable
 
 /*
@@ -1272,6 +1272,16 @@ const dataWithNonLeafFields = {
   },
 };
 
+const renderConfiguration: RenderConfiguration = {
+  human: {
+    friends: {
+      name: {
+        renderer: StringElement,
+      },
+    },
+  },
+};
+
 export default function ({
     storiesOf,
     action,
@@ -1314,6 +1324,13 @@ export default function ({
         metadata={metadata.data}
         componentMappings={{}}
         defaultListComponent={ListComponent}/>
+    ))
+    .add("with custom rendering of a specific field", () => (
+      <Entity
+        data={dataWithNonLeafFields.data}
+        metadata={metadata.data}
+        componentMappings={{}}
+        renderConfiguration={renderConfiguration}/>
     ))
     ;
 }

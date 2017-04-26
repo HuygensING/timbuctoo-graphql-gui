@@ -15,6 +15,16 @@ interface ComponentMappings {
   };
 }
 
+interface ComponentRenderConfiguration {
+  renderer: Component;
+}
+
+interface ObjectRenderConfiguration {
+  [key: string]: RenderConfiguration;
+}
+
+export type RenderConfiguration = ComponentRenderConfiguration | ObjectRenderConfiguration;
+
 type Component = (props: ComponentArguments) => JSX.Element;
 type ListComponent = (props: ComponentArguments, subtype: FieldMetadataType) => JSX.Element;
 
@@ -25,6 +35,7 @@ export interface ComponentArguments {
   defaultRelatedComponent: Component;
   defauldScalarComponent: Component;
   defaultListComponent: ListComponent;
+  renderConfiguration?: RenderConfiguration;
 }
 
 export function Entity(props: {
@@ -34,6 +45,7 @@ export function Entity(props: {
     defaultRelatedComponent?: Component,
     defaultScalarComponent?: Component,
     defaultListComponent?: ListComponent,
+    renderConfiguration?: RenderConfiguration,
   }): JSX.Element {
   const data = props.data;
   const subComponents: JSX.Element[] = [];
@@ -43,10 +55,18 @@ export function Entity(props: {
     props.defaultScalarComponent : DefaultScalarComponent;
   const defaultListComponent = props.defaultListComponent != null ?
     props.defaultListComponent : DefaultListComponent;
+
   for (const key in data) {
     if (data.hasOwnProperty(key)) {
       const dataItem: DataItem = data[key];
-      subComponents.push(renderFunctionOrDefault(dataItem.__typename, props.componentMappings, DefaultObjectComponent)(
+      const renderFunction = renderFunctionOrDefault(
+        dataItem.__typename,
+        props.componentMappings,
+        DefaultObjectComponent,
+        props.renderConfiguration,
+      );
+
+      subComponents.push(renderFunction(
         {
           data: dataItem,
           metadata: props.metadata,
@@ -54,6 +74,7 @@ export function Entity(props: {
           defaultRelatedComponent,
           defauldScalarComponent,
           defaultListComponent,
+          renderConfiguration: getRenderConfiguration(key, props.renderConfiguration),
         },
       ));
     }
@@ -112,6 +133,7 @@ export function renderItemFields({
   defaultRelatedComponent,
   defauldScalarComponent,
   defaultListComponent,
+  renderConfiguration,
 }: ComponentArguments): {[key: string]: JSX.Element} {
   const properties: {[key: string]: JSX.Element} = {};
   const metaDataType = getMetadata(data.__typename, metadata);
@@ -121,6 +143,8 @@ export function renderItemFields({
       if (propKey === "__typename") {
         continue;
       }
+      const fieldRenderConf = getRenderConfiguration(propKey, renderConfiguration);
+
       const fieldMetadataMatches = metaDataType.fields.filter((field) => field.name === propKey);
       if (fieldMetadataMatches.length > 0) {
         properties[propKey] = renderField({
@@ -130,6 +154,7 @@ export function renderItemFields({
           defaultRelatedComponent,
           defauldScalarComponent,
           defaultListComponent,
+          renderConfiguration: fieldRenderConf,
         }, fieldMetadataMatches[0].type);
       } else {
         console.error("No field metadata found for: " + propKey);
@@ -140,6 +165,14 @@ export function renderItemFields({
   return properties;
 }
 
+function getRenderConfiguration(fieldName: string, renderConfiguration?: RenderConfiguration)
+: RenderConfiguration | undefined {
+  if (isObjectRenderConfiguration(renderConfiguration) && renderConfiguration.hasOwnProperty(fieldName)) {
+        return renderConfiguration[fieldName];
+  }
+  return undefined;
+}
+
 /**
  * renders the data given: data object, fieldName, metadata object of parent
  */
@@ -148,7 +181,12 @@ export function renderField(props: ComponentArguments, fieldMetadata: FieldMetad
   switch (unwrapped.kind) {
     case "ENUM":
     case "SCALAR":
-      return renderFunctionOrDefault(unwrapped.name, props.componentMappings, props.defauldScalarComponent)(props);
+      return renderFunctionOrDefault(
+        unwrapped.name,
+        props.componentMappings,
+        props.defauldScalarComponent,
+        props.renderConfiguration,
+    )(props);
     case "OBJECT":
     case "UNION":
     case "INTERFACE":
@@ -156,6 +194,7 @@ export function renderField(props: ComponentArguments, fieldMetadata: FieldMetad
         props.data.__typename,
         props.componentMappings,
         props.defaultRelatedComponent,
+        props.renderConfiguration,
     )(props);
     case "LIST":
       return props.defaultListComponent(props, unwrapped.ofType);
@@ -165,10 +204,32 @@ export function renderField(props: ComponentArguments, fieldMetadata: FieldMetad
   }
 }
 
-function renderFunctionOrDefault(key: string, mappings: ComponentMappings, defaultComponent: Component): Component {
+function renderFunctionOrDefault(
+  key: string,
+  mappings: ComponentMappings,
+  defaultComponent: Component,
+  renderConfiguration?: RenderConfiguration,
+): Component {
+  if (renderConfiguration != null && isComponentRenderConfiguration(renderConfiguration)) {
+    return renderConfiguration.renderer;
+  }
   if (key in mappings) {
     return mappings[key].default;
   } else {
     return defaultComponent;
   }
+}
+
+function isComponentRenderConfiguration(renderConfiguration?: RenderConfiguration):
+  renderConfiguration is ComponentRenderConfiguration {
+  // TODO: check if type of the renderer is Component
+  return renderConfiguration != null &&
+  renderConfiguration.hasOwnProperty("renderer");
+}
+
+function isObjectRenderConfiguration(renderConfiguration?: RenderConfiguration):
+  renderConfiguration is ObjectRenderConfiguration {
+
+  return renderConfiguration != null &&
+  !renderConfiguration.hasOwnProperty("renderer");
 }
