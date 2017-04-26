@@ -1156,15 +1156,15 @@ const metadata: {data: Metadata} = {
 
 const componentMappings = {
   String: {
-    default: StringElement,
-    options: [StringElement],
+    default: StringComponent,
+    options: [StringComponent],
   },
 };
 
 const nonLeafCustomComponents = {
   Droid: {
-    default: DroidElement,
-    options: [DroidElement],
+    default: DroidComponent,
+    options: [DroidComponent],
   },
 };
 
@@ -1276,7 +1276,7 @@ const renderConfiguration: RenderConfiguration = {
   human: {
     friends: {
       name: {
-        renderer: StringElement,
+        renderer: StringComponent,
       },
     },
   },
@@ -1393,7 +1393,7 @@ function RelatedComponent(props: ComponentArguments): JSX.Element {
   );
 }
 
-function StringElement(props: ComponentArguments) {
+function StringComponent(props: ComponentArguments) {
   return (
     <span>
       <b>{props.data}</b>
@@ -1402,7 +1402,7 @@ function StringElement(props: ComponentArguments) {
   );
 }
 
-function DroidElement(props: ComponentArguments) {
+function DroidComponent(props: ComponentArguments) {
   const properties = renderItemFields(props);
 
   return (<div style={{border: "thin black solid"}}>
