@@ -11,38 +11,41 @@ import {
 interface ComponentMappings {
   [key: string]: {
     default: Component,
-    options: Component[],
   };
 }
 
-interface ComponentRenderConfiguration {
+interface ComponentOverrideConfiguration {
   renderer: Component;
 }
 
-interface ListComponentRenderConfiguration {
+interface ListComponentOverrideConfiguration {
   listRenderer: ListComponent;
 }
 
-interface ObjectRenderConfiguration {
-  [key: string]: RenderConfiguration;
+interface ObjectOverrideConfiguration {
+  [key: string]: OverrideConfig;
 }
 
-export type RenderConfiguration =
-  ComponentRenderConfiguration |
-  ObjectRenderConfiguration |
-  ListComponentRenderConfiguration;
+export type OverrideConfig =
+  ComponentOverrideConfiguration |
+  ObjectOverrideConfiguration |
+  ListComponentOverrideConfiguration;
+
+interface RenderConfig {
+  overrides?: OverrideConfig;
+  type: ComponentMappings;
+}
 
 type Component = (props: ComponentArguments) => JSX.Element;
-type ListComponent = (props: ComponentArguments, subtype: FieldMetadataType) => JSX.Element;
+export type ListComponent = (props: ComponentArguments, subtype: FieldMetadataType) => JSX.Element;
 
 export interface ComponentArguments {
   data: any;
   metadata: Metadata;
-  componentMappings: ComponentMappings;
   defaultRelatedComponent: Component;
-  defauldScalarComponent: Component;
+  defaultScalarComponent: Component;
   defaultListComponent: ListComponent;
-  renderConfiguration?: RenderConfiguration;
+  renderConfig: RenderConfig;
 }
 
 export function Entity(props: {
@@ -52,13 +55,13 @@ export function Entity(props: {
     defaultRelatedComponent?: Component,
     defaultScalarComponent?: Component,
     defaultListComponent?: ListComponent,
-    renderConfiguration?: RenderConfiguration,
+    renderConfiguration?: OverrideConfig,
   }): JSX.Element {
   const data = props.data;
   const subComponents: JSX.Element[] = [];
   const defaultRelatedComponent = props.defaultRelatedComponent != null ?
     props.defaultRelatedComponent : DefaultObjectComponent;
-  const defauldScalarComponent = props.defaultScalarComponent != null ?
+  const defaultScalarComponent = props.defaultScalarComponent != null ?
     props.defaultScalarComponent : DefaultScalarComponent;
   const defaultListComponent = props.defaultListComponent != null ?
     props.defaultListComponent : DefaultListComponent;
@@ -69,20 +72,20 @@ export function Entity(props: {
       const renderConfiguration = getRenderConfiguration(key, props.renderConfiguration);
       const renderFunction = renderFunctionOrDefault(
         dataItem.__typename,
-        props.componentMappings,
         DefaultObjectComponent,
-        renderConfiguration,
+        {overrides: props.renderConfiguration, type: props.componentMappings},
       );
+
+      const renderConfig = {tree: renderConfiguration, type: props.componentMappings};
 
       subComponents.push(renderFunction(
         {
           data: dataItem,
           metadata: props.metadata,
-          componentMappings: props.componentMappings,
           defaultRelatedComponent,
-          defauldScalarComponent,
+          defaultScalarComponent,
           defaultListComponent,
-          renderConfiguration,
+          renderConfig,
         },
       ));
     }
@@ -137,11 +140,10 @@ function getMetadata(typeName: string, metadata: Metadata): MetadataType | null 
 export function renderItemFields({
   data,
   metadata,
-  componentMappings,
   defaultRelatedComponent,
-  defauldScalarComponent,
+  defaultScalarComponent,
   defaultListComponent,
-  renderConfiguration,
+  renderConfig,
 }: ComponentArguments): {[key: string]: JSX.Element} {
   const properties: {[key: string]: JSX.Element} = {};
   const metaDataType = getMetadata(data.__typename, metadata);
@@ -151,18 +153,18 @@ export function renderItemFields({
       if (propKey === "__typename") {
         continue;
       }
-      const fieldRenderConf = getRenderConfiguration(propKey, renderConfiguration);
+      const propRenderConf = getRenderConfiguration(propKey, renderConfig.overrides);
+      const propRendering = {tree: propRenderConf, type: renderConfig.type};
 
       const fieldMetadataMatches = metaDataType.fields.filter((field) => field.name === propKey);
       if (fieldMetadataMatches.length > 0) {
         properties[propKey] = renderField({
           data: data[propKey],
           metadata,
-          componentMappings,
           defaultRelatedComponent,
-          defauldScalarComponent,
+          defaultScalarComponent,
           defaultListComponent,
-          renderConfiguration: fieldRenderConf,
+          renderConfig: propRendering,
         }, fieldMetadataMatches[0].type);
       } else {
         console.error("No field metadata found for: " + propKey);
@@ -173,8 +175,8 @@ export function renderItemFields({
   return properties;
 }
 
-function getRenderConfiguration(fieldName: string, renderConfiguration?: RenderConfiguration)
-: RenderConfiguration | undefined {
+function getRenderConfiguration(fieldName: string, renderConfiguration?: OverrideConfig)
+: OverrideConfig | undefined {
   if (isObjectRenderConfiguration(renderConfiguration) && renderConfiguration.hasOwnProperty(fieldName)) {
         return renderConfiguration[fieldName];
   }
@@ -191,25 +193,22 @@ export function renderField(props: ComponentArguments, fieldMetadata: FieldMetad
     case "SCALAR":
       return renderFunctionOrDefault(
         unwrapped.name,
-        props.componentMappings,
-        props.defauldScalarComponent,
-        props.renderConfiguration,
+        props.defaultScalarComponent,
+        props.renderConfig,
     )(props);
     case "OBJECT":
     case "UNION":
     case "INTERFACE":
       return renderFunctionOrDefault(
         props.data.__typename,
-        props.componentMappings,
         props.defaultRelatedComponent,
-        props.renderConfiguration,
+        props.renderConfig,
     )(props);
     case "LIST":
       return listRenderFunctionOrDefault(
         props.data.__typename,
-        props.componentMappings,
         props.defaultListComponent,
-        props.renderConfiguration,
+        props.renderConfig,
       )(props, unwrapped.ofType);
     default:
       assertNever(unwrapped);
@@ -219,15 +218,14 @@ export function renderField(props: ComponentArguments, fieldMetadata: FieldMetad
 
 function renderFunctionOrDefault(
   type: string,
-  mappings: ComponentMappings,
   defaultComponent: Component,
-  renderConfiguration?: RenderConfiguration,
+  rendering: RenderConfig,
 ): Component {
-  if (renderConfiguration != null && isComponentRenderConfiguration(renderConfiguration)) {
-    return renderConfiguration.renderer;
+  if (rendering.overrides != null && isComponentRenderConfiguration(rendering.overrides)) {
+    return rendering.overrides.renderer;
   }
-  if (type in mappings) {
-    return mappings[type].default;
+  if (type in rendering.type) {
+    return rendering.type[type].default;
   } else {
     return defaultComponent;
   }
@@ -235,36 +233,35 @@ function renderFunctionOrDefault(
 
 function listRenderFunctionOrDefault(
   type: string,
-  mappings: ComponentMappings,
   defaultComponent: ListComponent,
-  renderConfiguration?: RenderConfiguration,
+  rendering: RenderConfig,
 ): ListComponent {
-  if (renderConfiguration != null && isListComponentRenderConfiguration(renderConfiguration)) {
-    return renderConfiguration.listRenderer;
+  if (rendering.overrides != null && isListComponentRenderConfiguration(rendering.overrides)) {
+    return rendering.overrides.listRenderer;
   }
-  if (type in mappings) {
-    return mappings[type].default;
+  if (type in rendering.type) {
+    return rendering.type[type].default;
   } else {
     return defaultComponent;
   }
 }
 
-function isListComponentRenderConfiguration(renderConfiguration?: RenderConfiguration):
-  renderConfiguration is ListComponentRenderConfiguration {
+function isListComponentRenderConfiguration(renderConfiguration?: OverrideConfig):
+  renderConfiguration is ListComponentOverrideConfiguration {
   // TODO: check if type of the renderer is Component
   return renderConfiguration != null &&
   renderConfiguration.hasOwnProperty("listRenderer");
 }
 
-function isComponentRenderConfiguration(renderConfiguration?: RenderConfiguration):
-  renderConfiguration is ComponentRenderConfiguration {
+function isComponentRenderConfiguration(renderConfiguration?: OverrideConfig):
+  renderConfiguration is ComponentOverrideConfiguration {
   // TODO: check if type of the renderer is Component
   return renderConfiguration != null &&
   renderConfiguration.hasOwnProperty("renderer");
 }
 
-function isObjectRenderConfiguration(renderConfiguration?: RenderConfiguration):
-  renderConfiguration is ObjectRenderConfiguration {
+function isObjectRenderConfiguration(renderConfiguration?: OverrideConfig):
+  renderConfiguration is ObjectOverrideConfiguration {
 
   return renderConfiguration != null &&
   !renderConfiguration.hasOwnProperty("renderer");

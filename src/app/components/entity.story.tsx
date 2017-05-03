@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Data, DataItem, FieldMetadataType, Metadata} from "../support/graphqlHelpers";
-import {ComponentArguments, Entity, RenderConfiguration, renderField, renderItemFields} from "./entity";
+import {ComponentArguments, Entity, OverrideConfig, renderField, renderItemFields} from "./entity";
 declare const module: any; // when webpack compiles it provides a module variable
 
 /*
@@ -1272,7 +1272,7 @@ const dataWithNonLeafFields = {
   },
 };
 
-const renderConfiguration: RenderConfiguration = {
+const renderConfiguration: OverrideConfig = {
   human: {
     friends: {
       name: {
@@ -1282,7 +1282,7 @@ const renderConfiguration: RenderConfiguration = {
   },
 };
 
-const objectRenderConfiguration: RenderConfiguration = {
+const objectRenderConfiguration: OverrideConfig = {
   human: {
     renderer: (props: ComponentArguments): JSX.Element => {
       for (const key in props.data) {
@@ -1302,7 +1302,7 @@ const objectRenderConfiguration: RenderConfiguration = {
   },
 };
 
-const listRenderConfiguration: RenderConfiguration = {
+const listRenderConfiguration: OverrideConfig = {
   human: {
     friends: {
       friends: {
