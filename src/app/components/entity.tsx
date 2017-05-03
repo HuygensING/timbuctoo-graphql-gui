@@ -218,7 +218,7 @@ export function renderField(props: ComponentArguments, fieldMetadata: FieldMetad
 }
 
 function renderFunctionOrDefault(
-  key: string,
+  type: string,
   mappings: ComponentMappings,
   defaultComponent: Component,
   renderConfiguration?: RenderConfiguration,
@@ -226,15 +226,15 @@ function renderFunctionOrDefault(
   if (renderConfiguration != null && isComponentRenderConfiguration(renderConfiguration)) {
     return renderConfiguration.renderer;
   }
-  if (key in mappings) {
-    return mappings[key].default;
+  if (type in mappings) {
+    return mappings[type].default;
   } else {
     return defaultComponent;
   }
 }
 
 function listRenderFunctionOrDefault(
-  key: string,
+  type: string,
   mappings: ComponentMappings,
   defaultComponent: ListComponent,
   renderConfiguration?: RenderConfiguration,
@@ -242,8 +242,8 @@ function listRenderFunctionOrDefault(
   if (renderConfiguration != null && isListComponentRenderConfiguration(renderConfiguration)) {
     return renderConfiguration.listRenderer;
   }
-  if (key in mappings) {
-    return mappings[key].default;
+  if (type in mappings) {
+    return mappings[type].default;
   } else {
     return defaultComponent;
   }
