@@ -1,8 +1,9 @@
-
+// TODO move to api.tsx
 export interface Data {
   [key: string]: DataItem;
 }
 
+// TODO move to api.tsx
 export interface DataItem  {
   [key: string]: DataItem | string | number | boolean | null | undefined | DataItem[] | string[] | number[];
   __typename: string;
@@ -146,6 +147,19 @@ export function unwrapNonNull(fieldType: FieldMetadataType): FieldMetadataTypeEx
     return unwrapNonNull(fieldType.ofType);
   } else {
     return fieldType;
+  }
+}
+
+export function getMetadata(typeName: string, metadata: Metadata): MetadataType | null {
+  const matchingMetadata = metadata.__schema.types.filter((item) => item.name === typeName);
+  if (matchingMetadata.length === 0) {
+    console.error("No field metadata found for: " + typeName);
+    return null;
+  } else if (matchingMetadata.length > 1) {
+    console.error(`type '${typeName} appears more then once in the metadata array`, metadata);
+    return matchingMetadata[0];
+  } else {
+    return matchingMetadata[0];
   }
 }
 

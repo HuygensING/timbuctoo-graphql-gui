@@ -1,6 +1,9 @@
 import * as React from "react";
+import {GraphQlDataRenderer} from "../support/graphqlDataRenderer";
 import {Data, DataItem, FieldMetadataType, Metadata} from "../support/graphqlHelpers";
-import {ComponentArguments, Entity, OverrideConfig, renderField, renderItemFields} from "./entity";
+import {DefaultMappings, GraphQlRenderConfig} from "../support/graphqlRenderConfig";
+import {DataRenderer, Entity} from "./api";
+import {ComponentArguments, OverrideConfig, renderField, renderItemFields} from "./entity";
 declare const module: any; // when webpack compiles it provides a module variable
 
 /*
@@ -1154,11 +1157,19 @@ const metadata: {data: Metadata} = {
   },
 };
 
-const componentMappings = {
-  String: {
-    default: StringComponent,
-    options: [StringComponent],
+const StringComponent = {
+  render: (dataRenderer: DataRenderer) => {
+    return (
+      <span>
+        <b>{dataRenderer.getData()}</b>
+        <br/>
+      </span>
+    );
   },
+};
+
+const componentMappings: DefaultMappings = {
+  String: StringComponent,
 };
 
 const nonLeafCustomComponents = {
@@ -1168,8 +1179,20 @@ const nonLeafCustomComponents = {
   },
 };
 
-const data: {data: Data} = {
+/*
+{
+  __typename
+  human(id: "1000") {
+    name
+    height
+    mass
+    __typename
+  }
+}
+*/
+const data: {data: DataItem} = {
   data: {
+    __typename: "Query",
     human: {
       name: "Luke Skywalker",
       height: 1.72,
@@ -1179,12 +1202,33 @@ const data: {data: Data} = {
   },
 };
 
+/*
+{
+  __typename
+  human(id: "1000") {
+    name
+    height
+    mass
+    __typename
+    friends {
+      name
+      __typename
+      friends {
+      	name
+      	__typename
+    	}
+    }
+  }
+}
+*/
 const dataWithNonLeafFields = {
   data: {
+    __typename: "Query",
     human: {
       name: "Luke Skywalker",
       height: 1.72,
       mass: 77,
+      __typename: "Human",
       friends: [
         {
           name: "Han Solo",
@@ -1267,20 +1311,19 @@ const dataWithNonLeafFields = {
           ],
         },
       ],
-      __typename: "Human",
     },
   },
 };
 
-const renderConfiguration: OverrideConfig = {
-  human: {
-    friends: {
-      name: {
-        renderer: StringComponent,
-      },
-    },
-  },
-};
+// const renderConfiguration: OverrideConfig = {
+//   human: {
+//     friends: {
+//       name: {
+//         renderer: StringComponent,
+//       },
+//     },
+//   },
+// };
 
 const objectRenderConfiguration: OverrideConfig = {
   human: {
@@ -1320,15 +1363,19 @@ export default function ({
   }: any) {
   storiesOf("Entity", module)
     .add("without specific components", () => (
-      <Entity data={data.data} metadata={metadata.data} componentMappings={{}}></Entity>
+      <Entity datarenderer={new GraphQlDataRenderer(data.data, new GraphQlRenderConfig({}), metadata.data)}></Entity>
     ))
     .add("with custom component", () => (
-      <Entity data={data.data} metadata={metadata.data} componentMappings={componentMappings}></Entity>
+      <Entity datarenderer={
+        new GraphQlDataRenderer(data.data, new GraphQlRenderConfig(componentMappings), metadata.data)
+      }></Entity>
     ))
     .add("with non-leaf fields", () => (
-      <Entity data={dataWithNonLeafFields.data} metadata={metadata.data} componentMappings={{}}></Entity>
+      <Entity datarenderer={
+        new GraphQlDataRenderer(dataWithNonLeafFields.data, new GraphQlRenderConfig({}), metadata.data)
+      }></Entity>
     ))
-    .add("with non-leaf fields with custom components", () => (
+    /*.add("with non-leaf fields with custom components", () => (
       <Entity data={dataWithNonLeafFields.data} metadata={metadata.data} componentMappings={nonLeafCustomComponents}>
       </Entity>
     ))
@@ -1375,7 +1422,7 @@ export default function ({
         metadata={metadata.data}
         componentMappings={{}}
         renderConfiguration={listRenderConfiguration}/>
-    ))
+    ))*/
     ;
 }
 
@@ -1407,15 +1454,6 @@ function RelatedComponent(props: ComponentArguments): JSX.Element {
     <div style={customStyle}>
       {Object.keys(properties).sort().map((key) => <span>{key}: {properties[key]}</span>)}
     </div>
-  );
-}
-
-function StringComponent(props: ComponentArguments) {
-  return (
-    <span>
-      <b>{props.data}</b>
-      <br/>
-    </span>
   );
 }
 
