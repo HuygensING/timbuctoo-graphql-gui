@@ -137,11 +137,6 @@ export interface InputObjectMetadataType {
   enumValues?: null;
 }
 
-export interface TypeInfo {
-  typeName: string;
-  typeClass: "leaf" | "object" | "list";
-}
-
 export function unwrapNonNull(fieldType: FieldMetadataType): FieldMetadataTypeExceptNonNull {
   if (fieldType.kind === "NON_NULL") {
     return unwrapNonNull(fieldType.ofType);
