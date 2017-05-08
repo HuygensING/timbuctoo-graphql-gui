@@ -48,7 +48,7 @@ export class GraphQlRenderConfig {
     };
   }
 
-  public getComponent(fieldName: string | number, fieldMetadata: FieldMetadataType): TimComponent {
+  public getComponent(fieldMetadata: FieldMetadataType): TimComponent {
 
     const unwrapped = unwrapNonNull(fieldMetadata);
     switch (unwrapped.kind) {

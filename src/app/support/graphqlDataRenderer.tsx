@@ -46,7 +46,7 @@ export class GraphQlDataRenderer implements DataRenderer {
         if (metaDataType != null && metaDataType.fields != null) {
           const fieldMetadataMatches = metaDataType.fields.filter((mdField) => mdField.name === field);
           if (fieldMetadataMatches.length > 0) {
-            return this.renderConfig.getComponent(field, fieldMetadataMatches[0].type)
+            return this.renderConfig.getComponent(fieldMetadataMatches[0].type)
               .render(this.subRenderer(field));
           } else {
             console.error("No field metadata found for: " + field);
