@@ -1,6 +1,6 @@
 import * as React from "react";
 import {GraphQlDataRenderer} from "../support/graphqlDataRenderer";
-import {Data, DataItem, FieldMetadataType, Metadata} from "../support/graphqlHelpers";
+import {Data, DataItem, FieldMetadataType, getMetadata, Metadata} from "../support/graphqlHelpers";
 import {DefaultMappings, GraphQlRenderConfig} from "../support/graphqlRenderConfig";
 import {DataRenderer, Entity} from "./api";
 import {ComponentArguments, OverrideConfig, renderField, renderItemFields} from "./entity";

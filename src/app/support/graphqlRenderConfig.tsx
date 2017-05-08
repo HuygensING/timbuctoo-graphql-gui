@@ -1,6 +1,6 @@
 import * as React from "react";
 import {DataRenderer, TimComponent} from "../components/api";
-import {assertNever, FieldMetadataType, unwrapNonNull} from "./graphqlHelpers";
+import {assertNever, FieldMetadataType, MetadataType, unwrapNonNull} from "./graphqlHelpers";
 
 export class GraphQlRenderConfig {
   private defaults: DefaultMappings;
@@ -48,13 +48,12 @@ export class GraphQlRenderConfig {
     };
   }
 
-  public getComponent(fieldMetadata: FieldMetadataType): TimComponent {
-
-    const unwrapped = unwrapNonNull(fieldMetadata);
-    switch (unwrapped.kind) {
+  public getComponent(fieldMetadata: MetadataType): TimComponent {
+    const kind = fieldMetadata.kind;
+    switch (fieldMetadata.kind) {
       case "ENUM":
       case "SCALAR":
-        return this.renderFunctionOrDefault(unwrapped.name, this.defaultScalarComponent);
+        return this.renderFunctionOrDefault(fieldMetadata.name, this.defaultScalarComponent);
       case "OBJECT":
       case "UNION":
       case "INTERFACE":
@@ -62,7 +61,7 @@ export class GraphQlRenderConfig {
       case "LIST":
         return this.defaultListComponent;
       default:
-        assertNever(unwrapped);
+        console.error("Unhandle case for: ", fieldMetadata);
         return this.unknownComponent;
     }
   }

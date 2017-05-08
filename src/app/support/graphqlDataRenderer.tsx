@@ -1,6 +1,6 @@
 import * as React from "react";
 import {DataRenderer, TimComponent} from "../components/api";
-import {getMetadata, Metadata} from "./graphqlHelpers";
+import {convertToMetadataType, getMetadata, isListMetadata, Metadata} from "./graphqlHelpers";
 import {GraphQlRenderConfig} from "./graphqlRenderConfig";
 
 export class GraphQlDataRenderer implements DataRenderer {
@@ -15,6 +15,7 @@ export class GraphQlDataRenderer implements DataRenderer {
   }
 
   public fields(): string[] {
+    // TODO get the fields from the metadata
     if (this.data instanceof Object) {
       return Object.keys(this.data).filter((field) => field !== "__typename");
     }
@@ -41,13 +42,25 @@ export class GraphQlDataRenderer implements DataRenderer {
 
   public renderField(field: string | number): JSX.Element {
     if (this.data.hasOwnProperty(field)) {
-      if(this.data instanceof Object) {
-        const metaDataType = getMetadata(this.data.__typename, this.metadata);
-        if (metaDataType != null && metaDataType.fields != null) {
-          const fieldMetadataMatches = metaDataType.fields.filter((mdField) => mdField.name === field);
+      if (this.data instanceof Array && typeof field === "number") {
+        const fieldMetadata = getMetadata(this.data[field].__typename, this.metadata);
+        if (fieldMetadata != null) {
+          return this.renderConfig.getComponent(fieldMetadata).render(this.subRenderer(field));
+        }
+        // const metadataType = getMetadata("LIST", this.metadata);
+        // if (metadataType != null && isListMetadata(metadataType)) {
+        //   return this.renderConfig.getComponent(metadataType.ofType).render(this.subRenderer(field));
+        // }
+      } else if (this.data instanceof Object) {
+        const metadataType = getMetadata(this.data.__typename, this.metadata);
+        if (metadataType != null && metadataType.fields != null) {
+          const fieldMetadataMatches = metadataType.fields.filter((mdField) => mdField.name === field);
           if (fieldMetadataMatches.length > 0) {
-            return this.renderConfig.getComponent(fieldMetadataMatches[0].type)
-              .render(this.subRenderer(field));
+            const fieldMetadata = convertToMetadataType(fieldMetadataMatches[0].type, this.metadata);
+            if (fieldMetadata != null) {
+              return this.renderConfig.getComponent(fieldMetadata)
+                .render(this.subRenderer(field));
+            }
           } else {
             console.error("No field metadata found for: " + field);
           }

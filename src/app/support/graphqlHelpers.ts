@@ -145,10 +145,26 @@ export function unwrapNonNull(fieldType: FieldMetadataType): FieldMetadataTypeEx
   }
 }
 
+export function convertToMetadataType(fieldMetadataType: FieldMetadataType, metadata: Metadata): MetadataType | null {
+  const unwrapped = unwrapNonNull(fieldMetadataType);
+  switch (unwrapped.kind) {
+    case "SCALAR":
+    case "UNION":
+    case "LIST":
+      return unwrapped;
+    case "OBJECT":
+    case "INTERFACE":
+    case "ENUM":
+      return getMetadata(unwrapped.name, metadata);
+    default:
+      return null;
+  }
+}
+
 export function getMetadata(typeName: string, metadata: Metadata): MetadataType | null {
   const matchingMetadata = metadata.__schema.types.filter((item) => item.name === typeName);
   if (matchingMetadata.length === 0) {
-    console.error("No field metadata found for: " + typeName);
+    console.error("No metadata found for type: " + typeName);
     return null;
   } else if (matchingMetadata.length > 1) {
     console.error(`type '${typeName} appears more then once in the metadata array`, metadata);
@@ -156,6 +172,10 @@ export function getMetadata(typeName: string, metadata: Metadata): MetadataType 
   } else {
     return matchingMetadata[0];
   }
+}
+
+export function isListMetadata(metadataType: MetadataType | FieldMetadataType): metadataType is ListMetadataType {
+  return metadataType != null && metadataType.kind === "LIST";
 }
 
 export function assertNever(value: never): void {
