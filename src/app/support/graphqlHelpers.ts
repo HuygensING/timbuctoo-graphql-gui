@@ -1,8 +1,9 @@
-
+// TODO move to api.tsx
 export interface Data {
   [key: string]: DataItem;
 }
 
+// TODO move to api.tsx
 export interface DataItem  {
   [key: string]: DataItem | string | number | boolean | null | undefined | DataItem[] | string[] | number[];
   __typename: string;
@@ -136,17 +137,45 @@ export interface InputObjectMetadataType {
   enumValues?: null;
 }
 
-export interface TypeInfo {
-  typeName: string;
-  typeClass: "leaf" | "object" | "list";
-}
-
 export function unwrapNonNull(fieldType: FieldMetadataType): FieldMetadataTypeExceptNonNull {
   if (fieldType.kind === "NON_NULL") {
     return unwrapNonNull(fieldType.ofType);
   } else {
     return fieldType;
   }
+}
+
+export function convertToMetadataType(fieldMetadataType: FieldMetadataType, metadata: Metadata): MetadataType | null {
+  const unwrapped = unwrapNonNull(fieldMetadataType);
+  switch (unwrapped.kind) {
+    case "SCALAR":
+    case "UNION":
+    case "LIST":
+      return unwrapped;
+    case "OBJECT":
+    case "INTERFACE":
+    case "ENUM":
+      return getMetadata(unwrapped.name, metadata);
+    default:
+      return null;
+  }
+}
+
+export function getMetadata(typeName: string, metadata: Metadata): MetadataType | null {
+  const matchingMetadata = metadata.__schema.types.filter((item) => item.name === typeName);
+  if (matchingMetadata.length === 0) {
+    console.error("No metadata found for type: " + typeName);
+    return null;
+  } else if (matchingMetadata.length > 1) {
+    console.error(`type '${typeName} appears more then once in the metadata array`, metadata);
+    return matchingMetadata[0];
+  } else {
+    return matchingMetadata[0];
+  }
+}
+
+export function isListMetadata(metadataType: MetadataType | FieldMetadataType): metadataType is ListMetadataType {
+  return metadataType != null && metadataType.kind === "LIST";
 }
 
 export function assertNever(value: never): void {

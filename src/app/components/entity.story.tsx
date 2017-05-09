@@ -1,6 +1,9 @@
 import * as React from "react";
-import {Data, DataItem, FieldMetadataType, Metadata} from "../support/graphqlHelpers";
-import {ComponentArguments, Entity, OverrideConfig, renderField, renderItemFields} from "./entity";
+import {GraphQlDataRenderer} from "../support/graphqlDataRenderer";
+import {Data, DataItem, FieldMetadataType, getMetadata, Metadata} from "../support/graphqlHelpers";
+import {DefaultMappings, GraphQlRenderConfig, OverrideConfig} from "../support/graphqlRenderConfig";
+import {DataRenderer, Entity} from "./api";
+import {ComponentArguments, renderField, renderItemFields} from "./entity";
 declare const module: any; // when webpack compiles it provides a module variable
 
 /*
@@ -1154,22 +1157,82 @@ const metadata: {data: Metadata} = {
   },
 };
 
-const componentMappings = {
-  String: {
-    default: StringComponent,
-    options: [StringComponent],
+const StringComponent = {
+  render: (dataRenderer: DataRenderer) => {
+    return (
+      <span>
+        <b>{dataRenderer.getData()}</b>
+        <br/>
+      </span>
+    );
   },
 };
 
-const nonLeafCustomComponents = {
-  Droid: {
-    default: DroidComponent,
-    options: [DroidComponent],
+const componentMappings: DefaultMappings = {
+  String: StringComponent,
+};
+
+const DroidComponent = {
+  render(dataRenderer: DataRenderer) {
+    const properties: {[key: string]: any} = {};
+    dataRenderer.fields().forEach((field) => properties[field] = dataRenderer.renderField(field));
+
+    return (<div style={{border: "thin black solid"}}>
+      <div>🤖</div>
+      {Object.keys(properties).sort().map((key) => <span>{key}: {properties[key]}</span>)}
+    </div>);
   },
 };
 
-const data: {data: Data} = {
+const nonLeafCustomComponents: DefaultMappings = {
+  Droid: DroidComponent,
+};
+
+const DefaultObjectOverride = {
+  render(dataRenderer: DataRenderer): JSX.Element {
+    const properties: {[key: string]: any} = {};
+    dataRenderer.fields().forEach((field) => properties[field] = dataRenderer.renderField(field));
+
+    return (
+      <div style={{backgroundColor: "#EEE", border: "thin black solid"}}>
+        {Object.keys(properties).sort().map((key) => <span>{key}: {properties[key]}</span>)}
+      </div>
+    );
+  },
+};
+
+const DefaultScalarOverride = {
+  render(dataRenderer: DataRenderer): JSX.Element {
+    return <span style={{color: "red"}}>{dataRenderer.getData()}<br/></span>;
+  },
+};
+
+const DefaultListOverride = {
+  render(dataRenderer: DataRenderer): JSX.Element {
+    const propElements: JSX.Element[] = [];
+
+    for (let i = 0; i < dataRenderer.count(); i++) {
+      propElements.push(dataRenderer.renderField(i));
+    }
+
+    return <ol>{propElements.map((el) => <li>{el}</li>)}</ol>;
+  },
+};
+
+/*
+{
+  __typename
+  human(id: "1000") {
+    name
+    height
+    mass
+    __typename
+  }
+}
+*/
+const data: {data: DataItem} = {
   data: {
+    __typename: "Query",
     human: {
       name: "Luke Skywalker",
       height: 1.72,
@@ -1179,12 +1242,33 @@ const data: {data: Data} = {
   },
 };
 
+/*
+{
+  __typename
+  human(id: "1000") {
+    name
+    height
+    mass
+    __typename
+    friends {
+      name
+      __typename
+      friends {
+      	name
+      	__typename
+    	}
+    }
+  }
+}
+*/
 const dataWithNonLeafFields = {
   data: {
+    __typename: "Query",
     human: {
       name: "Luke Skywalker",
       height: 1.72,
       mass: 77,
+      __typename: "Human",
       friends: [
         {
           name: "Han Solo",
@@ -1267,7 +1351,6 @@ const dataWithNonLeafFields = {
           ],
         },
       ],
-      __typename: "Human",
     },
   },
 };
@@ -1275,8 +1358,10 @@ const dataWithNonLeafFields = {
 const renderConfiguration: OverrideConfig = {
   human: {
     friends: {
-      name: {
-        renderer: StringComponent,
+      0: {
+        name: {
+          renderer: StringComponent,
+        },
       },
     },
   },
@@ -1284,20 +1369,23 @@ const renderConfiguration: OverrideConfig = {
 
 const objectRenderConfiguration: OverrideConfig = {
   human: {
-    renderer: (props: ComponentArguments): JSX.Element => {
-      for (const key in props.data) {
-        if (props.data.hasOwnProperty(key)) {
-          return (
-            <div>
-              <span>
-                Custom root object rendering <br/>
-                {key}: {props.data[key]}
-              </span>
-            </div>
-          );
+    renderer: {
+      render: (dataRenderer: DataRenderer) => {
+        const objectData = dataRenderer.getData();
+        for (const key in objectData) {
+          if (objectData.hasOwnProperty(key)) {
+            return (
+              <div>
+                <span>
+                  Custom root object rendering <br/>
+                  {key}: {objectData[key]}
+                </span>
+              </div>
+            );
+          }
         }
-      }
-      return <div>No data</div>;
+        return <div>No data</div>;
+      },
     },
   },
 };
@@ -1305,8 +1393,10 @@ const objectRenderConfiguration: OverrideConfig = {
 const listRenderConfiguration: OverrideConfig = {
   human: {
     friends: {
-      friends: {
-        listRenderer: ListComponent,
+      0: {
+        friends: {
+          renderer: DefaultListOverride,
+        },
       },
     },
   },
@@ -1320,110 +1410,68 @@ export default function ({
   }: any) {
   storiesOf("Entity", module)
     .add("without specific components", () => (
-      <Entity data={data.data} metadata={metadata.data} componentMappings={{}}></Entity>
+      <Entity datarenderer={
+        new GraphQlDataRenderer(data.data, new GraphQlRenderConfig({defaults: {}}), metadata.data)
+      }></Entity>
     ))
     .add("with custom component", () => (
-      <Entity data={data.data} metadata={metadata.data} componentMappings={componentMappings}></Entity>
+      <Entity datarenderer={
+        new GraphQlDataRenderer(data.data, new GraphQlRenderConfig({defaults: componentMappings}), metadata.data)
+      }></Entity>
     ))
     .add("with non-leaf fields", () => (
-      <Entity data={dataWithNonLeafFields.data} metadata={metadata.data} componentMappings={{}}></Entity>
+      <Entity datarenderer={
+        new GraphQlDataRenderer(dataWithNonLeafFields.data, new GraphQlRenderConfig({defaults: {}}), metadata.data)
+      }></Entity>
     ))
     .add("with non-leaf fields with custom components", () => (
-      <Entity data={dataWithNonLeafFields.data} metadata={metadata.data} componentMappings={nonLeafCustomComponents}>
-      </Entity>
+      <Entity datarenderer={new GraphQlDataRenderer(
+        dataWithNonLeafFields.data,
+        new GraphQlRenderConfig({defaults: nonLeafCustomComponents}),
+        metadata.data,
+      )}></Entity>
     ))
     .add("with custom default rendering of non-leaf fields", () => (
-      <Entity
-        data={dataWithNonLeafFields.data}
-        metadata={metadata.data}
-        componentMappings={{}}
-        defaultRelatedComponent={RelatedComponent}
-      >
-      </Entity>
+      <Entity datarenderer={new GraphQlDataRenderer(
+        dataWithNonLeafFields.data,
+        new GraphQlRenderConfig({defaults: {}, defaultObject: DefaultObjectOverride}),
+        metadata.data,
+      )}></Entity>
     ))
     .add("with custom default scalar rendering", () => (
-      <Entity
-        data={dataWithNonLeafFields.data}
-        metadata={metadata.data}
-        componentMappings={{}}
-        defaultScalarComponent={ScalarComponent}/>
+      <Entity datarenderer={new GraphQlDataRenderer(
+        dataWithNonLeafFields.data,
+        new GraphQlRenderConfig({defaults: {}, defaultScalar: DefaultScalarOverride}),
+        metadata.data,
+      )}></Entity>
     ))
     .add("with custom default list rendering", () => (
-      <Entity
-        data={dataWithNonLeafFields.data}
-        metadata={metadata.data}
-        componentMappings={{}}
-        defaultListComponent={ListComponent}/>
+      <Entity datarenderer={new GraphQlDataRenderer(
+        dataWithNonLeafFields.data,
+        new GraphQlRenderConfig({defaults: {}, defaultList: DefaultListOverride}),
+        metadata.data,
+      )}></Entity>
     ))
     .add("with custom rendering of a specific leaf field", () => (
-      <Entity
-        data={dataWithNonLeafFields.data}
-        metadata={metadata.data}
-        componentMappings={{}}
-        renderConfiguration={renderConfiguration}/>
+      <Entity datarenderer={new GraphQlDataRenderer(
+        dataWithNonLeafFields.data,
+        new GraphQlRenderConfig({defaults: {}, overrides: renderConfiguration }),
+        metadata.data,
+      )}></Entity>
     ))
     .add("with custom rendering of a specific object field", () => (
-      <Entity
-        data={dataWithNonLeafFields.data}
-        metadata={metadata.data}
-        componentMappings={{}}
-        renderConfiguration={objectRenderConfiguration}/>
+      <Entity datarenderer={new GraphQlDataRenderer(
+        dataWithNonLeafFields.data,
+        new GraphQlRenderConfig({defaults: {}, overrides: objectRenderConfiguration }),
+        metadata.data,
+      )}></Entity>
     ))
     .add("with custom rendering of a specific list field", () => (
-      <Entity
-        data={dataWithNonLeafFields.data}
-        metadata={metadata.data}
-        componentMappings={{}}
-        renderConfiguration={listRenderConfiguration}/>
+      <Entity datarenderer={new GraphQlDataRenderer(
+        dataWithNonLeafFields.data,
+        new GraphQlRenderConfig({defaults: {}, overrides: listRenderConfiguration }),
+        metadata.data,
+      )}></Entity>
     ))
     ;
-}
-
-function ListComponent(props: ComponentArguments, subtype: FieldMetadataType): JSX.Element {
-  const propElements: JSX.Element[] = [];
-  const value = props.data;
-  if (value && typeof value.map === "function") {
-    // this is either a list of leaf nodes, objects, or lists.
-    // we don't do lists of lists in this component
-    return <ol>{value.map((item: any) => <li>{renderField({...props, data: item}, subtype)}</li>)}</ol>;
-  } else {
-    console.error("data of type list is not an array!", value);
-    return <ol></ol>;
-  }
-}
-
-function ScalarComponent(props: ComponentArguments): JSX.Element {
-  return <span style={{color: "red"}}>{props.data}<br/></span>;
-}
-
-function RelatedComponent(props: ComponentArguments): JSX.Element {
-  const customStyle = {
-    backgroundColor: "#EEE",
-  };
-
-  const properties: {[key: string]: JSX.Element} = renderItemFields(props);
-
-  return (
-    <div style={customStyle}>
-      {Object.keys(properties).sort().map((key) => <span>{key}: {properties[key]}</span>)}
-    </div>
-  );
-}
-
-function StringComponent(props: ComponentArguments) {
-  return (
-    <span>
-      <b>{props.data}</b>
-      <br/>
-    </span>
-  );
-}
-
-function DroidComponent(props: ComponentArguments) {
-  const properties = renderItemFields(props);
-
-  return (<div style={{border: "thin black solid"}}>
-    <div>🤖</div>
-    {Object.keys(properties).sort().map((key) => <span>{key}: {properties[key]}</span>)}
-  </div>);
 }
