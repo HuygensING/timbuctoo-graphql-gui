@@ -1,9 +1,8 @@
 import * as React from "react";
 import {GraphQlDataRenderer} from "../support/graphqlDataRenderer";
-import {Data, DataItem, FieldMetadataType, getMetadata, Metadata} from "../support/graphqlHelpers";
+import {FieldMetadataType, getMetadata, Metadata} from "../support/graphqlHelpers";
 import {DefaultMappings, GraphQlRenderConfig, OverrideConfig} from "../support/graphqlRenderConfig";
 import {DataRenderer, Entity} from "./api";
-import {ComponentArguments, renderField, renderItemFields} from "./entity";
 declare const module: any; // when webpack compiles it provides a module variable
 
 /*
@@ -1230,7 +1229,7 @@ const DefaultListOverride = {
   }
 }
 */
-const data: {data: DataItem} = {
+const data = {
   data: {
     __typename: "Query",
     human: {

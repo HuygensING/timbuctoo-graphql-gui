@@ -1,14 +1,3 @@
-// TODO move to api.tsx
-export interface Data {
-  [key: string]: DataItem;
-}
-
-// TODO move to api.tsx
-export interface DataItem  {
-  [key: string]: DataItem | string | number | boolean | null | undefined | DataItem[] | string[] | number[];
-  __typename: string;
-}
-
 export interface Metadata {
   __schema: {
     types: MetadataType[];

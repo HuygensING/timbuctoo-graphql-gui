@@ -21,14 +21,3 @@ export function Entity(props: {datarenderer: DataRenderer}): JSX.Element {
 
   return <div>{properties}</div>;
 }
-
-// TODO remove from graphqlhelpers
-export interface Data {
-  [key: string]: DataItem;
-}
-
-// TODO remove from graphqlhelpers
-export interface DataItem  {
-  [key: string]: DataItem | string | number | boolean | null | undefined | DataItem[] | string[] | number[];
-  __typename: string;
-}
