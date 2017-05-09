@@ -1201,6 +1201,12 @@ const DefaultObjectOverride = {
   },
 };
 
+const DefaultScalarOverride = {
+  render(dataRenderer: DataRenderer): JSX.Element {
+    return <span style={{color: "red"}}>{dataRenderer.getData()}<br/></span>;
+  },
+};
+
 /*
 {
   __typename
@@ -1413,14 +1419,14 @@ export default function ({
         metadata.data,
       )}></Entity>
     ))
-    /*.add("with custom default scalar rendering", () => (
-      <Entity
-        data={dataWithNonLeafFields.data}
-        metadata={metadata.data}
-        componentMappings={{}}
-        defaultScalarComponent={ScalarComponent}/>
+    .add("with custom default scalar rendering", () => (
+      <Entity datarenderer={new GraphQlDataRenderer(
+        dataWithNonLeafFields.data,
+        new GraphQlRenderConfig({defaults: {}, defaultScalar: DefaultScalarOverride}),
+        metadata.data,
+      )}></Entity>
     ))
-    .add("with custom default list rendering", () => (
+    /*.add("with custom default list rendering", () => (
       <Entity
         data={dataWithNonLeafFields.data}
         metadata={metadata.data}
@@ -1462,8 +1468,4 @@ function ListComponent(props: ComponentArguments, subtype: FieldMetadataType): J
     console.error("data of type list is not an array!", value);
     return <ol></ol>;
   }
-}
-
-function ScalarComponent(props: ComponentArguments): JSX.Element {
-  return <span style={{color: "red"}}>{props.data}<br/></span>;
 }

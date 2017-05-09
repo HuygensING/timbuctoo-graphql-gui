@@ -16,10 +16,17 @@ const DefaultObjectComponent = {
   },
 };
 
+const DefaultScalarComponent = {
+  render(dataRenderer: DataRenderer) {
+    return <span>{dataRenderer.getData()}<br/></span>;
+  },
+};
+
 interface GraphQlRenderConfigParams {
   defaults: DefaultMappings;
   overrides?: OverrideConfig;
   defaultObject?: TimComponent;
+  defaultScalar?: TimComponent;
 }
 
 export class GraphQlRenderConfig {
@@ -30,15 +37,11 @@ export class GraphQlRenderConfig {
   private defaultListComponent: TimComponent;
   private unknownComponent: TimComponent;
 
-  constructor({defaults, overrides, defaultObject}: GraphQlRenderConfigParams) {
+  constructor({defaults, overrides, defaultObject, defaultScalar}: GraphQlRenderConfigParams) {
     this.defaults = defaults;
     this.overrides = overrides;
     this.defaultObjectComponent = defaultObject != null ? defaultObject : DefaultObjectComponent;
-    this.defaultScalarComponent = {
-      render(dataRenderer: DataRenderer) {
-        return <span>{dataRenderer.getData()}<br/></span>;
-      },
-    };
+    this.defaultScalarComponent =  defaultScalar != null ? defaultScalar : DefaultScalarComponent;
     this.defaultListComponent = {
       render(dataRenderer: DataRenderer) {
         const props: JSX.Element[] = [];
@@ -81,6 +84,7 @@ export class GraphQlRenderConfig {
       defaults: this.defaults,
       overrides: fieldOverrides,
       defaultObject: this.defaultObjectComponent,
+      defaultScalar: this.defaultScalarComponent,
     });
   }
 
