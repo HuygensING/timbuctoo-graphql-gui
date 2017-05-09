@@ -1,9 +1,9 @@
 import * as React from "react";
 import {GraphQlDataRenderer} from "../support/graphqlDataRenderer";
 import {Data, DataItem, FieldMetadataType, getMetadata, Metadata} from "../support/graphqlHelpers";
-import {DefaultMappings, GraphQlRenderConfig} from "../support/graphqlRenderConfig";
+import {DefaultMappings, GraphQlRenderConfig, OverrideConfig} from "../support/graphqlRenderConfig";
 import {DataRenderer, Entity} from "./api";
-import {ComponentArguments, OverrideConfig, renderField, renderItemFields} from "./entity";
+import {ComponentArguments, renderField, renderItemFields} from "./entity";
 declare const module: any; // when webpack compiles it provides a module variable
 
 /*
@@ -1172,11 +1172,21 @@ const componentMappings: DefaultMappings = {
   String: StringComponent,
 };
 
-const nonLeafCustomComponents = {
-  Droid: {
-    default: DroidComponent,
-    options: [DroidComponent],
+const DroidComponent = {
+  render(dataRenderer: DataRenderer) {
+    const properties: {[key: string]: any} = {};
+
+    dataRenderer.fields().forEach((field) => properties[field] = dataRenderer.renderField(field));
+
+    return (<div style={{border: "thin black solid"}}>
+      <div>🤖</div>
+      {Object.keys(properties).sort().map((key) => <span>{key}: {properties[key]}</span>)}
+    </div>);
   },
+};
+
+const nonLeafCustomComponents: DefaultMappings = {
+  Droid: DroidComponent,
 };
 
 /*
@@ -1325,7 +1335,7 @@ const dataWithNonLeafFields = {
 //   },
 // };
 
-const objectRenderConfiguration: OverrideConfig = {
+/*const objectRenderConfiguration: OverrideConfig = {
   human: {
     renderer: (props: ComponentArguments): JSX.Element => {
       for (const key in props.data) {
@@ -1343,17 +1353,17 @@ const objectRenderConfiguration: OverrideConfig = {
       return <div>No data</div>;
     },
   },
-};
+};*/
 
-const listRenderConfiguration: OverrideConfig = {
-  human: {
-    friends: {
-      friends: {
-        listRenderer: ListComponent,
-      },
-    },
-  },
-};
+// const listRenderConfiguration: OverrideConfig = {
+//   human: {
+//     friends: {
+//       friends: {
+//         listRenderer: ListComponent,
+//       },
+//     },
+//   },
+// };
 
 export default function ({
     storiesOf,
@@ -1375,11 +1385,14 @@ export default function ({
         new GraphQlDataRenderer(dataWithNonLeafFields.data, new GraphQlRenderConfig({}), metadata.data)
       }></Entity>
     ))
-    /*.add("with non-leaf fields with custom components", () => (
-      <Entity data={dataWithNonLeafFields.data} metadata={metadata.data} componentMappings={nonLeafCustomComponents}>
-      </Entity>
+    .add("with non-leaf fields with custom components", () => (
+      <Entity datarenderer={new GraphQlDataRenderer(
+        dataWithNonLeafFields.data,
+        new GraphQlRenderConfig(nonLeafCustomComponents),
+        metadata.data,
+      )}></Entity>
     ))
-    .add("with custom default rendering of non-leaf fields", () => (
+    /*.add("with custom default rendering of non-leaf fields", () => (
       <Entity
         data={dataWithNonLeafFields.data}
         metadata={metadata.data}
@@ -1455,13 +1468,4 @@ function RelatedComponent(props: ComponentArguments): JSX.Element {
       {Object.keys(properties).sort().map((key) => <span>{key}: {properties[key]}</span>)}
     </div>
   );
-}
-
-function DroidComponent(props: ComponentArguments) {
-  const properties = renderItemFields(props);
-
-  return (<div style={{border: "thin black solid"}}>
-    <div>🤖</div>
-    {Object.keys(properties).sort().map((key) => <span>{key}: {properties[key]}</span>)}
-  </div>);
 }

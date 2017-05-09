@@ -57,7 +57,7 @@ export class GraphQlRenderConfig {
       case "OBJECT":
       case "UNION":
       case "INTERFACE":
-        return this.defaultObjectComponent;
+        return this.renderFunctionOrDefault(fieldMetadata.name, this.defaultObjectComponent);
       case "LIST":
         return this.defaultListComponent;
       default:
