@@ -1358,7 +1358,7 @@ const dataWithNonLeafFields = {
 const renderConfiguration: OverrideConfig = {
   human: {
     friends: {
-        0: {
+      0: {
         name: {
           renderer: StringComponent,
         },

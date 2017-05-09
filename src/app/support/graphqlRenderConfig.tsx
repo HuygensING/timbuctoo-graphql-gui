@@ -11,7 +11,7 @@ const DefaultObjectComponent = {
     });
 
     return (<div>
-        {Object.keys(properties).sort().map((key) => <span>{key}: {properties[key]}</span>)}
+      {Object.keys(properties).sort().map((key) => <span>{key}: {properties[key]}</span>)}
     </div>);
   },
 };
