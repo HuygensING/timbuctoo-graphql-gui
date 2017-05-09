@@ -15,9 +15,9 @@ export class GraphQlDataRenderer implements DataRenderer {
   }
 
   public fields(): string[] {
-    // TODO get the fields from the metadata
-    if (this.data instanceof Object) {
-      return Object.keys(this.data).filter((field) => field !== "__typename");
+    const metadata = getMetadata(this.data.__typename, this.metadata);
+    if (metadata && metadata.fields) {
+      return metadata.fields.map((field) => field.name).filter((field) => this.data.hasOwnProperty(field));
     }
     return [];
   }
@@ -47,10 +47,6 @@ export class GraphQlDataRenderer implements DataRenderer {
         if (fieldMetadata != null) {
           return this.renderConfig.getComponent(fieldMetadata).render(this.subRenderer(field));
         }
-        // const metadataType = getMetadata("LIST", this.metadata);
-        // if (metadataType != null && isListMetadata(metadataType)) {
-        //   return this.renderConfig.getComponent(metadataType.ofType).render(this.subRenderer(field));
-        // }
       } else if (this.data instanceof Object) {
         const metadataType = getMetadata(this.data.__typename, this.metadata);
         if (metadataType != null && metadataType.fields != null) {
