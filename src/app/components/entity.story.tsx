@@ -1355,45 +1355,52 @@ const dataWithNonLeafFields = {
   },
 };
 
-// const renderConfiguration: OverrideConfig = {
-//   human: {
-//     friends: {
-//       name: {
-//         renderer: StringComponent,
-//       },
-//     },
-//   },
-// };
-
-/*const objectRenderConfiguration: OverrideConfig = {
+const renderConfiguration: OverrideConfig = {
   human: {
-    renderer: (props: ComponentArguments): JSX.Element => {
-      for (const key in props.data) {
-        if (props.data.hasOwnProperty(key)) {
-          return (
-            <div>
-              <span>
-                Custom root object rendering <br/>
-                {key}: {props.data[key]}
-              </span>
-            </div>
-          );
-        }
-      }
-      return <div>No data</div>;
+    friends: {
+        0: {
+        name: {
+          renderer: StringComponent,
+        },
+      },
     },
   },
-};*/
+};
 
-// const listRenderConfiguration: OverrideConfig = {
-//   human: {
-//     friends: {
-//       friends: {
-//         listRenderer: ListComponent,
-//       },
-//     },
-//   },
-// };
+const objectRenderConfiguration: OverrideConfig = {
+  human: {
+    renderer: {
+      render: (dataRenderer: DataRenderer) => {
+        const objectData = dataRenderer.getData();
+        for (const key in objectData) {
+          if (objectData.hasOwnProperty(key)) {
+            return (
+              <div>
+                <span>
+                  Custom root object rendering <br/>
+                  {key}: {objectData[key]}
+                </span>
+              </div>
+            );
+          }
+        }
+        return <div>No data</div>;
+      },
+    },
+  },
+};
+
+const listRenderConfiguration: OverrideConfig = {
+  human: {
+    friends: {
+      0: {
+        friends: {
+          renderer: DefaultListOverride,
+        },
+      },
+    },
+  },
+};
 
 export default function ({
     storiesOf,
@@ -1445,26 +1452,26 @@ export default function ({
         metadata.data,
       )}></Entity>
     ))
-    /*.add("with custom rendering of a specific leaf field", () => (
-      <Entity
-        data={dataWithNonLeafFields.data}
-        metadata={metadata.data}
-        componentMappings={{}}
-        renderConfiguration={renderConfiguration}/>
+    .add("with custom rendering of a specific leaf field", () => (
+      <Entity datarenderer={new GraphQlDataRenderer(
+        dataWithNonLeafFields.data,
+        new GraphQlRenderConfig({defaults: {}, overrides: renderConfiguration }),
+        metadata.data,
+      )}></Entity>
     ))
     .add("with custom rendering of a specific object field", () => (
-      <Entity
-        data={dataWithNonLeafFields.data}
-        metadata={metadata.data}
-        componentMappings={{}}
-        renderConfiguration={objectRenderConfiguration}/>
+      <Entity datarenderer={new GraphQlDataRenderer(
+        dataWithNonLeafFields.data,
+        new GraphQlRenderConfig({defaults: {}, overrides: objectRenderConfiguration }),
+        metadata.data,
+      )}></Entity>
     ))
     .add("with custom rendering of a specific list field", () => (
-      <Entity
-        data={dataWithNonLeafFields.data}
-        metadata={metadata.data}
-        componentMappings={{}}
-        renderConfiguration={listRenderConfiguration}/>
-    ))*/
+      <Entity datarenderer={new GraphQlDataRenderer(
+        dataWithNonLeafFields.data,
+        new GraphQlRenderConfig({defaults: {}, overrides: listRenderConfiguration }),
+        metadata.data,
+      )}></Entity>
+    ))
     ;
 }

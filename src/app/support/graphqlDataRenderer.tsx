@@ -45,7 +45,7 @@ export class GraphQlDataRenderer implements DataRenderer {
       if (this.data instanceof Array && typeof field === "number") {
         const fieldMetadata = getMetadata(this.data[field].__typename, this.metadata);
         if (fieldMetadata != null) {
-          return this.renderConfig.getComponent(fieldMetadata).render(this.subRenderer(field));
+          return this.renderConfig.getComponent(field, fieldMetadata).render(this.subRenderer(field));
         }
       } else if (this.data instanceof Object) {
         const metadataType = getMetadata(this.data.__typename, this.metadata);
@@ -54,8 +54,7 @@ export class GraphQlDataRenderer implements DataRenderer {
           if (fieldMetadataMatches.length > 0) {
             const fieldMetadata = convertToMetadataType(fieldMetadataMatches[0].type, this.metadata);
             if (fieldMetadata != null) {
-              return this.renderConfig.getComponent(fieldMetadata)
-                .render(this.subRenderer(field));
+              return this.renderConfig.getComponent(field, fieldMetadata).render(this.subRenderer(field));
             }
           } else {
             console.error("No field metadata found for: " + field);

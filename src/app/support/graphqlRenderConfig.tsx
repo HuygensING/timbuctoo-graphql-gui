@@ -62,26 +62,26 @@ export class GraphQlRenderConfig {
     };
   }
 
-  public getComponent(fieldMetadata: MetadataType): TimComponent {
+  public getComponent(field: string | number, fieldMetadata: MetadataType): TimComponent {
     const kind = fieldMetadata.kind;
     switch (fieldMetadata.kind) {
       case "ENUM":
       case "SCALAR":
-        return this.renderFunctionOrDefault(fieldMetadata.name, this.defaultScalarComponent);
+        return this.renderFunctionOrDefault(field, fieldMetadata.name, this.defaultScalarComponent);
       case "OBJECT":
       case "UNION":
       case "INTERFACE":
-        return this.renderFunctionOrDefault(fieldMetadata.name, this.defaultObjectComponent);
+        return this.renderFunctionOrDefault(field, fieldMetadata.name, this.defaultObjectComponent);
       case "LIST":
-        return this.defaultListComponent;
+        return this.renderFunctionOrDefault(field, "", this.defaultListComponent);
       default:
         console.error("Unhandle case for: ", fieldMetadata);
         return this.unknownComponent;
     }
   }
 
-  public subRenderConfigFor(fieldName: string | number): GraphQlRenderConfig {
-    const fieldOverrides = isObjectOverrideConfiguration(this.overrides) ? this.overrides[fieldName] : undefined;
+  public subRenderConfigFor(field: string | number): GraphQlRenderConfig {
+    const fieldOverrides = isObjectOverrideConfiguration(this.overrides) ? this.overrides[field] : undefined;
 
     return new GraphQlRenderConfig({
       defaults: this.defaults,
@@ -92,13 +92,16 @@ export class GraphQlRenderConfig {
     });
   }
 
-  private renderFunctionOrDefault(
-      type: string,
-      defaultComponent: TimComponent,
-  ): TimComponent {
-    if (this.overrides != null && isComponentRenderConfiguration(this.overrides)) {
-      return this.overrides.renderer;
+  private renderFunctionOrDefault(field: string | number, type: string, defaultComponent: TimComponent): TimComponent {
+    if (this.overrides != null) {
+      if (isObjectOverrideConfiguration(this.overrides) && this.overrides.hasOwnProperty(field.toString())) {
+        const fieldOverride = this.overrides[field.toString()];
+        if (isComponentRenderConfiguration(fieldOverride)) {
+          return fieldOverride.renderer;
+        }
+      }
     }
+
     if (this.defaults.hasOwnProperty(type)) {
       return this.defaults[type];
     } else {
