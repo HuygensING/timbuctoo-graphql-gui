@@ -1207,6 +1207,18 @@ const DefaultScalarOverride = {
   },
 };
 
+const DefaultListOverride = {
+  render(dataRenderer: DataRenderer): JSX.Element {
+    const propElements: JSX.Element[] = [];
+
+    for (let i = 0; i < dataRenderer.count(); i++) {
+      propElements.push(dataRenderer.renderField(i));
+    }
+
+    return <ol>{propElements.map((el) => <li>{el}</li>)}</ol>;
+  },
+};
+
 /*
 {
   __typename
@@ -1426,14 +1438,14 @@ export default function ({
         metadata.data,
       )}></Entity>
     ))
-    /*.add("with custom default list rendering", () => (
-      <Entity
-        data={dataWithNonLeafFields.data}
-        metadata={metadata.data}
-        componentMappings={{}}
-        defaultListComponent={ListComponent}/>
+    .add("with custom default list rendering", () => (
+      <Entity datarenderer={new GraphQlDataRenderer(
+        dataWithNonLeafFields.data,
+        new GraphQlRenderConfig({defaults: {}, defaultList: DefaultListOverride}),
+        metadata.data,
+      )}></Entity>
     ))
-    .add("with custom rendering of a specific leaf field", () => (
+    /*.add("with custom rendering of a specific leaf field", () => (
       <Entity
         data={dataWithNonLeafFields.data}
         metadata={metadata.data}
@@ -1455,17 +1467,4 @@ export default function ({
         renderConfiguration={listRenderConfiguration}/>
     ))*/
     ;
-}
-
-function ListComponent(props: ComponentArguments, subtype: FieldMetadataType): JSX.Element {
-  const propElements: JSX.Element[] = [];
-  const value = props.data;
-  if (value && typeof value.map === "function") {
-    // this is either a list of leaf nodes, objects, or lists.
-    // we don't do lists of lists in this component
-    return <ol>{value.map((item: any) => <li>{renderField({...props, data: item}, subtype)}</li>)}</ol>;
-  } else {
-    console.error("data of type list is not an array!", value);
-    return <ol></ol>;
-  }
 }

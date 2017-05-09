@@ -22,11 +22,23 @@ const DefaultScalarComponent = {
   },
 };
 
+const DefaultListComponent = {
+  render(dataRenderer: DataRenderer) {
+    const props: JSX.Element[] = [];
+    for (let i = 0; i < dataRenderer.count(); i++) {
+      props.push(dataRenderer.renderField(i));
+    }
+
+    return <ul>{props.map((prop) => <li>{prop}</li>)}</ul>;
+  },
+};
+
 interface GraphQlRenderConfigParams {
   defaults: DefaultMappings;
   overrides?: OverrideConfig;
   defaultObject?: TimComponent;
   defaultScalar?: TimComponent;
+  defaultList?: TimComponent;
 }
 
 export class GraphQlRenderConfig {
@@ -37,21 +49,12 @@ export class GraphQlRenderConfig {
   private defaultListComponent: TimComponent;
   private unknownComponent: TimComponent;
 
-  constructor({defaults, overrides, defaultObject, defaultScalar}: GraphQlRenderConfigParams) {
+  constructor({defaults, overrides, defaultObject, defaultScalar, defaultList}: GraphQlRenderConfigParams) {
     this.defaults = defaults;
     this.overrides = overrides;
     this.defaultObjectComponent = defaultObject != null ? defaultObject : DefaultObjectComponent;
     this.defaultScalarComponent =  defaultScalar != null ? defaultScalar : DefaultScalarComponent;
-    this.defaultListComponent = {
-      render(dataRenderer: DataRenderer) {
-        const props: JSX.Element[] = [];
-        for (let i = 0; i < dataRenderer.count(); i++) {
-          props.push(dataRenderer.renderField(i));
-        }
-
-        return <ul>{props.map((prop) => <li>{prop}</li>)}</ul>;
-      },
-    };
+    this.defaultListComponent = defaultList != null ? defaultList : DefaultListComponent;
     this.unknownComponent = {
       render(dataRenderer: DataRenderer) {
         return <div></div>;
@@ -85,6 +88,7 @@ export class GraphQlRenderConfig {
       overrides: fieldOverrides,
       defaultObject: this.defaultObjectComponent,
       defaultScalar: this.defaultScalarComponent,
+      defaultList: this.defaultListComponent,
     });
   }
 
