@@ -1175,7 +1175,6 @@ const componentMappings: DefaultMappings = {
 const DroidComponent = {
   render(dataRenderer: DataRenderer) {
     const properties: {[key: string]: any} = {};
-
     dataRenderer.fields().forEach((field) => properties[field] = dataRenderer.renderField(field));
 
     return (<div style={{border: "thin black solid"}}>
@@ -1187,6 +1186,19 @@ const DroidComponent = {
 
 const nonLeafCustomComponents: DefaultMappings = {
   Droid: DroidComponent,
+};
+
+const DefaultObjectOverride = {
+  render(dataRenderer: DataRenderer): JSX.Element {
+    const properties: {[key: string]: any} = {};
+    dataRenderer.fields().forEach((field) => properties[field] = dataRenderer.renderField(field));
+
+    return (
+      <div style={{backgroundColor: "#EEE", border: "thin black solid"}}>
+        {Object.keys(properties).sort().map((key) => <span>{key}: {properties[key]}</span>)}
+      </div>
+    );
+  },
 };
 
 /*
@@ -1373,35 +1385,35 @@ export default function ({
   }: any) {
   storiesOf("Entity", module)
     .add("without specific components", () => (
-      <Entity datarenderer={new GraphQlDataRenderer(data.data, new GraphQlRenderConfig({}), metadata.data)}></Entity>
+      <Entity datarenderer={
+        new GraphQlDataRenderer(data.data, new GraphQlRenderConfig({defaults: {}}), metadata.data)
+      }></Entity>
     ))
     .add("with custom component", () => (
       <Entity datarenderer={
-        new GraphQlDataRenderer(data.data, new GraphQlRenderConfig(componentMappings), metadata.data)
+        new GraphQlDataRenderer(data.data, new GraphQlRenderConfig({defaults: componentMappings}), metadata.data)
       }></Entity>
     ))
     .add("with non-leaf fields", () => (
       <Entity datarenderer={
-        new GraphQlDataRenderer(dataWithNonLeafFields.data, new GraphQlRenderConfig({}), metadata.data)
+        new GraphQlDataRenderer(dataWithNonLeafFields.data, new GraphQlRenderConfig({defaults: {}}), metadata.data)
       }></Entity>
     ))
     .add("with non-leaf fields with custom components", () => (
       <Entity datarenderer={new GraphQlDataRenderer(
         dataWithNonLeafFields.data,
-        new GraphQlRenderConfig(nonLeafCustomComponents),
+        new GraphQlRenderConfig({defaults: nonLeafCustomComponents}),
         metadata.data,
       )}></Entity>
     ))
-    /*.add("with custom default rendering of non-leaf fields", () => (
-      <Entity
-        data={dataWithNonLeafFields.data}
-        metadata={metadata.data}
-        componentMappings={{}}
-        defaultRelatedComponent={RelatedComponent}
-      >
-      </Entity>
+    .add("with custom default rendering of non-leaf fields", () => (
+      <Entity datarenderer={new GraphQlDataRenderer(
+        dataWithNonLeafFields.data,
+        new GraphQlRenderConfig({defaults: {}, defaultObject: DefaultObjectOverride}),
+        metadata.data,
+      )}></Entity>
     ))
-    .add("with custom default scalar rendering", () => (
+    /*.add("with custom default scalar rendering", () => (
       <Entity
         data={dataWithNonLeafFields.data}
         metadata={metadata.data}
@@ -1454,18 +1466,4 @@ function ListComponent(props: ComponentArguments, subtype: FieldMetadataType): J
 
 function ScalarComponent(props: ComponentArguments): JSX.Element {
   return <span style={{color: "red"}}>{props.data}<br/></span>;
-}
-
-function RelatedComponent(props: ComponentArguments): JSX.Element {
-  const customStyle = {
-    backgroundColor: "#EEE",
-  };
-
-  const properties: {[key: string]: JSX.Element} = renderItemFields(props);
-
-  return (
-    <div style={customStyle}>
-      {Object.keys(properties).sort().map((key) => <span>{key}: {properties[key]}</span>)}
-    </div>
-  );
 }

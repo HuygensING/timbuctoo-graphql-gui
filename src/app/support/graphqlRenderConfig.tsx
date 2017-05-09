@@ -2,6 +2,26 @@ import * as React from "react";
 import {DataRenderer, TimComponent} from "../components/api";
 import {assertNever, FieldMetadataType, MetadataType, unwrapNonNull} from "./graphqlHelpers";
 
+const DefaultObjectComponent = {
+  render(dataRenderer: DataRenderer) {
+    const properties: {[key: string]: JSX.Element} = {};
+
+    dataRenderer.fields().forEach((field) => {
+      properties[field] = dataRenderer.renderField(field);
+    });
+
+    return (<div>
+        {Object.keys(properties).sort().map((key) => <span>{key}: {properties[key]}</span>)}
+    </div>);
+  },
+};
+
+interface GraphQlRenderConfigParams {
+  defaults: DefaultMappings;
+  overrides?: OverrideConfig;
+  defaultObject?: TimComponent;
+}
+
 export class GraphQlRenderConfig {
   private defaults: DefaultMappings;
   private overrides?: OverrideConfig;
@@ -10,22 +30,10 @@ export class GraphQlRenderConfig {
   private defaultListComponent: TimComponent;
   private unknownComponent: TimComponent;
 
-  constructor(defaults: DefaultMappings, overrides?: OverrideConfig) {
+  constructor({defaults, overrides, defaultObject}: GraphQlRenderConfigParams) {
     this.defaults = defaults;
     this.overrides = overrides;
-    this.defaultObjectComponent = {
-      render(dataRenderer: DataRenderer) {
-        const properties: {[key: string]: JSX.Element} = {};
-
-        dataRenderer.fields().forEach((field) => {
-          properties[field] = dataRenderer.renderField(field);
-        });
-
-        return (<div>
-           {Object.keys(properties).sort().map((key) => <span>{key}: {properties[key]}</span>)}
-        </div>);
-      },
-    };
+    this.defaultObjectComponent = defaultObject != null ? defaultObject : DefaultObjectComponent;
     this.defaultScalarComponent = {
       render(dataRenderer: DataRenderer) {
         return <span>{dataRenderer.getData()}<br/></span>;
@@ -67,10 +75,13 @@ export class GraphQlRenderConfig {
   }
 
   public subRenderConfigFor(fieldName: string | number): GraphQlRenderConfig {
-    if (isObjectOverrideConfiguration(this.overrides)) {
-      return new GraphQlRenderConfig(this.defaults, this.overrides[fieldName] );
-    }
-    return new GraphQlRenderConfig(this.defaults);
+    const fieldOverrides = isObjectOverrideConfiguration(this.overrides) ? this.overrides[fieldName] : undefined;
+
+    return new GraphQlRenderConfig({
+      defaults: this.defaults,
+      overrides: fieldOverrides,
+      defaultObject: this.defaultObjectComponent,
+    });
   }
 
   private renderFunctionOrDefault(

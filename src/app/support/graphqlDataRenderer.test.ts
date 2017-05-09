@@ -8,7 +8,7 @@ function assertThat(test: boolean, message: string): void {
   }
 }
 
-const graphqlRenderConfigMock: GraphQlRenderConfig = new GraphQlRenderConfig({});
+const graphqlRenderConfigMock: GraphQlRenderConfig = new GraphQlRenderConfig({defaults: {}});
 const metadataMock: Metadata = {
   __schema: {
     types: [
