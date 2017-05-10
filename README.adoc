@@ -1,105 +1,59 @@
-= Huygens ING scaffold
+= Timbuctoo GraphQL GUI
 
-== todo when starting a project using this scaffold
+This project is developed to easily create / generate front-ends for the Timbuctoo project.
 
-- [ ] `git clone [this repo] [your projectname]`
-- [ ] `git remote rename origin scaffold`
-- [ ] `git remote add origin [where you want to store your code]`
-- [ ] `git push --set-upstream origin master`
-- [ ] `grep -Ri scaffold *` and replace it with your project name
-- [ ] edit package.json and fill in the administrative fields (name, licence etc.)
-- [ ] `git commit -am "Start [projectname] using scaffold from [this repo]"`
-- [ ] `git push origin master`
-- [ ] `docker-compose up`
-- [ ] `npm install`
-- [ ] start hacking :)
+== Goal
 
-== vscode configuration
+The goal of this project is to be able to generate GUI's based on GraphQL schema definitions and make it customizable on different levels.
 
-- [ ] install the tslint extension
+== Code (src/app)
 
-== todo / features
-- [x] uses yarn for npm install so we have less chance of irreproducable bugs between team members
-- [x] buildbase container that contains all packages so we can be certain that a build can still be done 5 years from now.
-- [x] Dockerfile that does not use FROM buildbase and removes node_modules after build so we have a small container
-- [x] put node_modules at the root so everyone uses the same node_modules (without downloading) but we can mount the entire app module and we can override a module if we want to by doing a local npm/yarn install
-- [x] express base site
-  - [x] index file that links to the three different js-apps
-  - [x] storybook dev middleware +
-      test: docker-compose up, open browser on http://localhost:8080/build/storybook/ and edit the components/test.story.tsx [<- note! typescript] watch if it updates automatically
-  - [x] unittest dev middleware (HMR) +
-      test: docker-compose up, open browser on http://localhost:8080/build/tests.html and edit the actions/theModule.test.ts [<- note! typescript] watch if it updates automatically
-  - [x] app dev middleware (HMR) +
-      test: docker-compose up, open browser on http://localhost:8080/build/index.html and edit the actions/theModule.test.ts [<- note! typescript] watch if it updates automatically
-  - [x] static file serving
-- [x] compilation + prod static file server
-  - [x] app
-- [x] Promise
-  - [x] typescript
-  - [x] polyfill
-- [x] fetch
-  - [x] typescript
-  - [x] polyfill
-- [x] React + React-dom + Redux
-  - [x] typescript
-  - [x] static asset
-    - [x] HMR (3)
-    - [x] compiled
-- [x] proxy through browsersync
-  * [x] with https (and no funky chrome changes because it's self-signed, document what the user needs to do)
-- typescript error report
-  * compilation
-    ** [x] storybook
-    ** [x] unittests
-    ** [x] full app
-  * hmr
-    ** [x] storybook
-    ** [x] unittests
-    ** [x] full app
-- tslint report
-  * in vscode
-  * compilation
-    ** [x] storybook
-    ** [x] unittests
-    ** [x] full app
-  * *NOTE:* I can't get hmr reporting (tslint-loader) to work.
+=== Components
 
-- [x] fast container shutdown
-- [x] ci run on saucelabs
-- [x] fix that node_modules should have parts available outside container and parts inside container (c++ libs should 
-      be compiled in container, vscode should be able to reach typings outside container)
-- [x] storybook with knobs
-- [x] storybook alle .story files laten includen
-- [ ] storybook with source code shown
-- [ ] simple router (test pushState with scroll position)
-- [ ] vscode debugger support (chrome)
-- [ ] run commands using same userid as host system so that created files get the right owner
+Contains the main code. `api.tsx` contains the interfaces needed to create a custom rendering.
 
-=== production ready
-- [ ] remote urls are configured using env-variables
-- [ ] can be proxied under subfolder (is configured using env-variable)
-  * [ ] test base tag with 
-    ** pushState
-    ** css urls
-    ** script urls
-    ** image urls
-    ** images/css loaded via react
+[ditaa]
+....
+  +-------------------+
+  |                   |                         +----------------------------+
+  |   DataRenderer    |                         |                            |
+  |                   +-----------------------> |    TimComponent            |
+  |                   |                         |                            |
+  +-------------------+                         |                            |
+          ^                                     +----------------------------+
+          |
+          |
+          |
+          |
+          |
+          |
+          |                                      +---------------------------+
+          |                                      |                           |
+          +--------------------------------------+   Entity                  |
+                                                 |                           |
+                                                 |                           |
+                                                 +---------------------------+
 
-- caching
-  * [ ] js compiled with hash and served with infinite cache header (both in dev and prod mode)
-  * [ ] base html knows the hashes and is served with hash based etag
-- [ ] https://www.npmjs.com/package/finalhandler
-- [ ] log all requests as json to the console in prod mode
+....
 
+The `Entity` uses the `DataRenderer` to render its contents. 
+The `DataRenderer` uses `TimComponent`s to its fields.
+`TimComponent` converts the data of the `DataRenderer` to a jsx element.
+`entity.story.tsx` contains implementation examples how the code is used.
 
-Not gonna do for now: 
+=== Support
 
-- [ ] debug server from vscode?
-- [ ] storybook for user documentation?
-- [ ] chrome live edit support?
-- [ ] make http:// redirect to https://
-- [ ] refresh if storybook config changes
-- [ ] refresh if webpack config changes
+Support contains the GraphQL implementation of the `DataRenderer`. 
+This `DataRenderer` uses a `GraphQlRenderConfiguration`.
+The configuration contains the way the data is how the data is rendered.
 
-= folder layout
-See README's at lower levels for an explanation of what each folder does.
+== How to test
+1. run `npm install` in the root directory of the project.
+1. run `docker-compose up`
+1. surf to `https://localhost:8080` with your favorite browser. (Your browser might complain about the connection being not seccure, ignore the warning an find the way you can work around this problem in you favorite browser.)
+
+== See also
+
+GraphQL: http://graphql.org/learn/
+The base of this project: https://github.com/HuygensING/js-scaffold
+Timbuctoo: https://github.com/HuygensING/timbuctoo

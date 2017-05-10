@@ -5,6 +5,8 @@ import {DefaultMappings, GraphQlRenderConfig, OverrideConfig} from "../support/g
 import {DataRenderer, Entity} from "./api";
 declare const module: any; // when webpack compiles it provides a module variable
 
+// N.B. Data and metadata examples used in this file are retrieved from http://graphql.org/learn/queries/
+
 /*
 {
   __schema {
