@@ -1391,10 +1391,27 @@ const objectRenderConfiguration: OverrideConfig = {
   },
 };
 
-const listRenderConfiguration: OverrideConfig = {
+const specificItemListRenderConfiguration: OverrideConfig = {
   human: {
     friends: {
       0: {
+        friends: {
+          __tim_renderer: DefaultListOverride,
+        },
+      },
+    },
+  },
+};
+
+const allItemListRenderConfiguration: OverrideConfig = {
+  human: {
+    friends: {
+      "*": {
+        name: {
+          __tim_renderer: StringComponent,
+        },
+      },
+      "0": {
         friends: {
           __tim_renderer: DefaultListOverride,
         },
@@ -1470,7 +1487,14 @@ export default function ({
     .add("with custom rendering of a specific list field", () => (
       <Entity datarenderer={new GraphQlDataRenderer(
         dataWithNonLeafFields.data,
-        new GraphQlRenderConfig({defaults: {}, overrides: listRenderConfiguration }),
+        new GraphQlRenderConfig({defaults: {}, overrides: specificItemListRenderConfiguration }),
+        metadata.data,
+      )}></Entity>
+    ))
+    .add("with custom rendering for all items without specific config in a list", () => (
+      <Entity datarenderer={new GraphQlDataRenderer(
+        dataWithNonLeafFields.data,
+        new GraphQlRenderConfig({defaults: {}, overrides: allItemListRenderConfiguration }),
         metadata.data,
       )}></Entity>
     ))

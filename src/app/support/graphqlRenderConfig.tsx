@@ -81,7 +81,7 @@ export class GraphQlRenderConfig {
   }
 
   public subRenderConfigFor(field: string | number): GraphQlRenderConfig {
-    const fieldOverrides = isObjectOverrideConfiguration(this.overrides) ? this.overrides[field] : undefined;
+    const fieldOverrides = isObjectOverrideConfiguration(this.overrides) ? this.getOverrideForField(field) : undefined;
 
     return new GraphQlRenderConfig({
       defaults: this.defaults,
@@ -94,8 +94,8 @@ export class GraphQlRenderConfig {
 
   private renderFunctionOrDefault(field: string | number, type: string, defaultComponent: TimComponent): TimComponent {
     if (this.overrides != null) {
-      if (isObjectOverrideConfiguration(this.overrides) && this.overrides.hasOwnProperty(field.toString())) {
-        const fieldOverride = this.overrides[field.toString()];
+      if (this.hasOverrideForField(field)) {
+        const fieldOverride = this.getOverrideForField(field);
         if (isComponentRenderConfiguration(fieldOverride)) {
           return fieldOverride.__tim_renderer;
         }
@@ -107,6 +107,28 @@ export class GraphQlRenderConfig {
     } else {
       return defaultComponent;
     }
+  }
+
+  private hasOverrideForField(field: string | number): boolean {
+    if (!isObjectOverrideConfiguration(this.overrides)) {
+      return false;
+    }
+
+    if (typeof field === "string") {
+      return this.overrides.hasOwnProperty(field.toString());
+    } else if (typeof field === "number") { // is property of an array
+      return this.overrides.hasOwnProperty(field.toString()) || this.overrides.hasOwnProperty("*");
+    }
+
+    return false;
+  }
+
+  private getOverrideForField(field: string | number): OverrideConfig | undefined {
+    if (!isObjectOverrideConfiguration(this.overrides)) {
+      return undefined;
+    }
+
+    return this.overrides[field.toString()] != null ? this.overrides[field.toString()] : this.overrides["*"];
   }
 }
 
