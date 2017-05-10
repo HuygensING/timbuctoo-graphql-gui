@@ -8,7 +8,7 @@ The goal of this project is to be able to generate GUI's based on GraphQL schema
 
 == Code (src/app)
 
-=== Components
+=== Default (components)
 
 Contains the main code. `api.tsx` contains the interfaces needed to create a custom rendering.
 
@@ -41,11 +41,88 @@ The `DataRenderer` uses `TimComponent`s to its fields.
 `TimComponent` converts the data of the `DataRenderer` to a jsx element.
 `entity.story.tsx` contains implementation examples how the code is used.
 
-=== Support
+=== GraphQL (support)
 
 Support contains the GraphQL implementation of the `DataRenderer`. 
 This `DataRenderer` uses a `GraphQlRenderConfiguration`.
 The configuration contains the way the data is how the data is rendered.
+
+=== How to configure GraphQL
+`GraphQlRenderConfiguration` expects one object for the `defaults` property.
+It also has some optional parameters:
+* `overrides` for overrides of specific fields.
+* `defaultObject` to override the default rendering of javascript objects.
+* `defaultScalar` to override the default rendering of all scalars.
+* `defaultList` to override the default rendering of javascript arrays.
+
+==== `defaults`
+`defaults` is a map that has the names of the types defined in the GraphQL schema as key and a TimComponent as value.
+[source,json]
+----
+{
+  String: StringComponent, // StringComponent is an implementation of TimComponent.
+}
+----
+
+==== `overrides`
+`overrides` is a structure that follows the structure of the data.
+If the data looks like the next example:
+[source,json]
+----
+"human": {
+  "name": "John Doe"
+}
+----
+The `override` configuration has to look like the next example to have a custom rendering for the `name` of the `human`.
+[source,json]
+----
+"human": {
+  "name": {
+    "__tim_renderer": StringComponent, // custom renderer the name property of the human
+  }
+}
+----
+`__tim_renderer` is the key to configure the custom renderers.
+
+Configuring with arrays is done like the following example.
+[source,json]
+----
+{
+  human: {
+    friends: {
+      0: {
+        name: {
+          __tim_renderer: StringComponent,
+        },
+      },
+    },
+  },
+}
+----
+`friends` is an array of objects with a name.
+The sample above contains a custom configuration for the `name` of the first item of the array.
+
+For the configuration of all the items in an array without specific configuration as shown in the example above, you can use hte `*`.
+The example below has a custom configuration of the `friends` of the first item of the `friends` and the name of all the other `friends`.
+[source, json]
+----
+const allItemListRenderConfiguration: OverrideConfig = {
+  human: {
+    friends: {
+      "*": {
+        name: {
+          __tim_renderer: StringComponent,
+        },
+      },
+      "0": {
+        friends: {
+          __tim_renderer: DefaultListOverride,
+        },
+      },
+    },
+  },
+};
+----
 
 == How to test
 1. run `npm install` in the root directory of the project.
@@ -53,7 +130,6 @@ The configuration contains the way the data is how the data is rendered.
 1. surf to `https://localhost:8080` with your favorite browser. (Your browser might complain about the connection being not seccure, ignore the warning an find the way you can work around this problem in you favorite browser.)
 
 == See also
-
-GraphQL: http://graphql.org/learn/
-The base of this project: https://github.com/HuygensING/js-scaffold
-Timbuctoo: https://github.com/HuygensING/timbuctoo
+* GraphQL: http://graphql.org/learn/
+* The base of this project: https://github.com/HuygensING/js-scaffold
+* Timbuctoo: https://github.com/HuygensING/timbuctoo
