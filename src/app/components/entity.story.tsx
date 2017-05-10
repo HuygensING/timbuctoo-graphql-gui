@@ -1361,7 +1361,7 @@ const renderConfiguration: OverrideConfig = {
     friends: {
       0: {
         name: {
-          renderer: StringComponent,
+          __tim_renderer: StringComponent,
         },
       },
     },
@@ -1370,7 +1370,7 @@ const renderConfiguration: OverrideConfig = {
 
 const objectRenderConfiguration: OverrideConfig = {
   human: {
-    renderer: {
+    __tim_renderer: {
       render: (dataRenderer: DataRenderer) => {
         const objectData = dataRenderer.getData();
         for (const key in objectData) {
@@ -1396,7 +1396,7 @@ const listRenderConfiguration: OverrideConfig = {
     friends: {
       0: {
         friends: {
-          renderer: DefaultListOverride,
+          __tim_renderer: DefaultListOverride,
         },
       },
     },

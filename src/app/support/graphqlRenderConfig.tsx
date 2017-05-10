@@ -97,7 +97,7 @@ export class GraphQlRenderConfig {
       if (isObjectOverrideConfiguration(this.overrides) && this.overrides.hasOwnProperty(field.toString())) {
         const fieldOverride = this.overrides[field.toString()];
         if (isComponentRenderConfiguration(fieldOverride)) {
-          return fieldOverride.renderer;
+          return fieldOverride.__tim_renderer;
         }
       }
     }
@@ -111,7 +111,7 @@ export class GraphQlRenderConfig {
 }
 
 interface ComponentOverrideConfiguration {
-  renderer: TimComponent;
+  __tim_renderer: TimComponent;
 }
 
 interface ObjectOverrideConfiguration {
@@ -137,5 +137,5 @@ function isComponentRenderConfiguration(renderConfiguration?: OverrideConfig):
   renderConfiguration is ComponentOverrideConfiguration {
   // TODO: check if type of the renderer is Component
   return renderConfiguration != null &&
-  renderConfiguration.hasOwnProperty("renderer");
+  renderConfiguration.hasOwnProperty("__tim_renderer");
 }
