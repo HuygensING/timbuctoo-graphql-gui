@@ -1159,6 +1159,7 @@ const metadata: {data: Metadata} = {
 };
 
 const StringComponent = {
+  dataType: "String",
   render: (dataRenderer: DataRenderer) => {
     return (
       <span>
@@ -1174,6 +1175,7 @@ const componentMappings: DefaultMappings = {
 };
 
 const DroidComponent = {
+  dataType: "Droid",
   render(dataRenderer: DataRenderer) {
     const properties: {[key: string]: any} = {};
     dataRenderer.fields().forEach((field) => properties[field] = dataRenderer.renderField(field));
@@ -1190,6 +1192,7 @@ const nonLeafCustomComponents: DefaultMappings = {
 };
 
 const DefaultObjectOverride = {
+  dataType: "OBJECT",
   render(dataRenderer: DataRenderer): JSX.Element {
     const properties: {[key: string]: any} = {};
     dataRenderer.fields().forEach((field) => properties[field] = dataRenderer.renderField(field));
@@ -1203,12 +1206,14 @@ const DefaultObjectOverride = {
 };
 
 const DefaultScalarOverride = {
+  dataType: "SCALAR",
   render(dataRenderer: DataRenderer): JSX.Element {
     return <span style={{color: "red"}}>{dataRenderer.getData()}<br/></span>;
   },
 };
 
 const DefaultListOverride = {
+  dataType: "LIST",
   render(dataRenderer: DataRenderer): JSX.Element {
     const propElements: JSX.Element[] = [];
 
@@ -1371,6 +1376,7 @@ const renderConfiguration: OverrideConfig = {
 const objectRenderConfiguration: OverrideConfig = {
   human: {
     __tim_renderer: {
+      dataType: "Human",
       render: (dataRenderer: DataRenderer) => {
         const objectData = dataRenderer.getData();
         for (const key in objectData) {
@@ -1416,6 +1422,14 @@ const allItemListRenderConfiguration: OverrideConfig = {
           __tim_renderer: DefaultListOverride,
         },
       },
+    },
+  },
+};
+
+const wrongRendererOveride: OverrideConfig = {
+  human: {
+    mass: {
+      __tim_renderer: StringComponent,
     },
   },
 };
@@ -1495,6 +1509,13 @@ export default function ({
       <Entity datarenderer={new GraphQlDataRenderer(
         dataWithNonLeafFields.data,
         new GraphQlRenderConfig({defaults: {}, overrides: allItemListRenderConfiguration }),
+        metadata.data,
+      )}></Entity>
+    ))
+    .add("with non matching renderer for field", () => (
+      <Entity datarenderer={new GraphQlDataRenderer(
+        data.data,
+        new GraphQlRenderConfig({defaults: {}, overrides: wrongRendererOveride }),
         metadata.data,
       )}></Entity>
     ))

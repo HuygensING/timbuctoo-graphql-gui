@@ -9,6 +9,7 @@ export interface DataRenderer {
 }
 
 export interface TimComponent {
+  dataType: string; // the data type the renderer should be used for
   render(datarenderer: DataRenderer): JSX.Element;
 }
 

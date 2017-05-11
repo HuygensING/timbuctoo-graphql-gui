@@ -3,6 +3,7 @@ import {DataRenderer, TimComponent} from "../components/api";
 import {assertNever, FieldMetadataType, MetadataType, unwrapNonNull} from "./graphqlHelpers";
 
 const DefaultObjectComponent = {
+  dataType: "OBJECT",
   render(dataRenderer: DataRenderer) {
     const properties: {[key: string]: JSX.Element} = {};
 
@@ -17,12 +18,14 @@ const DefaultObjectComponent = {
 };
 
 const DefaultScalarComponent = {
+  dataType: "SCALAR",
   render(dataRenderer: DataRenderer) {
     return <span>{dataRenderer.getData()}<br/></span>;
   },
 };
 
 const DefaultListComponent = {
+  dataType: "LIST",
   render(dataRenderer: DataRenderer) {
     const props: JSX.Element[] = [];
     for (let i = 0; i < dataRenderer.count(); i++) {
@@ -56,6 +59,7 @@ export class GraphQlRenderConfig {
     this.defaultScalarComponent =  defaultScalar != null ? defaultScalar : DefaultScalarComponent;
     this.defaultListComponent = defaultList != null ? defaultList : DefaultListComponent;
     this.unknownComponent = {
+      dataType: "",
       render(dataRenderer: DataRenderer) {
         return <div></div>;
       },
@@ -73,7 +77,7 @@ export class GraphQlRenderConfig {
       case "INTERFACE":
         return this.renderFunctionOrDefault(field, fieldMetadata.name, this.defaultObjectComponent);
       case "LIST":
-        return this.renderFunctionOrDefault(field, "", this.defaultListComponent);
+        return this.renderFunctionOrDefault(field, "LIST", this.defaultListComponent);
       default:
         console.error("Unhandle case for: ", fieldMetadata);
         return this.unknownComponent;
@@ -97,7 +101,11 @@ export class GraphQlRenderConfig {
       if (this.hasOverrideForField(field)) {
         const fieldOverride = this.getOverrideForField(field);
         if (isComponentRenderConfiguration(fieldOverride)) {
-          return fieldOverride.__tim_renderer;
+          if (this.isRightTypeComponent(fieldOverride.__tim_renderer, type)) {
+            return fieldOverride.__tim_renderer;
+          } else {
+            console.error(`${JSON.stringify(fieldOverride.__tim_renderer)} is not valid for field type '${type}'`);
+          }
         }
       }
     }
@@ -129,6 +137,10 @@ export class GraphQlRenderConfig {
     }
 
     return this.overrides[field.toString()] != null ? this.overrides[field.toString()] : this.overrides["*"];
+  }
+
+  private isRightTypeComponent(componenent: TimComponent, fieldType: string): boolean {
+    return componenent.dataType === fieldType;
   }
 }
 
