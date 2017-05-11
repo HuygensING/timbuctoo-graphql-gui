@@ -71,13 +71,13 @@ export class GraphQlRenderConfig {
     switch (fieldMetadata.kind) {
       case "ENUM":
       case "SCALAR":
-        return this.renderFunctionOrDefault(field, fieldMetadata.name, this.defaultScalarComponent);
+        return this.renderFunctionOrDefault(field, fieldMetadata, this.defaultScalarComponent);
       case "OBJECT":
       case "UNION":
       case "INTERFACE":
-        return this.renderFunctionOrDefault(field, fieldMetadata.name, this.defaultObjectComponent);
+        return this.renderFunctionOrDefault(field, fieldMetadata, this.defaultObjectComponent);
       case "LIST":
-        return this.renderFunctionOrDefault(field, "LIST", this.defaultListComponent);
+        return this.renderFunctionOrDefault(field, fieldMetadata, this.defaultListComponent);
       default:
         console.error("Unhandle case for: ", fieldMetadata);
         return this.unknownComponent;
@@ -96,7 +96,11 @@ export class GraphQlRenderConfig {
     });
   }
 
-  private renderFunctionOrDefault(field: string | number, type: string, defaultComponent: TimComponent): TimComponent {
+  private renderFunctionOrDefault(
+    field: string | number,
+    type: FieldMetadataType,
+    defaultComponent: TimComponent,
+  ): TimComponent {
     if (this.overrides != null) {
       if (this.hasOverrideForField(field)) {
         const fieldOverride = this.getOverrideForField(field);
@@ -110,8 +114,8 @@ export class GraphQlRenderConfig {
       }
     }
 
-    if (this.defaults.hasOwnProperty(type)) {
-      return this.defaults[type];
+    if (type.name != null && this.defaults.hasOwnProperty(type.name)) {
+      return this.defaults[type.name];
     } else {
       return defaultComponent;
     }
@@ -139,8 +143,8 @@ export class GraphQlRenderConfig {
     return this.overrides[field.toString()] != null ? this.overrides[field.toString()] : this.overrides["*"];
   }
 
-  private isRightTypeComponent(componenent: TimComponent, fieldType: string): boolean {
-    return componenent.dataType === fieldType;
+  private isRightTypeComponent(componenent: TimComponent, fieldType: FieldMetadataType): boolean {
+    return componenent.dataType === fieldType.name || componenent.dataType === fieldType.kind;
   }
 }
 

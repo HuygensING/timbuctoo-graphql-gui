@@ -1434,6 +1434,14 @@ const wrongRendererOveride: OverrideConfig = {
   },
 };
 
+const matchingKind: OverrideConfig = {
+  human: {
+    mass: {
+      __tim_renderer: DefaultScalarOverride,
+    },
+  },
+};
+
 export default function ({
     storiesOf,
     action,
@@ -1516,6 +1524,13 @@ export default function ({
       <Entity datarenderer={new GraphQlDataRenderer(
         data.data,
         new GraphQlRenderConfig({defaults: {}, overrides: wrongRendererOveride }),
+        metadata.data,
+      )}></Entity>
+    ))
+    .add("with renderer that matches the kind of the field", () => (
+      <Entity datarenderer={new GraphQlDataRenderer(
+        data.data,
+        new GraphQlRenderConfig({defaults: {}, overrides: matchingKind}),
         metadata.data,
       )}></Entity>
     ))
