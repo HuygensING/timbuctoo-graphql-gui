@@ -408,6 +408,46 @@ const metadata: {data: Metadata} = {
                 ofType: null,
               },
             },
+             {
+              name: "image",
+              type: {
+                name: "String",
+                kind: "SCALAR",
+                ofType: null,
+              },
+            },
+             {
+              name: "birthDate",
+              type: {
+                name: "String",
+                kind: "SCALAR",
+                ofType: null,
+              },
+            },
+             {
+              name: "birthPlace",
+              type: {
+                name: "String",
+                kind: "SCALAR",
+                ofType: null,
+              },
+            },
+             {
+              name: "deathDate",
+              type: {
+                name: "String",
+                kind: "SCALAR",
+                ofType: null,
+              },
+            },
+             {
+              name: "deathPlace",
+              type: {
+                name: "String",
+                kind: "SCALAR",
+                ofType: null,
+              },
+            },
             {
               name: "mass",
               type: {
@@ -1174,6 +1214,13 @@ const componentMappings: DefaultMappings = {
   String: StringComponent,
 };
 
+const ImageComponent = {
+  dataType:"String",
+  render: (dataRenderer: DataRenderer) => {
+    return (
+        <img className="img-portrait img-circle" src={dataRenderer.getData()}></img>
+    )}
+}
 const DroidComponent = {
   dataType: "Droid",
   render(dataRenderer: DataRenderer) {
@@ -1190,6 +1237,56 @@ const DroidComponent = {
 const nonLeafCustomComponents: DefaultMappings = {
   Droid: DroidComponent,
 };
+
+const personObject = {
+  dataType: "OBJECT",
+  render(dataRenderer: DataRenderer): JSX.Element {
+    const properties: {[key: string]: any} = {};
+    dataRenderer.fields().forEach((field) => properties[field] = dataRenderer.renderField(field));
+    const birthDeathBlock  = (
+      <div className="row small-margin text-center">
+        <div className="col-xs-3 text-right" />
+        <div className="col-xs-6">
+          <div className="row">
+            <div className="col-xs-5 text-right">
+              {properties["birthDate"]}
+              {properties["birthPlace"]}
+            </div>
+            <div className="col-xs-2 text-center">
+              <img id="born-died" src="/build/images/lived-center.svg" />
+            </div>
+            <div className="col-xs-5 text-left">
+              {properties["deathDate"]}
+              {properties["deathPlace"]}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+    
+    return (
+      <div className="container basic-margin">
+        <div className="row">
+          <div className="col-xs-10 text-center">
+            {dataRenderer.renderField('image')}
+            <h1>{properties['name']}</h1>
+            {birthDeathBlock}
+          </div>
+          <div className="container basic-margin">
+            {Object.keys(properties).sort().map((key) => (key === 'name' || key === 'image' || key === 'birthDate' || key === 'birthPlace' || key === 'deathDate' || key === 'deathPlace') ? null :
+
+              <div key={key} className="row small-margin">
+                <div className="col-xs-5 text-right hi-light-grey" style={{ fontWeight: "bold" }}>{key}</div>
+                <div className="col-xs-5">{properties[key]}</div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  },
+};
+
 
 const DefaultObjectOverride = {
   dataType: "OBJECT",
@@ -1243,6 +1340,11 @@ const data = {
       name: "Luke Skywalker",
       height: 1.72,
       mass: 77,
+      image: "https://vignette3.wikia.nocookie.net/starwars/images/1/15/Luke_Skywalker_Ep_7_SWCT.png/revision/latest?cb=20161230081329",
+      birthDate: "19 BBY",
+      birthPlace: "Polis Massa",
+      deathDate: "",
+      deathPlace: "",
       __typename: "Human",
     },
   },
@@ -1371,6 +1473,14 @@ const renderConfiguration: OverrideConfig = {
       },
     },
   },
+};
+
+const renderImageConfiguration: OverrideConfig = {
+  human: {
+        image: {
+          __tim_renderer: ImageComponent,
+        },
+      },
 };
 
 const objectRenderConfiguration: OverrideConfig = {
@@ -1533,6 +1643,11 @@ export default function ({
         new GraphQlRenderConfig({defaults: {}, overrides: matchingKind}),
         metadata.data,
       )}></Entity>
+    ))
+    .add("person fiche", () => (
+       <Entity datarenderer={
+        new GraphQlDataRenderer(data.data, new GraphQlRenderConfig({defaults: {}, defaultObject: personObject, overrides: renderImageConfiguration}), metadata.data)
+      }></Entity>
     ))
     ;
 }
