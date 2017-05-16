@@ -3,6 +3,7 @@ import {GraphQlDataRenderer} from "../support/graphqlDataRenderer";
 import {FieldMetadataType, getMetadata, Metadata} from "../support/graphqlHelpers";
 import {DefaultMappings, GraphQlRenderConfig, OverrideConfig} from "../support/graphqlRenderConfig";
 import {DataRenderer, Entity} from "./api";
+import {personObject} from "./timPerson";
 declare const module: any; // when webpack compiles it provides a module variable
 
 // N.B. Data and metadata examples used in this file are retrieved from http://graphql.org/learn/queries/
@@ -1215,12 +1216,14 @@ const componentMappings: DefaultMappings = {
 };
 
 const ImageComponent = {
-  dataType:"String",
+  dataType: "String",
   render: (dataRenderer: DataRenderer) => {
     return (
         <img className="img-portrait img-circle" src={dataRenderer.getData()}></img>
-    )}
-}
+    );
+  },
+};
+
 const DroidComponent = {
   dataType: "Droid",
   render(dataRenderer: DataRenderer) {
@@ -1237,56 +1240,6 @@ const DroidComponent = {
 const nonLeafCustomComponents: DefaultMappings = {
   Droid: DroidComponent,
 };
-
-const personObject = {
-  dataType: "OBJECT",
-  render(dataRenderer: DataRenderer): JSX.Element {
-    const properties: {[key: string]: any} = {};
-    dataRenderer.fields().forEach((field) => properties[field] = dataRenderer.renderField(field));
-    const birthDeathBlock  = (
-      <div className="row small-margin text-center">
-        <div className="col-xs-3 text-right" />
-        <div className="col-xs-6">
-          <div className="row">
-            <div className="col-xs-5 text-right">
-              {properties["birthDate"]}
-              {properties["birthPlace"]}
-            </div>
-            <div className="col-xs-2 text-center">
-              <img id="born-died" src="/build/images/lived-center.svg" />
-            </div>
-            <div className="col-xs-5 text-left">
-              {properties["deathDate"]}
-              {properties["deathPlace"]}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-    
-    return (
-      <div className="container basic-margin">
-        <div className="row">
-          <div className="col-xs-10 text-center">
-            {dataRenderer.renderField('image')}
-            <h1>{properties['name']}</h1>
-            {birthDeathBlock}
-          </div>
-          <div className="container basic-margin">
-            {Object.keys(properties).sort().map((key) => (key === 'name' || key === 'image' || key === 'birthDate' || key === 'birthPlace' || key === 'deathDate' || key === 'deathPlace') ? null :
-
-              <div key={key} className="row small-margin">
-                <div className="col-xs-5 text-right hi-light-grey" style={{ fontWeight: "bold" }}>{key}</div>
-                <div className="col-xs-5">{properties[key]}</div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  },
-};
-
 
 const DefaultObjectOverride = {
   dataType: "OBJECT",
