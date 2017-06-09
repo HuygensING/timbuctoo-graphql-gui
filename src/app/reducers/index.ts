@@ -1,16 +1,20 @@
-type Action = {
-  type: "setState";
-  state: State;
-} | {
-  type: "newPage";
-  name: "default" | "upload";
-  args: any;
-} | {
-  type: "404";
-  url: string
-} | {
-  type: "@@redux/INIT";
-};
+type Action =
+  | {
+      type: "setState";
+      state: State;
+    }
+  | {
+      type: "newPage";
+      name: "default" | "upload";
+      args: any;
+    }
+  | {
+      type: "404";
+      url: string;
+    }
+  | {
+      type: "@@redux/INIT";
+    };
 
 export interface State {
   clicks: number;

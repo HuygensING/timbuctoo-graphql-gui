@@ -1,9 +1,17 @@
 import * as React from "react";
-import {GraphQlDataRenderer} from "../support/graphqlDataRenderer";
-import {FieldMetadataType, getMetadata, Metadata} from "../support/graphqlHelpers";
-import {DefaultMappings, GraphQlRenderConfig, OverrideConfig} from "../support/graphqlRenderConfig";
-import {DataRenderer, Entity} from "./api";
-import {personObject} from "./timPerson";
+import { GraphQlDataRenderer } from "../support/graphqlDataRenderer";
+import {
+  FieldMetadataType,
+  getMetadata,
+  Metadata,
+} from "../support/graphqlHelpers";
+import {
+  DefaultMappings,
+  GraphQlRenderConfig,
+  OverrideConfig,
+} from "../support/graphqlRenderConfig";
+import { DataRenderer, Entity } from "./api";
+import { personObject } from "./timPerson";
 declare const module: any; // when webpack compiles it provides a module variable
 
 // N.B. Data and metadata examples used in this file are retrieved from http://graphql.org/learn/queries/
@@ -40,7 +48,7 @@ declare const module: any; // when webpack compiles it provides a module variabl
   }
 }
  */
-const metadata: {data: Metadata} = {
+const metadata: { data: Metadata } = {
   data: {
     __schema: {
       types: [
@@ -409,7 +417,7 @@ const metadata: {data: Metadata} = {
                 ofType: null,
               },
             },
-             {
+            {
               name: "image",
               type: {
                 name: "String",
@@ -417,7 +425,7 @@ const metadata: {data: Metadata} = {
                 ofType: null,
               },
             },
-             {
+            {
               name: "birthDate",
               type: {
                 name: "String",
@@ -425,7 +433,7 @@ const metadata: {data: Metadata} = {
                 ofType: null,
               },
             },
-             {
+            {
               name: "birthPlace",
               type: {
                 name: "String",
@@ -433,7 +441,7 @@ const metadata: {data: Metadata} = {
                 ofType: null,
               },
             },
-             {
+            {
               name: "deathDate",
               type: {
                 name: "String",
@@ -441,7 +449,7 @@ const metadata: {data: Metadata} = {
                 ofType: null,
               },
             },
-             {
+            {
               name: "deathPlace",
               type: {
                 name: "String",
@@ -1205,7 +1213,7 @@ const StringComponent = {
     return (
       <span>
         <b>{dataRenderer.getData()}</b>
-        <br/>
+        <br />
       </span>
     );
   },
@@ -1219,7 +1227,7 @@ const ImageComponent = {
   dataType: "String",
   render: (dataRenderer: DataRenderer) => {
     return (
-        <img className="img-portrait img-circle" src={dataRenderer.getData()}></img>
+      <img className="img-portrait img-circle" src={dataRenderer.getData()} />
     );
   },
 };
@@ -1227,13 +1235,19 @@ const ImageComponent = {
 const DroidComponent = {
   dataType: "Droid",
   render(dataRenderer: DataRenderer) {
-    const properties: {[key: string]: any} = {};
-    dataRenderer.fields().forEach((field) => properties[field] = dataRenderer.renderField(field));
+    const properties: { [key: string]: any } = {};
+    dataRenderer
+      .fields()
+      .forEach(field => (properties[field] = dataRenderer.renderField(field)));
 
-    return (<div style={{border: "thin black solid"}}>
-      <div>🤖</div>
-      {Object.keys(properties).sort().map((key) => <span>{key}: {properties[key]}</span>)}
-    </div>);
+    return (
+      <div style={{ border: "thin black solid" }}>
+        <div>🤖</div>
+        {Object.keys(properties)
+          .sort()
+          .map(key => <span>{key}: {properties[key]}</span>)}
+      </div>
+    );
   },
 };
 
@@ -1244,12 +1258,16 @@ const nonLeafCustomComponents: DefaultMappings = {
 const DefaultObjectOverride = {
   dataType: "OBJECT",
   render(dataRenderer: DataRenderer): JSX.Element {
-    const properties: {[key: string]: any} = {};
-    dataRenderer.fields().forEach((field) => properties[field] = dataRenderer.renderField(field));
+    const properties: { [key: string]: any } = {};
+    dataRenderer
+      .fields()
+      .forEach(field => (properties[field] = dataRenderer.renderField(field)));
 
     return (
-      <div style={{backgroundColor: "#EEE", border: "thin black solid"}}>
-        {Object.keys(properties).sort().map((key) => <span>{key}: {properties[key]}</span>)}
+      <div style={{ backgroundColor: "#EEE", border: "thin black solid" }}>
+        {Object.keys(properties)
+          .sort()
+          .map(key => <span>{key}: {properties[key]}</span>)}
       </div>
     );
   },
@@ -1258,7 +1276,7 @@ const DefaultObjectOverride = {
 const DefaultScalarOverride = {
   dataType: "SCALAR",
   render(dataRenderer: DataRenderer): JSX.Element {
-    return <span style={{color: "red"}}>{dataRenderer.getData()}<br/></span>;
+    return <span style={{ color: "red" }}>{dataRenderer.getData()}<br /></span>;
   },
 };
 
@@ -1271,7 +1289,7 @@ const DefaultListOverride = {
       propElements.push(dataRenderer.renderField(i));
     }
 
-    return <ol>{propElements.map((el) => <li>{el}</li>)}</ol>;
+    return <ol>{propElements.map(el => <li>{el}</li>)}</ol>;
   },
 };
 
@@ -1293,7 +1311,8 @@ const data = {
       name: "Luke Skywalker",
       height: 1.72,
       mass: 77,
-      image: "https://vignette3.wikia.nocookie.net/starwars/images/1/15/Luke_Skywalker_Ep_7_SWCT.png/revision/latest?cb=20161230081329",
+      image:
+        "https://vignette3.wikia.nocookie.net/starwars/images/1/15/Luke_Skywalker_Ep_7_SWCT.png/revision/latest?cb=20161230081329",
       birthDate: "19 BBY",
       birthPlace: "Polis Massa",
       deathDate: "",
@@ -1430,10 +1449,10 @@ const renderConfiguration: OverrideConfig = {
 
 const renderImageConfiguration: OverrideConfig = {
   human: {
-        image: {
-          __tim_renderer: ImageComponent,
-        },
-      },
+    image: {
+      __tim_renderer: ImageComponent,
+    },
+  },
 };
 
 const objectRenderConfiguration: OverrideConfig = {
@@ -1447,7 +1466,7 @@ const objectRenderConfiguration: OverrideConfig = {
             return (
               <div>
                 <span>
-                  Custom root object rendering <br/>
+                  Custom root object rendering <br />
                   {key}: {objectData[key]}
                 </span>
               </div>
@@ -1505,102 +1524,190 @@ const matchingKind: OverrideConfig = {
   },
 };
 
-export default function ({
-    storiesOf,
-    action,
-    linkTo,
-    knobs,
-  }: any) {
+export default function({ storiesOf, action, linkTo, knobs }: any) {
   storiesOf("Entity", module)
-    .add("without specific components", () => (
-      <Entity datarenderer={
-        new GraphQlDataRenderer(data.data, new GraphQlRenderConfig({defaults: {}}), metadata.data)
-      }></Entity>
-    ))
-    .add("with custom component", () => (
-      <Entity datarenderer={
-        new GraphQlDataRenderer(data.data, new GraphQlRenderConfig({defaults: componentMappings}), metadata.data)
-      }></Entity>
-    ))
-    .add("with non-leaf fields", () => (
-      <Entity datarenderer={
-        new GraphQlDataRenderer(dataWithNonLeafFields.data, new GraphQlRenderConfig({defaults: {}}), metadata.data)
-      }></Entity>
-    ))
-    .add("with non-leaf fields with custom components", () => (
-      <Entity datarenderer={new GraphQlDataRenderer(
-        dataWithNonLeafFields.data,
-        new GraphQlRenderConfig({defaults: nonLeafCustomComponents}),
-        metadata.data,
-      )}></Entity>
-    ))
-    .add("with custom default rendering of non-leaf fields", () => (
-      <Entity datarenderer={new GraphQlDataRenderer(
-        dataWithNonLeafFields.data,
-        new GraphQlRenderConfig({defaults: {}, defaultObject: DefaultObjectOverride}),
-        metadata.data,
-      )}></Entity>
-    ))
-    .add("with custom default scalar rendering", () => (
-      <Entity datarenderer={new GraphQlDataRenderer(
-        dataWithNonLeafFields.data,
-        new GraphQlRenderConfig({defaults: {}, defaultScalar: DefaultScalarOverride}),
-        metadata.data,
-      )}></Entity>
-    ))
-    .add("with custom default list rendering", () => (
-      <Entity datarenderer={new GraphQlDataRenderer(
-        dataWithNonLeafFields.data,
-        new GraphQlRenderConfig({defaults: {}, defaultList: DefaultListOverride}),
-        metadata.data,
-      )}></Entity>
-    ))
-    .add("with custom rendering of a specific leaf field", () => (
-      <Entity datarenderer={new GraphQlDataRenderer(
-        dataWithNonLeafFields.data,
-        new GraphQlRenderConfig({defaults: {}, overrides: renderConfiguration }),
-        metadata.data,
-      )}></Entity>
-    ))
-    .add("with custom rendering of a specific object field", () => (
-      <Entity datarenderer={new GraphQlDataRenderer(
-        dataWithNonLeafFields.data,
-        new GraphQlRenderConfig({defaults: {}, overrides: objectRenderConfiguration }),
-        metadata.data,
-      )}></Entity>
-    ))
-    .add("with custom rendering of a specific list field", () => (
-      <Entity datarenderer={new GraphQlDataRenderer(
-        dataWithNonLeafFields.data,
-        new GraphQlRenderConfig({defaults: {}, overrides: specificItemListRenderConfiguration }),
-        metadata.data,
-      )}></Entity>
-    ))
-    .add("with custom rendering for all items without specific config in a list", () => (
-      <Entity datarenderer={new GraphQlDataRenderer(
-        dataWithNonLeafFields.data,
-        new GraphQlRenderConfig({defaults: {}, overrides: allItemListRenderConfiguration }),
-        metadata.data,
-      )}></Entity>
-    ))
-    .add("with non matching renderer for field", () => (
-      <Entity datarenderer={new GraphQlDataRenderer(
-        data.data,
-        new GraphQlRenderConfig({defaults: {}, overrides: wrongRendererOveride }),
-        metadata.data,
-      )}></Entity>
-    ))
-    .add("with renderer that matches the kind of the field", () => (
-      <Entity datarenderer={new GraphQlDataRenderer(
-        data.data,
-        new GraphQlRenderConfig({defaults: {}, overrides: matchingKind}),
-        metadata.data,
-      )}></Entity>
-    ))
-    .add("person fiche", () => (
-       <Entity datarenderer={
-        new GraphQlDataRenderer(data.data, new GraphQlRenderConfig({defaults: {}, defaultObject: personObject, overrides: renderImageConfiguration}), metadata.data)
-      }></Entity>
-    ))
-    ;
+    .add("without specific components", () =>
+      <Entity
+        datarenderer={
+          new GraphQlDataRenderer(
+            data.data,
+            new GraphQlRenderConfig({ defaults: {} }),
+            metadata.data,
+          )
+        }
+      />,
+    )
+    .add("with custom component", () =>
+      <Entity
+        datarenderer={
+          new GraphQlDataRenderer(
+            data.data,
+            new GraphQlRenderConfig({ defaults: componentMappings }),
+            metadata.data,
+          )
+        }
+      />,
+    )
+    .add("with non-leaf fields", () =>
+      <Entity
+        datarenderer={
+          new GraphQlDataRenderer(
+            dataWithNonLeafFields.data,
+            new GraphQlRenderConfig({ defaults: {} }),
+            metadata.data,
+          )
+        }
+      />,
+    )
+    .add("with non-leaf fields with custom components", () =>
+      <Entity
+        datarenderer={
+          new GraphQlDataRenderer(
+            dataWithNonLeafFields.data,
+            new GraphQlRenderConfig({ defaults: nonLeafCustomComponents }),
+            metadata.data,
+          )
+        }
+      />,
+    )
+    .add("with custom default rendering of non-leaf fields", () =>
+      <Entity
+        datarenderer={
+          new GraphQlDataRenderer(
+            dataWithNonLeafFields.data,
+            new GraphQlRenderConfig({
+              defaults: {},
+              defaultObject: DefaultObjectOverride,
+            }),
+            metadata.data,
+          )
+        }
+      />,
+    )
+    .add("with custom default scalar rendering", () =>
+      <Entity
+        datarenderer={
+          new GraphQlDataRenderer(
+            dataWithNonLeafFields.data,
+            new GraphQlRenderConfig({
+              defaults: {},
+              defaultScalar: DefaultScalarOverride,
+            }),
+            metadata.data,
+          )
+        }
+      />,
+    )
+    .add("with custom default list rendering", () =>
+      <Entity
+        datarenderer={
+          new GraphQlDataRenderer(
+            dataWithNonLeafFields.data,
+            new GraphQlRenderConfig({
+              defaults: {},
+              defaultList: DefaultListOverride,
+            }),
+            metadata.data,
+          )
+        }
+      />,
+    )
+    .add("with custom rendering of a specific leaf field", () =>
+      <Entity
+        datarenderer={
+          new GraphQlDataRenderer(
+            dataWithNonLeafFields.data,
+            new GraphQlRenderConfig({
+              defaults: {},
+              overrides: renderConfiguration,
+            }),
+            metadata.data,
+          )
+        }
+      />,
+    )
+    .add("with custom rendering of a specific object field", () =>
+      <Entity
+        datarenderer={
+          new GraphQlDataRenderer(
+            dataWithNonLeafFields.data,
+            new GraphQlRenderConfig({
+              defaults: {},
+              overrides: objectRenderConfiguration,
+            }),
+            metadata.data,
+          )
+        }
+      />,
+    )
+    .add("with custom rendering of a specific list field", () =>
+      <Entity
+        datarenderer={
+          new GraphQlDataRenderer(
+            dataWithNonLeafFields.data,
+            new GraphQlRenderConfig({
+              defaults: {},
+              overrides: specificItemListRenderConfiguration,
+            }),
+            metadata.data,
+          )
+        }
+      />,
+    )
+    .add(
+      "with custom rendering for all items without specific config in a list",
+      () =>
+        <Entity
+          datarenderer={
+            new GraphQlDataRenderer(
+              dataWithNonLeafFields.data,
+              new GraphQlRenderConfig({
+                defaults: {},
+                overrides: allItemListRenderConfiguration,
+              }),
+              metadata.data,
+            )
+          }
+        />,
+    )
+    .add("with non matching renderer for field", () =>
+      <Entity
+        datarenderer={
+          new GraphQlDataRenderer(
+            data.data,
+            new GraphQlRenderConfig({
+              defaults: {},
+              overrides: wrongRendererOveride,
+            }),
+            metadata.data,
+          )
+        }
+      />,
+    )
+    .add("with renderer that matches the kind of the field", () =>
+      <Entity
+        datarenderer={
+          new GraphQlDataRenderer(
+            data.data,
+            new GraphQlRenderConfig({ defaults: {}, overrides: matchingKind }),
+            metadata.data,
+          )
+        }
+      />,
+    )
+    .add("person fiche", () =>
+      <Entity
+        datarenderer={
+          new GraphQlDataRenderer(
+            data.data,
+            new GraphQlRenderConfig({
+              defaults: {},
+              defaultObject: personObject,
+              overrides: renderImageConfiguration,
+            }),
+            metadata.data,
+          )
+        }
+      />,
+    );
 }

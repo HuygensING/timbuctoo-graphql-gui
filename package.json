@@ -3,6 +3,9 @@
   "version": null,
   "description": null,
   "license": null,
+  "scripts": {
+    "prettier": "prettier --trailing-comma all --write 'src/app/**/*.{tsx,ts,js}'"
+  },
   "dependencies": {
     "@kadira/storybook": "^2.35.3",
     "@kadira/storybook-addon-knobs": "^1.7.1",
@@ -28,5 +31,8 @@
     "webpack": "2.3.2",
     "webpack-dev-middleware": "1.10.1",
     "webpack-hot-middleware": "2.17.1"
+  },
+  "devDependencies": {
+    "prettier": "^1.4.4"
   }
 }

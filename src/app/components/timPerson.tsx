@@ -1,12 +1,14 @@
 import * as React from "react";
-import {DataRenderer} from "./api";
+import { DataRenderer } from "./api";
 
 export const personObject = {
   dataType: "OBJECT",
   render(dataRenderer: DataRenderer): JSX.Element {
-    const properties: {[key: string]: any} = {};
-    dataRenderer.fields().forEach((field) => properties[field] = dataRenderer.renderField(field));
-    const birthDeathBlock  = (
+    const properties: { [key: string]: any } = {};
+    dataRenderer
+      .fields()
+      .forEach(field => (properties[field] = dataRenderer.renderField(field)));
+    const birthDeathBlock = (
       <div className="row small-margin text-center">
         <div className="col-xs-3 text-right" />
         <div className="col-xs-6">
@@ -36,18 +38,28 @@ export const personObject = {
             {birthDeathBlock}
           </div>
           <div className="container basic-margin">
-            {Object.keys(properties).sort().filter((key) =>
-              key !== "name" &&
-              key !== "image" &&
-              key !== "birthDate" &&
-              key !== "birthPlace" &&
-              key !== "deathDate" &&
-              key !== "deathPlace").map((key) =>
+            {Object.keys(properties)
+              .sort()
+              .filter(
+                key =>
+                  key !== "name" &&
+                  key !== "image" &&
+                  key !== "birthDate" &&
+                  key !== "birthPlace" &&
+                  key !== "deathDate" &&
+                  key !== "deathPlace",
+              )
+              .map(key =>
                 <div key={key} className="row small-margin">
-                  <div className="col-xs-5 text-right hi-light-grey" style={{ fontWeight: "bold" }}>{key}</div>
+                  <div
+                    className="col-xs-5 text-right hi-light-grey"
+                    style={{ fontWeight: "bold" }}
+                  >
+                    {key}
+                  </div>
                   <div className="col-xs-5">{properties[key]}</div>
-                </div>)
-            }
+                </div>,
+              )}
           </div>
         </div>
       </div>

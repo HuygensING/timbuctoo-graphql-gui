@@ -1,15 +1,35 @@
 import * as React from "react";
 
-function Page(props: {username?: string, userlocation?: string, children?: any}) {
+function Page(props: {
+  username?: string;
+  userlocation?: string;
+  children?: any;
+}) {
   return (
     <div className="page">
       <div className="basic-margin hi-Green container-fluid">
         <nav className="navbar ">
           <div className="container">
-            <div className="navbar-header"> <a className="navbar-brand" href="#"><img src="images/page/logo-timbuctoo.svg" className="logo" alt="timbuctoo"/></a> </div>
+            <div className="navbar-header">
+              {" "}
+              <a className="navbar-brand" href="#">
+                <img
+                  src="images/page/logo-timbuctoo.svg"
+                  className="logo"
+                  alt="timbuctoo"
+                />
+              </a>{" "}
+            </div>
             <div id="navbar" className="navbar-collapse collapse">
               <ul className="nav navbar-nav navbar-right">
-                {props.username ? <li><a href={props.userlocation || "#"}><span className="glyphicon glyphicon-user"/> {props.username}</a></li> : null}
+                {props.username
+                  ? <li>
+                      <a href={props.userlocation || "#"}>
+                        <span className="glyphicon glyphicon-user" />{" "}
+                        {props.username}
+                      </a>
+                    </li>
+                  : null}
               </ul>
             </div>
           </div>

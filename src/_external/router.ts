@@ -7,17 +7,23 @@ interface RouterArgs<Routes, State> {
   onNoMatchFound: (url: string) => void;
 }
 
-export class Router<T, Routes extends {[key in keyof T]: string}, State> {
-  private routes: Array<{name: keyof Routes, route: Route}>;
+export class Router<T, Routes extends { [key in keyof T]: string }, State> {
+  private routes: Array<{ name: keyof Routes; route: Route }>;
   private currentUrl?: string;
-  private storedState: {[url: string]: {name: keyof Routes, state?: State}} = {};
+  private storedState: {
+    [url: string]: { name: keyof Routes; state?: State };
+  } = {};
 
   // the last arg is for type inference
-  constructor(private config: RouterArgs<Routes, State>, initialUrl: string, state: State) {
+  constructor(
+    private config: RouterArgs<Routes, State>,
+    initialUrl: string,
+    state: State,
+  ) {
     this.routes = [];
     for (const name in config.routes) {
       if (config.routes.hasOwnProperty(name)) {
-        this.routes.push({name, route: new Route(config.routes[name])});
+        this.routes.push({ name, route: new Route(config.routes[name]) });
       }
     }
     this.onUrl(initialUrl);
@@ -33,17 +39,20 @@ export class Router<T, Routes extends {[key in keyof T]: string}, State> {
       this.config.onNavigateAgain(storedState.name, storedState.state);
       this.currentUrl = url;
     } else {
-      let matchedRoute: {name: keyof Routes, routeMatch: {[i: string]: string}} | null = null;
+      let matchedRoute: {
+        name: keyof Routes;
+        routeMatch: { [i: string]: string };
+      } | null = null;
       for (const routeHandler of this.routes) {
         const routeMatch = routeHandler.route.match(url);
         if (typeof routeMatch !== "boolean") {
-          matchedRoute = {name: routeHandler.name, routeMatch};
+          matchedRoute = { name: routeHandler.name, routeMatch };
           break;
         }
       }
       if (matchedRoute !== null) {
         this.config.onNavigateNew(matchedRoute.name, matchedRoute.routeMatch);
-        this.storedState[url] = {name: matchedRoute.name, state: undefined};
+        this.storedState[url] = { name: matchedRoute.name, state: undefined };
         this.currentUrl = url;
       } else {
         this.config.onNoMatchFound(url);

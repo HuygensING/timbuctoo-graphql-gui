@@ -8,11 +8,15 @@ interface Props {
 }
 // (renames from UploadSplashScreen)
 function FirstUpload(props: Props) {
-  const { isLoggedIn, loginAction, gotoUpload} = props;
+  const { isLoggedIn, loginAction, gotoUpload } = props;
 
   const uploadButton = (
     <div>
-      <button className="btn btn-primary btn-lg" type="button" onClick={loginAction}>
+      <button
+        className="btn btn-primary btn-lg"
+        type="button"
+        onClick={loginAction}
+      >
         <span className="glyphicon glyphicon-cloud-upload" /> Browse
       </button>
     </div>
@@ -21,7 +25,11 @@ function FirstUpload(props: Props) {
   const loginButton = (
     <div>
       <p>Most university accounts will work.</p>
-      <button className="btn btn-primary btn-lg" type="button" onClick={gotoUpload}>
+      <button
+        className="btn btn-primary btn-lg"
+        type="button"
+        onClick={gotoUpload}
+      >
         <span className="glyphicon glyphicon-log-in" /> Log in to upload
       </button>
     </div>
@@ -31,7 +39,7 @@ function FirstUpload(props: Props) {
     <div className="container">
       <div className="jumbotron first-upload upload-bg">
         <h2>Upload your first dataset</h2>
-           {isLoggedIn ? uploadButton : loginButton }
+        {isLoggedIn ? uploadButton : loginButton}
       </div>
     </div>
   );

@@ -13,7 +13,7 @@ export interface TimComponent {
   render(datarenderer: DataRenderer): JSX.Element;
 }
 
-export function Entity(props: {datarenderer: DataRenderer}): JSX.Element {
+export function Entity(props: { datarenderer: DataRenderer }): JSX.Element {
   const properties: JSX.Element[] = [];
 
   for (const field of props.datarenderer.fields()) {

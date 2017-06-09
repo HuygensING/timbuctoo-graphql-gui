@@ -6,17 +6,20 @@ declare const module: any; // when webpack compiles it provides a module variabl
 // tslint:disable-next-line:no-empty
 function empty() {}
 
-export default function ({
-    storiesOf,
-    action,
-    linkTo,
-    knobs,
-  }: any) {
+export default function({ storiesOf, action, linkTo, knobs }: any) {
   storiesOf("first upload jumbotron", module)
-    .add("not logged in", () => (
-      <FirstUpload gotoUpload={action("gotoUpload")} isLoggedIn={false} loginAction={action("login")} />
-    ))
-    .add("logged in", () => (
-      <FirstUpload gotoUpload={action("gotoUpload")} isLoggedIn={true} loginAction={action("login")} />
-    ));
+    .add("not logged in", () =>
+      <FirstUpload
+        gotoUpload={action("gotoUpload")}
+        isLoggedIn={false}
+        loginAction={action("login")}
+      />,
+    )
+    .add("logged in", () =>
+      <FirstUpload
+        gotoUpload={action("gotoUpload")}
+        isLoggedIn={true}
+        loginAction={action("login")}
+      />,
+    );
 }
