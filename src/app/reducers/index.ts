@@ -8,6 +8,8 @@ type Action = {
 } | {
   type: "404";
   url: string
+} | {
+  type: "@@redux/INIT";
 };
 
 interface State {
@@ -31,6 +33,8 @@ export function reducer(state: State, action: Action): State {
     case "setState":
       return state;
     case "newPage":
+      return state;
+    case "@@redux/INIT":
       return state;
     default:
       assertNever(action);
