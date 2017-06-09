@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Timbuctoo Configurate [Mock]</title>
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/hi-style.css" rel="stylesheet" type="text/css">
+<link href="css/hi-interface.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div class="basic-margin hi-Green container-fluid">
+  <nav class="navbar ">
+    <div class="container">
+      <div class="navbar-header"> <a class="navbar-brand" href="#"><img src="images/logo-timbuctoo.svg" class="logo" alt=""/></a> </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#"><span class="glyphicon glyphicon-user"></span> Bas Doppen</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</div>
+<div class="container basic-margin">
+  <h2 class="small-margin">Upload and connect your dataset</h2>
+  <div class="alert alert-danger" role="alert">  
+  <span class="glyphicon glyphicon-exclamation-sign"></span> <button class="btn btn-danger pull-right">Re-upload</button> Publish failed. Please fix the mappings or re-upload the data.<br><br>
+  
+    
+</div>
+  <p>Configutate the columns to the properties of the Archetypes</p>
+</div>
+<div class="container basic-margin">
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#persons" aria-controls="persons" role="tab" data-toggle="tab">Persons<span class="excel-tab"><img src="images/icon-excel.svg" class="excel-icon" alt=""/> migranten</span></a></li>
+    <li role="presentation"><a href="#documents" aria-controls="documents" role="tab" data-toggle="tab"> Locations <span class="glyphicon glyphicon-ok" aria-hidden="true"></span><span class="excel-tab"><img src="images/icon-excel.svg" class="excel-icon" alt=""/> locaties</span></a></li>
+  </ul>
+</div>
+<div class="container basic-margin">
+
+  <div class="row small-margin">
+    <div class="col-sm-2 hi-success"><strong>Names</strong></div>
+    <div class="col-sm-2 hi-success">
+      <button type="button" class="btn btn-blank dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Surname <span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        <li><a href="#">Forename</a></li>
+        <li><a href="#">Surname</a></li>
+        <li><a href="#">Role name</a></li>
+        <li><a href="#">Gen name</a></li>
+      </ul>
+    </div>
+    <div class="col-sm-5">
+      <button type="button" class="btn btn-blank dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> <strong>achternaam</strong></span> <span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        <li><a href="#"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> achternaam</span></a></li>
+        <li><a href="#"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> geboortejaar</span></a></li>
+        <li><a href="#"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> hasBirthPlace</span></a></li>
+      </ul>
+      <button class="btn btn-blank pull-right" type="button"><span class="glyphicon glyphicon-remove"></span></button>
+    </div>
+    <div class="col-sm-2"></div>
+    <div class="col-sm-1 hi-success"><span class="glyphicon glyphicon-ok pull-right" aria-hidden="true"></span></div>
+  </div>
+  <div class="row small-margin">
+    <div class="col-sm-2"><strong>Types</strong></div>
+    <div class="col-sm-2" ></div>
+    <div class="col-sm-5">
+      <button type="button" class="btn btn-blank dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> Select a excel column</span> <span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        <li><a href="#"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> achternaam</span></a></li>
+        <li><a href="#"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> geboortejaar</span></a></li>
+        <li><a href="#"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> hasBirthPlace</span></a></li>
+      </ul>
+      <button class="btn btn-blank pull-right" type="button"><span class="glyphicon glyphicon-remove"></span></button>
+    </div>
+    <div class="col-sm-2"></div>
+    <div class="col-sm-1" > </div>
+  </div>
+  <div class="row small-margin">
+    <div class="col-sm-2"><strong>Gender</strong></div>
+    <div class="col-sm-2" ></div>
+    <div class="col-sm-5">
+      <button type="button" class="btn btn-blank dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> Select a excel column</span> <span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        <li><a href="#"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> achternaam</span></a></li>
+        <li><a href="#"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> geboortejaar</span></a></li>
+        <li><a href="#"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> hasBirthPlace</span></a></li>
+      </ul>
+      <button class="btn btn-blank pull-right" type="button"><span class="glyphicon glyphicon-remove"></span></button>
+    </div>
+    <div class="col-sm-2"></div>
+    <div class="col-sm-1" ></div>
+  </div>
+  <div class="row small-margin">
+    <div class="col-sm-2"><strong>Birth date</strong></div>
+    <div class="col-sm-2" ></div>
+    <div class="col-sm-5">
+      <button type="button" class="btn btn-blank dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> geboortejaar</span> <span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        <li><a href="#"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> achternaam</span></a></li>
+        <li><a href="#"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> geboortejaar</span></a></li>
+        <li><a href="#"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> hasBirthPlace</span></a></li>
+      </ul>
+      <button class="btn btn-blank pull-right" type="button"><span class="glyphicon glyphicon-remove"></span></button>
+    </div>
+    <div class="col-sm-2"></div>
+    <div class="col-sm-1" >
+      <button class="btn btn-success pull-right" type="button">Confirm</button>
+    </div>
+  </div>
+  <div class="row small-margin">
+    <div class="col-sm-2"><strong>Death date</strong></div>
+    <div class="col-sm-2" ></div>
+    <div class="col-sm-5">
+      <button type="button" class="btn btn-blank dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> Select a excel column</span> <span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        <li><a href="#"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> achternaam</span></a></li>
+        <li><a href="#"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> geboortejaar</span></a></li>
+        <li><a href="#"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> hasBirthPlace</span></a></li>
+      </ul>
+      <button class="btn btn-blank pull-right" type="button"><span class="glyphicon glyphicon-remove"></span></button>
+    </div>
+    <div class="col-sm-2"></div>
+    <div class="col-sm-1" ></div>
+  </div>
+  <div class="row basic-margin">
+    <div class="col-sm-2"><strong>Floruit</strong></div>
+    <div class="col-sm-2" ></div>
+    <div class="col-sm-5">
+      <button type="button" class="btn btn-blank dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> Select a excel column</span> <span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        <li><a href="#"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> achternaam</span></a></li>
+        <li><a href="#"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> geboortejaar</span></a></li>
+        <li><a href="#"><span class="from-excel"><img src="images/icon-excel.svg" alt=""/> hasBirthPlace</span></a></li>
+      </ul>
+      <button class="btn btn-blank pull-right" type="button"><span class="glyphicon glyphicon-remove"></span></button>
+    </div>
+    <div class="col-sm-2"></div>
+    <div class="col-sm-1" ></div>
+  </div>
+  <div class="row basic-margin">
+    <div class="col-sm-2">
+      <input type="text" class="form-control" id="exampleInputName2" placeholder="Property name">
+    </div>
+    <div class="col-sm-2">
+      <button type="button" class="btn btn-blank dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span> Choose a type</span> <span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        <li><a href="#"><span>Text</span></a></li>
+        <li><a href="#"><span>Relation</span></a></li>
+      </ul>
+    </div>
+    <div class="col-sm-5">
+      <button class="btn btn-blank pull-right" type="button"><span class="glyphicon glyphicon-remove"></span></button>
+    </div>
+    <div class="col-sm-2"></div>
+    <div class="col-sm-1">
+      <button class="btn btn-default pull-right" type="button">Add property</button>
+    </div>
+  </div>
+  
+  
+</div>
+
+<div class="container big-margin">
+	<button type="button" class="btn btn-warning btn-lg pull-right">Publish dataset</button>
+</div>
+
+
+<div class="container big-margin">
+<p class="from-excel"><img src="images/icon-excel.svg" alt=""/> <em>migranten</em> from migrants.xlsx</p>
+<div class="table-responsive">
+  <table class="table table-bordered table-obtrusive" >
+    <thead >
+      <tr>
+        <th><span data-reactid=".0.0.1.1.0.1.0.0.$0.0">achternaam</span><a class="pull-right glyphicon glyphicon-question-sign" data-reactid=".0.0.1.1.0.1.0.0.$0.1"></a></th>
+        <th><span data-reactid=".0.0.1.1.0.1.0.0.$1.0">geboortejaar</span><a class="pull-right glyphicon glyphicon-question-sign" data-reactid=".0.0.1.1.0.1.0.0.$1.1"></a></th>
+        <th><span data-reactid=".0.0.1.1.0.1.0.0.$2.0">hasBirthPlace</span><a class="pull-right glyphicon glyphicon-question-sign" data-reactid=".0.0.1.1.0.1.0.0.$2.1"></a></th>
+      </tr>
+    </thead>
+    <tbody data-reactid=".0.0.1.1.0.1.1">
+      <tr data-reactid=".0.0.1.1.0.1.1.$0">
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$0.$0"><span data-reactid=".0.0.1.1.0.1.1.$0.$0.0">Boschker</span></td>
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$0.$1"><span data-reactid=".0.0.1.1.0.1.1.$0.$1.0">1932</span></td>
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$0.$2"><span data-reactid=".0.0.1.1.0.1.1.$0.$2.0">Oosbaan</span></td>
+      </tr>
+      <tr data-reactid=".0.0.1.1.0.1.1.$1">
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$1.$0"><span data-reactid=".0.0.1.1.0.1.1.$1.$0.0">Schipper</span></td>
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$1.$1"><span data-reactid=".0.0.1.1.0.1.1.$1.$1.0">1933</span></td>
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$1.$2"><span data-reactid=".0.0.1.1.0.1.1.$1.$2.0">Oosbaan</span></td>
+      </tr>
+      <tr data-reactid=".0.0.1.1.0.1.1.$2">
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$2.$0"><span data-reactid=".0.0.1.1.0.1.1.$2.$0.0">Broek</span></td>
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$2.$1"><span data-reactid=".0.0.1.1.0.1.1.$2.$1.0">1914</span></td>
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$2.$2"><span data-reactid=".0.0.1.1.0.1.1.$2.$2.0">Oosbaan</span></td>
+      </tr>
+      <tr data-reactid=".0.0.1.1.0.1.1.$3">
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$3.$0"><span data-reactid=".0.0.1.1.0.1.1.$3.$0.0">Esseveld</span></td>
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$3.$1"><span data-reactid=".0.0.1.1.0.1.1.$3.$1.0">1892</span></td>
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$3.$2"><span data-reactid=".0.0.1.1.0.1.1.$3.$2.0">Oosbaan</span></td>
+      </tr>
+      <tr data-reactid=".0.0.1.1.0.1.1.$4">
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$4.$0"><span data-reactid=".0.0.1.1.0.1.1.$4.$0.0"> Kroon</span></td>
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$4.$1"><span data-reactid=".0.0.1.1.0.1.1.$4.$1.0">1916</span></td>
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$4.$2"><span data-reactid=".0.0.1.1.0.1.1.$4.$2.0">Lonneker</span></td>
+      </tr>
+      <tr data-reactid=".0.0.1.1.0.1.1.$5">
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$5.$0"><span data-reactid=".0.0.1.1.0.1.1.$5.$0.0">Blumink</span></td>
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$5.$1"><span data-reactid=".0.0.1.1.0.1.1.$5.$1.0">1910</span></td>
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$5.$2"><span data-reactid=".0.0.1.1.0.1.1.$5.$2.0">Lonneker</span></td>
+      </tr>
+      <tr data-reactid=".0.0.1.1.0.1.1.$6">
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$6.$0"><span data-reactid=".0.0.1.1.0.1.1.$6.$0.0">Dolder</span></td>
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$6.$1"><span data-reactid=".0.0.1.1.0.1.1.$6.$1.0">1916</span></td>
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$6.$2"><span data-reactid=".0.0.1.1.0.1.1.$6.$2.0">Lonneker</span></td>
+      </tr>
+      <tr data-reactid=".0.0.1.1.0.1.1.$7">
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$7.$0"><span data-reactid=".0.0.1.1.0.1.1.$7.$0.0">Dolder</span></td>
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$7.$1"><span data-reactid=".0.0.1.1.0.1.1.$7.$1.0">1916</span></td>
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$7.$2"><span data-reactid=".0.0.1.1.0.1.1.$7.$2.0">Vlissingen</span></td>
+      </tr>
+      <tr data-reactid=".0.0.1.1.0.1.1.$8">
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$8.$0"><span data-reactid=".0.0.1.1.0.1.1.$8.$0.0">Mahler</span></td>
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$8.$1"><span data-reactid=".0.0.1.1.0.1.1.$8.$1.0">1922</span></td>
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$8.$2"><span data-reactid=".0.0.1.1.0.1.1.$8.$2.0">Vlissingen</span></td>
+      </tr>
+      <tr data-reactid=".0.0.1.1.0.1.1.$9">
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$9.$0"><span data-reactid=".0.0.1.1.0.1.1.$9.$0.0">Puts</span></td>
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$9.$1"><span data-reactid=".0.0.1.1.0.1.1.$9.$1.0">1933</span></td>
+        <td class="" data-reactid=".0.0.1.1.0.1.1.$9.$2"><span data-reactid=".0.0.1.1.0.1.1.$9.$2.0">Vlissingen</span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+</div>
+
+
+<footer class="footer">
+  <div class="container">
+    <p class="text-muted"><span><img src="images/logo-huygens-ing.svg" class="logo" alt=""/></span> 
+    <div class="btn-group dropup pull-right">
+    <button type="button" class="btn btn-blank dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">[Mocks] <span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        <li><a href="Tim-dashboard-start.html">Dashboard start</a></li>
+                        <li><a href="Tim-dashboard.html">Dashboard</a></li>
+                        <li><a href="Tim-upload1.html">Upload 1</a></li>
+                        <li><a href="Tim-upload2.html">Upload 2</a></li>
+                        <li><a href="Tim-edit.html">Edit</a></li>
+                        <li><a href="Tim-faceted-search.html">Faceted search</a></li>
+                        <li><a href="Tim-faceted-search-detail.html">Faceted search detail</a></li>
+                        <li><a href="Tim-aggregated-search-item.html">Aggregated Search Item</a></li>
+                        <li><a href="Tim-aggregated-search-dataset.html">Aggregated Search Dataset</a></li>
+      </ul>
+      </div>
+    
+    <span class="pull-right"><img src="images/logo-clariah.svg" class="logo" alt=""/></span></p>
+  </div>
+</footer>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> 
+<script src="js/bootstrap.js"></script>
+</body>
+</html>

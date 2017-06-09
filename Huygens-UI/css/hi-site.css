@@ -1,0 +1,60 @@
+/* big tops */
+.big-top {
+	color:#ffffff;
+	min-height:50%;
+	}
+
+.big-top-content {
+	margin-top:5%;
+	margin-bottom:7%;
+	}
+
+
+.big-top h1 {
+	font-size:5em;
+	}
+
+.horseman {
+	background-image:url(../images/bg-horseman.jpg);
+	background-repeat:no-repeat;
+	
+	background-position: 120% 50%;
+	background-size:contain;
+	}
+
+
+@media  (min-width: 1026px) {
+.horseman {
+	background-position: 75% 40%;
+	background-size:60%
+	}
+}
+
+
+.logo-partner {
+	width:10em;
+	height:auto;
+	}
+	
+
+
+.summing li{
+	list-style:none;
+	margin-bottom:.5em;
+	}
+
+.github-icon {
+	float:right;
+	width:85px;
+	height:auto;
+	margin-top:-100px;
+	}
+
+.feature-items h4 {
+	margin-top:3em;
+	}
+	
+.feature-items img {
+	width:200px;
+	height:auto;
+	}
