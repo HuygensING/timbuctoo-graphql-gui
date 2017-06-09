@@ -29,3 +29,5 @@ store.subscribe(function (){
   router.saveState(curState);
   ReactDom.render(<Gui state={curState}></Gui>, document.getElementById("main"));
 });
+
+ReactDom.render(<Gui state={store.getState()}></Gui>, document.getElementById("main"));
