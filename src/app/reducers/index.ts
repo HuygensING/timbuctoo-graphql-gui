@@ -3,7 +3,7 @@ type Action = {
   state: State;
 } | {
   type: "newPage";
-  name: "default";
+  name: "default" | "upload";
   args: any;
 } | {
   type: "404";
@@ -12,7 +12,7 @@ type Action = {
   type: "@@redux/INIT";
 };
 
-interface State {
+export interface State {
   clicks: number;
 }
 
