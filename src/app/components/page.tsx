@@ -6,8 +6,8 @@ function Page(props: {
   children?: any;
 }) {
   return (
-    <div className="page">
-      <div className="basic-margin hi-Green container-fluid">
+    <div className="page container-fluid">
+      <div className="hi-Green" style={{ marginLeft: -15, marginRight: -15 }}>
         <nav className="navbar ">
           <div className="container">
             <div className="navbar-header">
