@@ -12,11 +12,7 @@ function FirstUpload(props: Props) {
 
   const uploadButton = (
     <div>
-      <button
-        className="btn btn-primary btn-lg"
-        type="button"
-        onClick={loginAction}
-      >
+      <button className="btn btn-primary btn-lg" type="button" onClick={loginAction}>
         <span className="glyphicon glyphicon-cloud-upload" /> Browse
       </button>
     </div>
@@ -25,11 +21,7 @@ function FirstUpload(props: Props) {
   const loginButton = (
     <div>
       <p>Most university accounts will work.</p>
-      <button
-        className="btn btn-primary btn-lg"
-        type="button"
-        onClick={gotoUpload}
-      >
+      <button className="btn btn-primary btn-lg" type="button" onClick={gotoUpload}>
         <span className="glyphicon glyphicon-log-in" /> Log in to upload
       </button>
     </div>

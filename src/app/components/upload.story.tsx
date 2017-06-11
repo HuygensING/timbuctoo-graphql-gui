@@ -95,10 +95,7 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             ...defaultValues,
             title: "Sheep across the ages",
             fileIsBeingAdded: "rs",
-            remoteSets: [
-              "http://example.org/set/1",
-              "http://example.org/set/2",
-            ],
+            remoteSets: ["http://example.org/set/1", "http://example.org/set/2"],
             remoteUri: "http://example.org",
           }}
         />

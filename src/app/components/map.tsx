@@ -1,13 +1,5 @@
 import * as React from "react";
-import {
-  DropdownButton,
-  Form,
-  FormControl,
-  InputGroup,
-  MenuItem,
-  Nav,
-  NavItem,
-} from "react-bootstrap";
+import { DropdownButton, Form, FormControl, InputGroup, MenuItem, Nav, NavItem } from "react-bootstrap";
 import { Actions } from "../actions";
 import {
   Mapping,
@@ -59,28 +51,19 @@ function AddPredicateButton(props: {
   function addPropMap(propertyName: string) {
     const predicateMap = props.predicateMap;
     let prefix = props.newPropertyPrefix;
-    if (
-      prefix.length > 0 &&
-      prefix.substr(-1) !== "/" &&
-      prefix.substr(-1) !== "#"
-    ) {
+    if (prefix.length > 0 && prefix.substr(-1) !== "/" && prefix.substr(-1) !== "#") {
       prefix += "#";
     }
     props.actions.mapping.setPredicateMap({
       type: "property",
       key: predicateMap.key,
-      predicate:
-        predicateMap.predicate || prefix + encodeURIComponent(propertyName),
+      predicate: predicateMap.predicate || prefix + encodeURIComponent(propertyName),
       propertyName,
       dataType: predicateMap.dataType,
     });
   }
   return (
-    <DropdownButton
-      bsStyle={props.bsStyle}
-      id="input-dropdown-addon"
-      title={props.caption || "Select..."}
-    >
+    <DropdownButton bsStyle={props.bsStyle} id="input-dropdown-addon" title={props.caption || "Select..."}>
       <MenuItem key="template" onClick={() => addMap("template")}>
         template
       </MenuItem>
@@ -91,11 +74,7 @@ function AddPredicateButton(props: {
       {props.rawDataCollection.properties.map(
         prop =>
           prop.inUse
-            ? <MenuItem
-                className="bg-success"
-                key={prop.name}
-                onClick={() => addPropMap(prop.name)}
-              >
+            ? <MenuItem className="bg-success" key={prop.name} onClick={() => addPropMap(prop.name)}>
                 {prop.name}{" "}
                 <span className="glyphicon glyphicon-ok pull-right" />
               </MenuItem>
@@ -122,12 +101,7 @@ function renderPred(
           type="text"
           value={implementation.template}
           placeholder="You can type anyting you want. To insert a column, place it's name between {}."
-          onChange={e =>
-            actions.mapping.setPredicateValue(
-              implementation,
-              "template",
-              (e.target as any).value,
-            )}
+          onChange={e => actions.mapping.setPredicateValue(implementation, "template", (e.target as any).value)}
         />
       );
       break;
@@ -137,12 +111,7 @@ function renderPred(
           type="text"
           value={implementation.expression}
           placeholder="You can type a jexl expression here"
-          onChange={e =>
-            actions.mapping.setPredicateValue(
-              implementation,
-              "expression",
-              (e.target as any).value,
-            )}
+          onChange={e => actions.mapping.setPredicateValue(implementation, "expression", (e.target as any).value)}
         />
       );
       break;
@@ -168,12 +137,7 @@ function renderPred(
           : <FormControl
               type="text"
               value={implementation.predicate}
-              onChange={e =>
-                actions.mapping.setPredicateValue(
-                  implementation,
-                  "predicate",
-                  (e.target as any).value,
-                )}
+              onChange={e => actions.mapping.setPredicateValue(implementation, "predicate", (e.target as any).value)}
             />}
       </div>
       <div className="col-sm-1 col-xs-3">
@@ -182,11 +146,7 @@ function renderPred(
           actions={actions}
           predicateMap={implementation}
           rawDataCollection={rawDataCollection}
-          caption={
-            implementation.type === "property"
-              ? implementation.propertyName
-              : implementation.type
-          }
+          caption={implementation.type === "property" ? implementation.propertyName : implementation.type}
         />
       </div>
       <div className="col-sm-6 col-xs-9">
@@ -201,23 +161,13 @@ function renderPred(
             >
               <MenuItem
                 key="number"
-                onClick={e =>
-                  actions.mapping.setPredicateValue(
-                    implementation,
-                    "dataType",
-                    "number",
-                  )}
+                onClick={e => actions.mapping.setPredicateValue(implementation, "dataType", "number")}
               >
                 number
               </MenuItem>
               <MenuItem
                 key="string"
-                onClick={e =>
-                  actions.mapping.setPredicateValue(
-                    implementation,
-                    "dataType",
-                    "string",
-                  )}
+                onClick={e => actions.mapping.setPredicateValue(implementation, "dataType", "string")}
               >
                 string
               </MenuItem>
@@ -235,18 +185,10 @@ function DefaultProp(
   actions: Actions,
   mappedPredicates: PredicateMap[],
 ) {
-  const implementations = mappedPredicates.filter(
-    mp => mp.predicate === predicate,
-  );
+  const implementations = mappedPredicates.filter(mp => mp.predicate === predicate);
   if (implementations.length > 0) {
     return implementations.map(function(implementation) {
-      return renderPred(
-        newPropertyPrefix,
-        rawDataCollection,
-        implementation,
-        actions,
-        true,
-      );
+      return renderPred(newPropertyPrefix, rawDataCollection, implementation, actions, true);
     });
   } else {
     return [
@@ -276,8 +218,7 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
         mainCollection: {},
         predicateMaps: [],
       };
-  const rawDataCollection: RawDataCollection = curMap.mainCollection
-    .sourceCollection
+  const rawDataCollection: RawDataCollection = curMap.mainCollection.sourceCollection
     ? rawDataCollections[curMap.mainCollection.sourceCollection]
     : { properties: [] };
   const mainCollection = curMap.mainCollection;
@@ -288,17 +229,11 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
         <div className="col-md-12">
           <Nav bsStyle="tabs" activeKey={currentTab || "add"}>
             {Object.keys(mappings).map(type =>
-              <NavItem
-                eventKey={type}
-                onClick={() => actions.mapping.gotoTab(type)}
-              >
+              <NavItem eventKey={type} onClick={() => actions.mapping.gotoTab(type)}>
                 {type}
               </NavItem>,
             )}
-            <NavItem
-              eventKey="add"
-              onClick={() => actions.mapping.gotoTab(undefined)}
-            >
+            <NavItem eventKey="add" onClick={() => actions.mapping.gotoTab(undefined)}>
               Add...
             </NavItem>
           </Nav>
@@ -307,10 +242,7 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
       <div className="row">
         <div className="col-md-6">
           <h4>We'll name this collection:</h4>
-          <FormControl
-            value={currentTab}
-            onChange={onChange("collectionName")}
-          />
+          <FormControl value={currentTab} onChange={onChange("collectionName")} />
           <h4>We'll give the items the following (unique) identifier:</h4>
           <FormControl
             placeholder="A template for the entity URI"
@@ -326,20 +258,13 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
             id="dropdown-no-s"
           >
             {Object.keys(rawDataCollections).map(rawCollection =>
-              <MenuItem
-                eventKey={rawCollection}
-                onClick={onChangeV("sourceCollection", rawCollection)}
-              >
+              <MenuItem eventKey={rawCollection} onClick={onChangeV("sourceCollection", rawCollection)}>
                 {rawCollection}
               </MenuItem>,
             )}
           </DropdownButton>{" "}
           <h4>And the items look a bit like a</h4>
-          <DropdownButton
-            bsStyle="default"
-            title={curMap.type}
-            id="dropdown-no-s"
-          >
+          <DropdownButton bsStyle="default" title={curMap.type} id="dropdown-no-s">
             {Object.keys(types).map(type =>
               <MenuItem eventKey={type} onClick={onChangeV("targetType", type)}>
                 {type}
@@ -355,21 +280,13 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
               <h4>{curMap.type}s usually have a...</h4>
               {types[curType]
                 .map(predicate =>
-                  DefaultProp(
-                    currentTab || "",
-                    rawDataCollection,
-                    predicate,
-                    actions,
-                    curMap.predicateMaps,
-                  ),
+                  DefaultProp(currentTab || "", rawDataCollection, predicate, actions, curMap.predicateMaps),
                 )
                 .reduce((prev, cur) => prev.concat(cur), [])}
               <h4>And we also define...</h4>
               {curMap.predicateMaps
                 .filter(pm => types[curType].indexOf(pm.predicate) === -1)
-                .map(pm =>
-                  renderPred(currentTab || "", rawDataCollection, pm, actions),
-                )}
+                .map(pm => renderPred(currentTab || "", rawDataCollection, pm, actions))}
             </div>
           </div>}
       {curType == null

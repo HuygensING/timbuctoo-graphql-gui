@@ -9,11 +9,7 @@ export interface Actions {
     gotoTab: (tabname: string | undefined) => void;
     setValue: (fieldName: string, value: string) => void;
     setPredicateMap: (predicateMap: PredicateMap) => void;
-    setPredicateValue: (
-      predicateMap: PredicateMap | PlaceHolderPredicateMap,
-      property: string,
-      value: string,
-    ) => void;
+    setPredicateValue: (predicateMap: PredicateMap | PlaceHolderPredicateMap, property: string, value: string) => void;
   };
 }
 
@@ -31,18 +27,12 @@ export function actionsFactory(store: Store): Actions {
       window.location.hash = "/mapping/" + dataSetId;
     },
     mapping: {
-      gotoTab: (tabName: string | undefined) =>
-        store.dispatch({ type: "gotoTab", tabName }),
+      gotoTab: (tabName: string | undefined) => store.dispatch({ type: "gotoTab", tabName }),
       setValue: (fieldName: string, value: string) => {
         store.dispatch({ type: "setValue", fieldName, value });
       },
-      setPredicateMap: (predicateMap: PredicateMap) =>
-        store.dispatch({ type: "setPredicateMap", predicateMap }),
-      setPredicateValue: (
-        predicateMap: PredicateMap,
-        property: string,
-        value: string,
-      ) =>
+      setPredicateMap: (predicateMap: PredicateMap) => store.dispatch({ type: "setPredicateMap", predicateMap }),
+      setPredicateValue: (predicateMap: PredicateMap, property: string, value: string) =>
         store.dispatch({
           type: "setPredicateValue",
           predicateMap,
@@ -53,9 +43,7 @@ export function actionsFactory(store: Store): Actions {
   };
 }
 
-export function fakeActionsFactory(
-  dummy: (name: string) => (...args: any[]) => void,
-): Actions {
+export function fakeActionsFactory(dummy: (name: string) => (...args: any[]) => void): Actions {
   return {
     performLogin: dummy("performLogin"),
     gotoCreate: dummy("gotoCreate"),

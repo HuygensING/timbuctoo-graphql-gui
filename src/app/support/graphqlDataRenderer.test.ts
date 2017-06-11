@@ -54,22 +54,12 @@ export default function(describe: any, it: any) {
         test2: "test",
         test3: "test",
       };
-      const instance = new GraphQlDataRenderer(
-        data,
-        graphqlRenderConfigMock,
-        metadata,
-      );
+      const instance = new GraphQlDataRenderer(data, graphqlRenderConfigMock, metadata);
 
       const fields = instance.fields();
 
-      assertThat(
-        fields.indexOf("test1") !== -1,
-        "fields does not contain 'test1'",
-      );
-      assertThat(
-        fields.indexOf("test2") !== -1,
-        "fields does not contain 'test2'",
-      );
+      assertThat(fields.indexOf("test1") !== -1, "fields does not contain 'test1'");
+      assertThat(fields.indexOf("test2") !== -1, "fields does not contain 'test2'");
       assertThat(fields.indexOf("test3") === -1, "fields does contain 'test3'");
     });
     it("does not return fields that are not in the data", function() {
@@ -102,26 +92,15 @@ export default function(describe: any, it: any) {
         },
       };
       const data = { __typename: "testType", test1: "test" };
-      const instance = new GraphQlDataRenderer(
-        data,
-        graphqlRenderConfigMock,
-        metadata,
-      );
+      const instance = new GraphQlDataRenderer(data, graphqlRenderConfigMock, metadata);
 
       const fields = instance.fields();
 
-      assertThat(
-        fields.indexOf("test1") !== -1,
-        "fields does not contain 'test1'",
-      );
+      assertThat(fields.indexOf("test1") !== -1, "fields does not contain 'test1'");
       assertThat(fields.indexOf("test2") === -1, "fields does contain 'test2'");
     });
     it("returns an empty array if the data is not an object", function() {
-      const instance = new GraphQlDataRenderer(
-        "test",
-        graphqlRenderConfigMock,
-        metadataMock,
-      );
+      const instance = new GraphQlDataRenderer("test", graphqlRenderConfigMock, metadataMock);
 
       assertThat(instance.fields().length === 0, "fields is not empty");
     });
@@ -178,16 +157,9 @@ export default function(describe: any, it: any) {
         },
         test2: "test",
       };
-      const instance = new GraphQlDataRenderer(
-        data,
-        graphqlRenderConfigMock,
-        metadata,
-      );
+      const instance = new GraphQlDataRenderer(data, graphqlRenderConfigMock, metadata);
 
-      assertThat(
-        instance.subRenderer("test1").fields().indexOf("subField") !== -1,
-        "'subfield' does not exist",
-      );
+      assertThat(instance.subRenderer("test1").fields().indexOf("subField") !== -1, "'subfield' does not exist");
     });
     it("returns a DataRenderer without fields for unknownFields", function() {
       const metadata: Metadata = {
@@ -240,25 +212,14 @@ export default function(describe: any, it: any) {
         },
         test2: "test",
       };
-      const instance = new GraphQlDataRenderer(
-        data,
-        graphqlRenderConfigMock,
-        metadata,
-      );
+      const instance = new GraphQlDataRenderer(data, graphqlRenderConfigMock, metadata);
 
-      assertThat(
-        instance.subRenderer("unknownField").fields().length === 0,
-        "DataRenderer contains data",
-      );
+      assertThat(instance.subRenderer("unknownField").fields().length === 0, "DataRenderer contains data");
     });
   });
   describe("GraphQlDataRenderer.count()", function() {
     it("returns the number of fields for a list", function() {
-      const instance = new GraphQlDataRenderer(
-        ["bla", "bla1"],
-        graphqlRenderConfigMock,
-        metadataMock,
-      );
+      const instance = new GraphQlDataRenderer(["bla", "bla1"], graphqlRenderConfigMock, metadataMock);
 
       const count = instance.count();
 

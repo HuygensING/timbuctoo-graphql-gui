@@ -1,9 +1,7 @@
 export async function getRawCollections(userId: string, dataSetId: string) {
-  return await fetch(
-    "http://0.0.0.0:8080/v5/" + userId + "/" + dataSetId + "/graphql",
-    {
-      method: "post",
-      body: `
+  return await fetch("http://0.0.0.0:8080/v5/" + userId + "/" + dataSetId + "/graphql", {
+    method: "post",
+    body: `
     {
       http___timbuctoo_collectionList {
         items {
@@ -16,6 +14,5 @@ export async function getRawCollections(userId: string, dataSetId: string) {
         }
       }
     }`,
-    },
-  ).then(response => response.json());
+  }).then(response => response.json());
 }

@@ -47,15 +47,7 @@ export const defaultValues = {
   files: [],
   userId: "jauco",
   baseUri: "http://localhost:8080/v5/",
-  availableColors: [
-    "#ce7060",
-    "#92e3fc",
-    "#fade8d",
-    "#9ce479",
-    "#e39061",
-    "#d3b2d6",
-    "#95cac4",
-  ],
+  availableColors: ["#ce7060", "#92e3fc", "#fade8d", "#9ce479", "#e39061", "#d3b2d6", "#95cac4"],
 };
 
 export function Upload(props: {
@@ -119,29 +111,17 @@ export function Upload(props: {
             <div>
               <div className="form-group">
                 <div className="input-group">
-                  <input
-                    type="text"
-                    value={remoteUri}
-                    className="form-control"
-                    placeholder="Enter discovery url"
-                  />
+                  <input type="text" value={remoteUri} className="form-control" placeholder="Enter discovery url" />
                   <span className="input-group-btn">
                     <button className="btn btn-default" type="button">
-                      <span
-                        className="glyphicon glyphicon-search"
-                        aria-hidden="true"
-                      />
+                      <span className="glyphicon glyphicon-search" aria-hidden="true" />
                     </button>
                   </span>
                 </div>
               </div>
               <div className="list-group">
                 {remoteSets.map((remoteUrl, i) =>
-                  <button
-                    type="button"
-                    className="list-group-item"
-                    key={remoteUrl}
-                  >
+                  <button type="button" className="list-group-item" key={remoteUrl}>
                     {remoteUrl}
                   </button>,
                 )}
@@ -197,9 +177,7 @@ export function Upload(props: {
                 style={{
                   borderRadius: colorCode === color ? "8px" : "12px",
                   display: "inline-block",
-                  border: `8px solid ${colorCode === color
-                    ? `#${colorCode}`
-                    : "white"}`,
+                  border: `8px solid ${colorCode === color ? `#${colorCode}` : "white"}`,
                   width: "40px",
                   height: "40px",
                   backgroundColor: colorCode,
@@ -212,12 +190,7 @@ export function Upload(props: {
       <div className="row">
         <div className="col-md-6">
           <h4>Description: </h4>
-          <textarea
-            rows={10}
-            className="form-control"
-            placeholder="Enter a description..."
-            value={description}
-          />
+          <textarea rows={10} className="form-control" placeholder="Enter a description..." value={description} />
         </div>
         <div className="col-md-6">
           <h4>Provenance: </h4>

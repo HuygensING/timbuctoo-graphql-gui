@@ -1,15 +1,7 @@
 import * as React from "react";
 import { GraphQlDataRenderer } from "../support/graphqlDataRenderer";
-import {
-  FieldMetadataType,
-  getMetadata,
-  Metadata,
-} from "../support/graphqlHelpers";
-import {
-  DefaultMappings,
-  GraphQlRenderConfig,
-  OverrideConfig,
-} from "../support/graphqlRenderConfig";
+import { FieldMetadataType, getMetadata, Metadata } from "../support/graphqlHelpers";
+import { DefaultMappings, GraphQlRenderConfig, OverrideConfig } from "../support/graphqlRenderConfig";
 import { DataRenderer, Entity } from "./api";
 import { personObject } from "./timPerson";
 declare const module: any; // when webpack compiles it provides a module variable
@@ -1226,9 +1218,7 @@ const componentMappings: DefaultMappings = {
 const ImageComponent = {
   dataType: "String",
   render: (dataRenderer: DataRenderer) => {
-    return (
-      <img className="img-portrait img-circle" src={dataRenderer.getData()} />
-    );
+    return <img className="img-portrait img-circle" src={dataRenderer.getData()} />;
   },
 };
 
@@ -1236,16 +1226,12 @@ const DroidComponent = {
   dataType: "Droid",
   render(dataRenderer: DataRenderer) {
     const properties: { [key: string]: any } = {};
-    dataRenderer
-      .fields()
-      .forEach(field => (properties[field] = dataRenderer.renderField(field)));
+    dataRenderer.fields().forEach(field => (properties[field] = dataRenderer.renderField(field)));
 
     return (
       <div style={{ border: "thin black solid" }}>
         <div>🤖</div>
-        {Object.keys(properties)
-          .sort()
-          .map(key => <span>{key}: {properties[key]}</span>)}
+        {Object.keys(properties).sort().map(key => <span>{key}: {properties[key]}</span>)}
       </div>
     );
   },
@@ -1259,15 +1245,11 @@ const DefaultObjectOverride = {
   dataType: "OBJECT",
   render(dataRenderer: DataRenderer): JSX.Element {
     const properties: { [key: string]: any } = {};
-    dataRenderer
-      .fields()
-      .forEach(field => (properties[field] = dataRenderer.renderField(field)));
+    dataRenderer.fields().forEach(field => (properties[field] = dataRenderer.renderField(field)));
 
     return (
       <div style={{ backgroundColor: "#EEE", border: "thin black solid" }}>
-        {Object.keys(properties)
-          .sort()
-          .map(key => <span>{key}: {properties[key]}</span>)}
+        {Object.keys(properties).sort().map(key => <span>{key}: {properties[key]}</span>)}
       </div>
     );
   },
@@ -1528,34 +1510,20 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
   storiesOf("Entity", module)
     .add("without specific components", () =>
       <Entity
-        datarenderer={
-          new GraphQlDataRenderer(
-            data.data,
-            new GraphQlRenderConfig({ defaults: {} }),
-            metadata.data,
-          )
-        }
+        datarenderer={new GraphQlDataRenderer(data.data, new GraphQlRenderConfig({ defaults: {} }), metadata.data)}
       />,
     )
     .add("with custom component", () =>
       <Entity
         datarenderer={
-          new GraphQlDataRenderer(
-            data.data,
-            new GraphQlRenderConfig({ defaults: componentMappings }),
-            metadata.data,
-          )
+          new GraphQlDataRenderer(data.data, new GraphQlRenderConfig({ defaults: componentMappings }), metadata.data)
         }
       />,
     )
     .add("with non-leaf fields", () =>
       <Entity
         datarenderer={
-          new GraphQlDataRenderer(
-            dataWithNonLeafFields.data,
-            new GraphQlRenderConfig({ defaults: {} }),
-            metadata.data,
-          )
+          new GraphQlDataRenderer(dataWithNonLeafFields.data, new GraphQlRenderConfig({ defaults: {} }), metadata.data)
         }
       />,
     )
@@ -1654,21 +1622,19 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
         }
       />,
     )
-    .add(
-      "with custom rendering for all items without specific config in a list",
-      () =>
-        <Entity
-          datarenderer={
-            new GraphQlDataRenderer(
-              dataWithNonLeafFields.data,
-              new GraphQlRenderConfig({
-                defaults: {},
-                overrides: allItemListRenderConfiguration,
-              }),
-              metadata.data,
-            )
-          }
-        />,
+    .add("with custom rendering for all items without specific config in a list", () =>
+      <Entity
+        datarenderer={
+          new GraphQlDataRenderer(
+            dataWithNonLeafFields.data,
+            new GraphQlRenderConfig({
+              defaults: {},
+              overrides: allItemListRenderConfiguration,
+            }),
+            metadata.data,
+          )
+        }
+      />,
     )
     .add("with non matching renderer for field", () =>
       <Entity

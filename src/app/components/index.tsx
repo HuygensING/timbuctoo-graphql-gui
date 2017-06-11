@@ -16,8 +16,7 @@ export function Gui(props: { state: State; actions: Actions }) {
         <FirstUpload
           loginAction={actions.performLogin}
           isLoggedIn={false}
-          gotoUpload={() =>
-            actions.gotoUpload("dierikx_ontwikkelingssamenwerking")}
+          gotoUpload={() => actions.gotoUpload("dierikx_ontwikkelingssamenwerking")}
         />
       );
       break;

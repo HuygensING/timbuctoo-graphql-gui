@@ -4,7 +4,7 @@
   "description": null,
   "license": null,
   "scripts": {
-    "prettier": "prettier --trailing-comma all --write 'src/app/**/*.{tsx,ts,js}'"
+    "prettier": "prettier --trailing-comma all --write 'src/app/**/*.{tsx,ts,js}' --print-width=120"
   },
   "dependencies": {
     "@kadira/storybook": "^2.35.3",

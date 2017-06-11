@@ -1,10 +1,6 @@
 import * as React from "react";
 
-function Page(props: {
-  username?: string;
-  userlocation?: string;
-  children?: any;
-}) {
+function Page(props: { username?: string; userlocation?: string; children?: any }) {
   return (
     <div className="page container-fluid">
       <div className="hi-Green" style={{ marginLeft: -15, marginRight: -15 }}>
@@ -13,11 +9,7 @@ function Page(props: {
             <div className="navbar-header">
               {" "}
               <a className="navbar-brand" href="#">
-                <img
-                  src="images/page/logo-timbuctoo.svg"
-                  className="logo"
-                  alt="timbuctoo"
-                />
+                <img src="images/page/logo-timbuctoo.svg" className="logo" alt="timbuctoo" />
               </a>{" "}
             </div>
             <div id="navbar" className="navbar-collapse collapse">

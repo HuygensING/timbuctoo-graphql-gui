@@ -1,11 +1,6 @@
 import * as React from "react";
 import { DataRenderer, TimComponent } from "../components/api";
-import {
-  assertNever,
-  FieldMetadataType,
-  MetadataType,
-  unwrapNonNull,
-} from "./graphqlHelpers";
+import { assertNever, FieldMetadataType, MetadataType, unwrapNonNull } from "./graphqlHelpers";
 
 const DefaultObjectComponent = {
   dataType: "OBJECT",
@@ -18,9 +13,7 @@ const DefaultObjectComponent = {
 
     return (
       <div>
-        {Object.keys(properties)
-          .sort()
-          .map(key => <span>{key}: {properties[key]}</span>)}
+        {Object.keys(properties).sort().map(key => <span>{key}: {properties[key]}</span>)}
       </div>
     );
   },
@@ -61,24 +54,12 @@ export class GraphQlRenderConfig {
   private defaultListComponent: TimComponent;
   private unknownComponent: TimComponent;
 
-  constructor({
-    defaults,
-    overrides,
-    defaultObject,
-    defaultScalar,
-    defaultList,
-  }: GraphQlRenderConfigParams) {
+  constructor({ defaults, overrides, defaultObject, defaultScalar, defaultList }: GraphQlRenderConfigParams) {
     this.defaults = defaults;
     this.overrides = overrides;
-    this.defaultObjectComponent = defaultObject != null
-      ? defaultObject
-      : DefaultObjectComponent;
-    this.defaultScalarComponent = defaultScalar != null
-      ? defaultScalar
-      : DefaultScalarComponent;
-    this.defaultListComponent = defaultList != null
-      ? defaultList
-      : DefaultListComponent;
+    this.defaultObjectComponent = defaultObject != null ? defaultObject : DefaultObjectComponent;
+    this.defaultScalarComponent = defaultScalar != null ? defaultScalar : DefaultScalarComponent;
+    this.defaultListComponent = defaultList != null ? defaultList : DefaultListComponent;
     this.unknownComponent = {
       dataType: "",
       render(dataRenderer: DataRenderer) {
@@ -87,33 +68,18 @@ export class GraphQlRenderConfig {
     };
   }
 
-  public getComponent(
-    field: string | number,
-    fieldMetadata: MetadataType,
-  ): TimComponent {
+  public getComponent(field: string | number, fieldMetadata: MetadataType): TimComponent {
     const kind = fieldMetadata.kind;
     switch (fieldMetadata.kind) {
       case "ENUM":
       case "SCALAR":
-        return this.renderFunctionOrDefault(
-          field,
-          fieldMetadata,
-          this.defaultScalarComponent,
-        );
+        return this.renderFunctionOrDefault(field, fieldMetadata, this.defaultScalarComponent);
       case "OBJECT":
       case "UNION":
       case "INTERFACE":
-        return this.renderFunctionOrDefault(
-          field,
-          fieldMetadata,
-          this.defaultObjectComponent,
-        );
+        return this.renderFunctionOrDefault(field, fieldMetadata, this.defaultObjectComponent);
       case "LIST":
-        return this.renderFunctionOrDefault(
-          field,
-          fieldMetadata,
-          this.defaultListComponent,
-        );
+        return this.renderFunctionOrDefault(field, fieldMetadata, this.defaultListComponent);
       default:
         console.error("Unhandle case for: ", fieldMetadata);
         return this.unknownComponent;
@@ -121,9 +87,7 @@ export class GraphQlRenderConfig {
   }
 
   public subRenderConfigFor(field: string | number): GraphQlRenderConfig {
-    const fieldOverrides = isObjectOverrideConfiguration(this.overrides)
-      ? this.getOverrideForField(field)
-      : undefined;
+    const fieldOverrides = isObjectOverrideConfiguration(this.overrides) ? this.getOverrideForField(field) : undefined;
 
     return new GraphQlRenderConfig({
       defaults: this.defaults,
@@ -146,11 +110,7 @@ export class GraphQlRenderConfig {
           if (this.isRightTypeComponent(fieldOverride.__tim_renderer, type)) {
             return fieldOverride.__tim_renderer;
           } else {
-            console.error(
-              `${JSON.stringify(
-                fieldOverride.__tim_renderer,
-              )} is not valid for field type '${type}'`,
-            );
+            console.error(`${JSON.stringify(fieldOverride.__tim_renderer)} is not valid for field type '${type}'`);
           }
         }
       }
@@ -172,35 +132,22 @@ export class GraphQlRenderConfig {
       return this.overrides.hasOwnProperty(field.toString());
     } else if (typeof field === "number") {
       // is property of an array
-      return (
-        this.overrides.hasOwnProperty(field.toString()) ||
-        this.overrides.hasOwnProperty("*")
-      );
+      return this.overrides.hasOwnProperty(field.toString()) || this.overrides.hasOwnProperty("*");
     }
 
     return false;
   }
 
-  private getOverrideForField(
-    field: string | number,
-  ): OverrideConfig | undefined {
+  private getOverrideForField(field: string | number): OverrideConfig | undefined {
     if (!isObjectOverrideConfiguration(this.overrides)) {
       return undefined;
     }
 
-    return this.overrides[field.toString()] != null
-      ? this.overrides[field.toString()]
-      : this.overrides["*"];
+    return this.overrides[field.toString()] != null ? this.overrides[field.toString()] : this.overrides["*"];
   }
 
-  private isRightTypeComponent(
-    componenent: TimComponent,
-    fieldType: FieldMetadataType,
-  ): boolean {
-    return (
-      componenent.dataType === fieldType.name ||
-      componenent.dataType === fieldType.kind
-    );
+  private isRightTypeComponent(componenent: TimComponent, fieldType: FieldMetadataType): boolean {
+    return componenent.dataType === fieldType.name || componenent.dataType === fieldType.kind;
   }
 }
 
@@ -212,9 +159,7 @@ interface ObjectOverrideConfiguration {
   [key: string]: OverrideConfig;
 }
 
-export type OverrideConfig =
-  | ComponentOverrideConfiguration
-  | ObjectOverrideConfiguration;
+export type OverrideConfig = ComponentOverrideConfiguration | ObjectOverrideConfiguration;
 
 export interface DefaultMappings {
   [key: string]: TimComponent;
@@ -223,18 +168,12 @@ export interface DefaultMappings {
 function isObjectOverrideConfiguration(
   renderConfiguration?: OverrideConfig,
 ): renderConfiguration is ObjectOverrideConfiguration {
-  return (
-    renderConfiguration != null &&
-    !renderConfiguration.hasOwnProperty("renderer")
-  ); // TODO make a better check
+  return renderConfiguration != null && !renderConfiguration.hasOwnProperty("renderer"); // TODO make a better check
 }
 
 function isComponentRenderConfiguration(
   renderConfiguration?: OverrideConfig,
 ): renderConfiguration is ComponentOverrideConfiguration {
   // TODO: check if type of the renderer is Component
-  return (
-    renderConfiguration != null &&
-    renderConfiguration.hasOwnProperty("__tim_renderer")
-  );
+  return renderConfiguration != null && renderConfiguration.hasOwnProperty("__tim_renderer");
 }

@@ -14,9 +14,7 @@ export type MetadataType =
   | NonNullMetadataType
   | InputObjectMetadataType;
 
-export type FieldMetadataType =
-  | FieldMetadataTypeExceptNonNull
-  | NonNullMetadataType;
+export type FieldMetadataType = FieldMetadataTypeExceptNonNull | NonNullMetadataType;
 
 export type FieldMetadataTypeExceptNonNull =
   | ObjectMetadataTypeInField
@@ -126,9 +124,7 @@ export interface InputObjectMetadataType {
   enumValues?: null;
 }
 
-export function unwrapNonNull(
-  fieldType: FieldMetadataType,
-): FieldMetadataTypeExceptNonNull {
+export function unwrapNonNull(fieldType: FieldMetadataType): FieldMetadataTypeExceptNonNull {
   if (fieldType.kind === "NON_NULL") {
     return unwrapNonNull(fieldType.ofType);
   } else {
@@ -136,10 +132,7 @@ export function unwrapNonNull(
   }
 }
 
-export function convertToMetadataType(
-  fieldMetadataType: FieldMetadataType,
-  metadata: Metadata,
-): MetadataType | null {
+export function convertToMetadataType(fieldMetadataType: FieldMetadataType, metadata: Metadata): MetadataType | null {
   const unwrapped = unwrapNonNull(fieldMetadataType);
   switch (unwrapped.kind) {
     case "SCALAR":
@@ -155,30 +148,20 @@ export function convertToMetadataType(
   }
 }
 
-export function getMetadata(
-  typeName: string,
-  metadata: Metadata,
-): MetadataType | null {
-  const matchingMetadata = metadata.__schema.types.filter(
-    item => item.name === typeName,
-  );
+export function getMetadata(typeName: string, metadata: Metadata): MetadataType | null {
+  const matchingMetadata = metadata.__schema.types.filter(item => item.name === typeName);
   if (matchingMetadata.length === 0) {
     console.error("No metadata found for type: " + typeName);
     return null;
   } else if (matchingMetadata.length > 1) {
-    console.error(
-      `type '${typeName} appears more then once in the metadata array`,
-      metadata,
-    );
+    console.error(`type '${typeName} appears more then once in the metadata array`, metadata);
     return matchingMetadata[0];
   } else {
     return matchingMetadata[0];
   }
 }
 
-export function isListMetadata(
-  metadataType: MetadataType | FieldMetadataType,
-): metadataType is ListMetadataType {
+export function isListMetadata(metadataType: MetadataType | FieldMetadataType): metadataType is ListMetadataType {
   return metadataType != null && metadataType.kind === "LIST";
 }
 

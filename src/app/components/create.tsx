@@ -66,24 +66,14 @@ export function Create(props: {
 
           <fieldset
             style={{ marginBottom: 5 }}
-            className={
-              "form-group" + (titleIsDuplicate ? " has-error has-feedback" : "")
-            }
+            className={"form-group" + (titleIsDuplicate ? " has-error has-feedback" : "")}
           >
             <label className="control-label">Title: </label>
             <div className="input-group">
               <span className="input-group-addon">{userId}/</span>
-              <input
-                className="form-control"
-                type="text"
-                placeholder="the title of your dataset"
-                value={title}
-              />
+              <input className="form-control" type="text" placeholder="the title of your dataset" value={title} />
               {titleIsDuplicate
-                ? <span
-                    className="glyphicon glyphicon-remove form-control-feedback"
-                    aria-hidden="true"
-                  />
+                ? <span className="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" />
                 : null}
             </div>
             {titleIsDuplicate
@@ -91,9 +81,7 @@ export function Create(props: {
                   You already have dataset with id <code>{dataSetId}</code>.
                 </span>
               : null}
-            {!titleIsDuplicate &&
-              title &&
-              dataSetId !== title.replace(/ /g, "-").toLowerCase()
+            {!titleIsDuplicate && title && dataSetId !== title.replace(/ /g, "-").toLowerCase()
               ? <span className="help-block">
                   The url of your dataset will be:{" "}
                   <a href={datasetUrl}>
@@ -102,11 +90,7 @@ export function Create(props: {
                 </span>
               : null}
           </fieldset>
-          <Button
-            bsStyle="success"
-            className="pull-right"
-            disabled={title == null}
-          >
+          <Button bsStyle="success" className="pull-right" disabled={title == null}>
             create
           </Button>
         </div>

@@ -5,9 +5,7 @@ export const personObject = {
   dataType: "OBJECT",
   render(dataRenderer: DataRenderer): JSX.Element {
     const properties: { [key: string]: any } = {};
-    dataRenderer
-      .fields()
-      .forEach(field => (properties[field] = dataRenderer.renderField(field)));
+    dataRenderer.fields().forEach(field => (properties[field] = dataRenderer.renderField(field)));
     const birthDeathBlock = (
       <div className="row small-margin text-center">
         <div className="col-xs-3 text-right" />
@@ -51,10 +49,7 @@ export const personObject = {
               )
               .map(key =>
                 <div key={key} className="row small-margin">
-                  <div
-                    className="col-xs-5 text-right hi-light-grey"
-                    style={{ fontWeight: "bold" }}
-                  >
+                  <div className="col-xs-5 text-right hi-light-grey" style={{ fontWeight: "bold" }}>
                     {key}
                   </div>
                   <div className="col-xs-5">{properties[key]}</div>

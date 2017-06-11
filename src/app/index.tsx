@@ -14,20 +14,15 @@ if (location.hash === "") {
 const store: Store = createStore(
   reducer,
   defaultState,
-  (window as any).__REDUX_DEVTOOLS_EXTENSION__ &&
-    (window as any).__REDUX_DEVTOOLS_EXTENSION__(),
+  (window as any).__REDUX_DEVTOOLS_EXTENSION__ && (window as any).__REDUX_DEVTOOLS_EXTENSION__(),
 );
 const router = new Router(
   {
-    onNavigateAgain: (name, state) =>
-      store.dispatch({ type: "setState", state }),
+    onNavigateAgain: (name, state) => store.dispatch({ type: "setState", state }),
     onNavigateNew: async function(name, args) {
       store.dispatch({ type: "newPage", name, args });
       if (name === "mapping") {
-        const rawdataSets = await getRawCollections(
-          store.getState().global.userId || "",
-          args.dataSetId,
-        );
+        const rawdataSets = await getRawCollections(store.getState().global.userId || "", args.dataSetId);
         store.dispatch({ type: "setRawDataSets", rawDataSets: rawdataSets });
       }
     },
@@ -52,13 +47,7 @@ addEventListener(
 store.subscribe(function() {
   const curState = store.getState();
   router.saveState(curState);
-  ReactDom.render(
-    <Gui state={curState} actions={actions} />,
-    document.getElementById("main"),
-  );
+  ReactDom.render(<Gui state={curState} actions={actions} />, document.getElementById("main"));
 });
 
-ReactDom.render(
-  <Gui state={store.getState()} actions={actions} />,
-  document.getElementById("main"),
-);
+ReactDom.render(<Gui state={store.getState()} actions={actions} />, document.getElementById("main"));

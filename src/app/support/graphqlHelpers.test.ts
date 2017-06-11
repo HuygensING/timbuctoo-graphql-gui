@@ -40,14 +40,8 @@ export default function(describe: any, it: any) {
       if (result.ofType == null) {
         throw new Error("Result.ofType must be the inner object");
       } else {
-        assertThat(
-          result.ofType.name === null,
-          `${result.ofType.name} !== null`,
-        );
-        assertThat(
-          result.ofType.kind === "NON_NULL",
-          `${result.ofType.kind} !== NON_NULL`,
-        );
+        assertThat(result.ofType.name === null, `${result.ofType.name} !== null`);
+        assertThat(result.ofType.kind === "NON_NULL", `${result.ofType.kind} !== NON_NULL`);
       }
     });
   });

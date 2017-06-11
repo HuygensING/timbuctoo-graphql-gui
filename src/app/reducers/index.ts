@@ -1,9 +1,5 @@
 import { fromJS, Map } from "immutable";
-import {
-  MappingProps,
-  PredicateMap,
-  RawDataCollections,
-} from "../components/map.types";
+import { MappingProps, PredicateMap, RawDataCollections } from "../components/map.types";
 import { assertNever } from "../support/assertNever";
 
 type possiblePages = "default" | "mapping";
@@ -116,10 +112,7 @@ function updateValue(fieldName: string, value: string, state: State) {
     if (mappingState.currentTab === undefined) {
       return immState
         .setIn(["pageSpecific", "mapping", "currentTab"], value)
-        .setIn(
-          ["pageSpecific", "mapping", "mappings", value],
-          fromJS({ mainCollection: {}, predicateMaps: [] }),
-        )
+        .setIn(["pageSpecific", "mapping", "mappings", value], fromJS({ mainCollection: {}, predicateMaps: [] }))
         .toJS();
     } else {
       const oldTab = mappingState.currentTab;
@@ -136,21 +129,12 @@ function updateValue(fieldName: string, value: string, state: State) {
     if (mappingState.currentTab === undefined) {
       immState = immState
         .setIn(["pageSpecific", "mapping", "currentTab"], "http://")
-        .setIn(
-          ["pageSpecific", "mapping", "mappings", "http://"],
-          fromJS({ mainCollection: {}, predicateMaps: [] }),
-        );
+        .setIn(["pageSpecific", "mapping", "mappings", "http://"], fromJS({ mainCollection: {}, predicateMaps: [] }));
     }
     if (fieldName === "targetType") {
       return immState
         .setIn(
-          [
-            "pageSpecific",
-            "mapping",
-            "mappings",
-            immState.getIn(["pageSpecific", "mapping", "currentTab"]),
-            "type",
-          ],
+          ["pageSpecific", "mapping", "mappings", immState.getIn(["pageSpecific", "mapping", "currentTab"]), "type"],
           value,
         )
         .toJS();
@@ -197,13 +181,7 @@ function markPropertiesInUse(predicateMap: PredicateMap, state: any) {
     "sourceCollection",
   ]);
   const properties = state
-    .getIn([
-      "pageSpecific",
-      "mapping",
-      "rawDataCollections",
-      sourceCollection,
-      "properties",
-    ])
+    .getIn(["pageSpecific", "mapping", "rawDataCollections", sourceCollection, "properties"])
     .toJS();
   switch (predicateMap.type) {
     case "template":
@@ -221,15 +199,7 @@ function markPropertiesInUse(predicateMap: PredicateMap, state: any) {
         }
       }
       return state.setIn(
-        [
-          "pageSpecific",
-          "mapping",
-          "rawDataCollections",
-          sourceCollection,
-          "properties",
-          propertyIndex,
-          "inUse",
-        ],
+        ["pageSpecific", "mapping", "rawDataCollections", sourceCollection, "properties", propertyIndex, "inUse"],
         true,
       );
     case undefined:
@@ -242,10 +212,7 @@ function markPropertiesInUse(predicateMap: PredicateMap, state: any) {
 }
 
 function setPredicateMap(predicateMap: PredicateMap, state: State) {
-  const predMaps =
-    state.pageSpecific.mapping.mappings[
-      state.pageSpecific.mapping.currentTab || ""
-    ].predicateMaps;
+  const predMaps = state.pageSpecific.mapping.mappings[state.pageSpecific.mapping.currentTab || ""].predicateMaps;
   let index = -1;
   if (predicateMap.key !== null) {
     for (let i = 0; i < predMaps.length; i++) {
@@ -282,10 +249,7 @@ function setPredicateMap(predicateMap: PredicateMap, state: State) {
     ]);
     predList = predList.push(predicateMap);
     const ret = immState
-      .setIn(
-        ["pageSpecific", "mappingPrivate", "keyCounter"],
-        state.pageSpecific.mappingPrivate.keyCounter + 1,
-      )
+      .setIn(["pageSpecific", "mappingPrivate", "keyCounter"], state.pageSpecific.mappingPrivate.keyCounter + 1)
       .setIn(
         [
           "pageSpecific",
@@ -301,12 +265,7 @@ function setPredicateMap(predicateMap: PredicateMap, state: State) {
   }
 }
 
-function setPredicateValue(
-  predicateMap: PredicateMap,
-  property: string,
-  value: string,
-  state: State,
-) {
+function setPredicateValue(predicateMap: PredicateMap, property: string, value: string, state: State) {
   return setPredicateMap(
     {
       ...predicateMap,
@@ -339,24 +298,20 @@ function setRawDataSets(rawDataSetsInput: any, state: State) {
   //   }
   // };
   const rawDataSets: RawDataCollections = {};
-  for (const collection of rawDataSetsInput.data.http___timbuctoo_collectionList
-    .items) {
+  for (const collection of rawDataSetsInput.data.http___timbuctoo_collectionList.items) {
     rawDataSets[collection.uri] = {
-      properties: collection.http___timbuctoo_com_thing_ofCollection_inverse.items.map(
-        function(item: { http___timpropname: { value: string } }) {
-          return {
-            name: item.http___timpropname.value,
-            inUse: false,
-          };
-        },
-      ),
+      properties: collection.http___timbuctoo_com_thing_ofCollection_inverse.items.map(function(item: {
+        http___timpropname: { value: string };
+      }) {
+        return {
+          name: item.http___timpropname.value,
+          inUse: false,
+        };
+      }),
     };
   }
-  debugger;
 
-  return fromJS(state)
-    .setIn(["pageSpecific", "mapping", "rawDataCollections"], rawDataSets)
-    .toJS();
+  return fromJS(state).setIn(["pageSpecific", "mapping", "rawDataCollections"], rawDataSets).toJS();
 }
 
 export function reducer(state: State, action: Action): State {
@@ -371,12 +326,7 @@ export function reducer(state: State, action: Action): State {
     case "setPredicateMap":
       return setPredicateMap(action.predicateMap, state);
     case "setPredicateValue":
-      return setPredicateValue(
-        action.predicateMap,
-        action.property,
-        action.value,
-        state,
-      );
+      return setPredicateValue(action.predicateMap, action.property, action.value, state);
     case "setRawDataSets":
       return setRawDataSets(action.rawDataSets, state);
     case "gotoTab":
