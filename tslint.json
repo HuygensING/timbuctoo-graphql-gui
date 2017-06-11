@@ -7,11 +7,13 @@
         "interface-name": [true, "never-prefix"],
 
         //this stuff is handled by prettier
-        "space-before-function-paren": [true, {"anonymous": "never", "named": "never", "asyncArrow": "always"}],
+        "space-before-function-paren": [false],
         "trailing-comma": [false],
         "object-literal-sort-keys": false,
         "max-line-length": [false],
         "arrow-parens": false,
-        "semicolon": [false]
+        "semicolon": [false],
+        "no-consecutive-blank-lines": [false],
+        "object-literal-shorthand": false
     }
 }

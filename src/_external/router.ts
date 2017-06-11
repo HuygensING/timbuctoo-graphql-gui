@@ -2,7 +2,7 @@ import * as Route from "route-parser";
 
 interface RouterArgs<Routes, State> {
   routes: Routes; // fixme: unittest that validates the order of Object.keys
-  onNavigateNew: (routeName: keyof Routes, urlargs: {}) => void;
+  onNavigateNew: (routeName: keyof Routes, urlargs: any) => void;
   onNavigateAgain: (routeName: keyof Routes, state: State) => void;
   onNoMatchFound: (url: string) => void;
 }
