@@ -8,6 +8,7 @@ export const dierikx: RmlJsonLd = {
     rr: "http://www.w3.org/ns/r2rml#",
     rml: "http://semweb.mmlab.be/ns/rml#",
     tim: "http://timbuctoo.huygens.knaw.nl/mapping#",
+    dataSet: "https://data.anansi.clariah.nl/v5/rdfNamespace/{{userId}}/{{dataSetId}}/",
   },
   "@graph": [
     {

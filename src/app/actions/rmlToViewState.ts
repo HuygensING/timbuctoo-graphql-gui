@@ -63,6 +63,7 @@ export interface RmlJsonLd {
     "rr": "http://www.w3.org/ns/r2rml#";
     "rml": "http://semweb.mmlab.be/ns/rml#";
     "tim": "http://timbuctoo.huygens.knaw.nl/mapping#";
+    dataSet?: string;
   };
   "@graph": RmlMapping[];
 }
