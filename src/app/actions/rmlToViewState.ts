@@ -1,4 +1,5 @@
 import { Mapping, PredicateMap } from "../components/map.types";
+import { assertNever } from "../support/assertNever";
 
 interface Uri {
   "@id": string;
@@ -54,7 +55,7 @@ interface RmlMapping {
     "rr:template": string;
     "rr:class"?: Uri;
   };
-  "rr:predicateObjectMap": PredObjMap[];
+  "rr:predicateObjectMap": PredObjMap | PredObjMap[];
 }
 
 export interface RmlJsonLd {
@@ -62,7 +63,6 @@ export interface RmlJsonLd {
     "rr": "http://www.w3.org/ns/r2rml#";
     "rml": "http://semweb.mmlab.be/ns/rml#";
     "tim": "http://timbuctoo.huygens.knaw.nl/mapping#";
-    "dataSet": string;
   };
   "@graph": RmlMapping[];
 }
@@ -129,7 +129,14 @@ export function rmlToView(rml: RmlJsonLd): { [key: string]: Mapping } {
         };
       }
     }
-    const typeMap: { map: string; index: number } | undefined = mapping["rr:predicateObjectMap"]
+    let predObjMaps: PredObjMap[];
+    const predObjMapsSrc: PredObjMap | PredObjMap[] = mapping["rr:predicateObjectMap"];
+    if (predObjMapsSrc instanceof Array) {
+      predObjMaps = predObjMapsSrc;
+    } else {
+      predObjMaps = [predObjMapsSrc];
+    }
+    const typeMap: { map: string; index: number } | undefined = predObjMaps
       .map(function(v, i) {
         return { value: v, index: i };
       })
@@ -155,66 +162,64 @@ export function rmlToView(rml: RmlJsonLd): { [key: string]: Mapping } {
         return cur;
       }, undefined);
     let key = 0;
-    const predicateMaps: any = mapping["rr:predicateObjectMap"]
-      .filter((map, index) => typeMap && index !== typeMap.index)
-      .map(map => {
-        key--;
-        if (isConstant(map)) {
+    const predicateMaps: any = predObjMaps.filter((map, index) => typeMap && index !== typeMap.index).map(map => {
+      key--;
+      if (isConstant(map)) {
+        return {
+          key: key + "",
+          predicate: getUriValue(map["rr:predicate"]),
+          type: "constant",
+          dataType: "http://timbuctoo/uri",
+          constant: getUriValue(map["rr:object"]),
+        };
+      } else {
+        const objMap = map["rr:objectMap"];
+        if (isConstantObjMap(objMap)) {
           return {
             key: key + "",
             predicate: getUriValue(map["rr:predicate"]),
             type: "constant",
-            dataType: "http://timbuctoo/uri",
-            constant: getUriValue(map["rr:object"]),
+            dataType: getDataType(objMap["rr:termType"], objMap["rr:datatype"]),
+            constant: getUriValue(objMap["rr:constant"]),
           };
-        } else {
-          const objMap = map["rr:objectMap"];
-          if (isConstantObjMap(objMap)) {
-            return {
-              key: key + "",
-              predicate: getUriValue(map["rr:predicate"]),
-              type: "constant",
-              dataType: getDataType(objMap["rr:termType"], objMap["rr:datatype"]),
-              constant: getUriValue(objMap["rr:constant"]),
-            };
-          } else if (isTemplateObjMap(objMap)) {
-            return {
-              key: key + "",
-              predicate: getUriValue(map["rr:predicate"]),
-              type: "template",
-              dataType: getDataType(objMap["rr:termType"], objMap["rr:datatype"]),
-              template: objMap["rr:template"],
-            };
-          } else if (isColumnObjMap(objMap)) {
-            const termtype = objMap["rr:termType"];
-            const dataType = objMap["rr:datatype"];
+        } else if (isTemplateObjMap(objMap)) {
+          return {
+            key: key + "",
+            predicate: getUriValue(map["rr:predicate"]),
+            type: "template",
+            dataType: getDataType(objMap["rr:termType"], objMap["rr:datatype"]),
+            template: objMap["rr:template"],
+          };
+        } else if (isColumnObjMap(objMap)) {
+          const termtype = objMap["rr:termType"];
+          const dataType = objMap["rr:datatype"];
 
-            if (objMap["rr:column"] in customFields) {
-              return {
-                key: key + "",
-                predicate: getUriValue(map["rr:predicate"]),
-                type: "expression",
-                dataType: termtype && termtype["@id"] === "rr:IRI"
-                  ? "http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri"
-                  : dataType ? getUriValue(dataType) : "http://www.w3.org/2001/XMLSchema#string",
-                expression: customFields[objMap["rr:column"]].expression,
-              };
-            } else {
-              return {
-                key: key + "",
-                predicate: getUriValue(map["rr:predicate"]),
-                type: "property",
-                dataType: termtype && termtype["@id"] === "rr:IRI"
-                  ? "http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri"
-                  : dataType ? getUriValue(dataType) : "http://www.w3.org/2001/XMLSchema#string",
-                propertyName: objMap["rr:column"],
-              };
-            }
+          if (objMap["rr:column"] in customFields) {
+            return {
+              key: key + "",
+              predicate: getUriValue(map["rr:predicate"]),
+              type: "expression",
+              dataType: termtype && termtype["@id"] === "rr:IRI"
+                ? "http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri"
+                : dataType ? getUriValue(dataType) : "http://www.w3.org/2001/XMLSchema#string",
+              expression: customFields[objMap["rr:column"]].expression,
+            };
           } else {
-            throw new Error("");
+            return {
+              key: key + "",
+              predicate: getUriValue(map["rr:predicate"]),
+              type: "property",
+              dataType: termtype && termtype["@id"] === "rr:IRI"
+                ? "http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri"
+                : dataType ? getUriValue(dataType) : "http://www.w3.org/2001/XMLSchema#string",
+              propertyName: objMap["rr:column"],
+            };
           }
+        } else {
+          throw new Error("");
         }
-      });
+      }
+    });
     const resultMap: Mapping = {
       mainCollection: {
         sourceCollection: mapping["rml:logicalSource"]["rml:source"]["tim:rawCollectionUri"]["@id"],
@@ -226,4 +231,118 @@ export function rmlToView(rml: RmlJsonLd): { [key: string]: Mapping } {
     retVal[mapping["@id"]] = resultMap;
   }
   return retVal;
+}
+
+export function viewToRml(mappings: { [key: string]: Mapping }): RmlJsonLd {
+  return {
+    "@context": {
+      rr: "http://www.w3.org/ns/r2rml#",
+      rml: "http://semweb.mmlab.be/ns/rml#",
+      tim: "http://timbuctoo.huygens.knaw.nl/mapping#",
+    },
+    "@graph": Object.keys(mappings).map(mappingId => {
+      const mapping = mappings[mappingId];
+      const namedExpressions: { [key: string]: string } = {};
+      const customFields: CustomField[] = [];
+      let expressionCounter = 0;
+      mapping.predicateMaps.forEach(pm => {
+        if (pm.type === "expression") {
+          expressionCounter++;
+          const expressionName = "expression" + expressionCounter;
+          namedExpressions[pm.expression] = expressionName;
+          customFields.push({
+            "tim:expression": pm.expression,
+            "tim:name": expressionName,
+          });
+        }
+      });
+      const rrClass = mapping.collectionType ? { "@id": mapping.collectionType } : undefined;
+
+      const predObjMaps: PredObjMap[] = mapping.predicateMaps.map(pm => {
+        const dataType: Uri | undefined = pm.dataType === "http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri"
+          ? undefined
+          : { "@id": pm.dataType };
+        const termType: TermType = {
+          "@id": pm.dataType === "http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri" ? "rr:IRI" : "rr:Literal",
+        };
+        switch (pm.type) {
+          case "template":
+            return {
+              "rr:predicate": { "@id": pm.predicate },
+              "rr:objectMap": {
+                "rr:template": pm.template,
+                "rr:datatype": dataType,
+                "rr:termType": termType,
+              },
+            };
+          case "expression":
+            return {
+              "rr:predicate": { "@id": pm.predicate },
+              "rr:objectMap": {
+                "rr:column": namedExpressions[pm.expression],
+                "rr:datatype": dataType,
+                "rr:termType": termType,
+              },
+            };
+          case "join":
+            return {
+              "rr:predicate": { "@id": pm.predicate },
+              "rr:objectMap": {
+                "rr:column": "NonExistingColumnThatWillBeNullAndThusNotGenerateATriple (joins are not yet supported)",
+              },
+            };
+          case "property":
+            return {
+              "rr:predicate": { "@id": pm.predicate },
+              "rr:objectMap": {
+                "rr:column": pm.propertyName,
+                "rr:datatype": dataType,
+                "rr:termType": termType,
+              },
+            };
+          case "constant":
+            return {
+              "rr:predicate": { "@id": pm.predicate },
+              "rr:objectMap": {
+                "rr:constant": pm.constant,
+                "rr:datatype": dataType,
+                "rr:termType": termType,
+              },
+            };
+          case undefined:
+            return {
+              "rr:predicate": { "@id": "http://example.org/thisShouldNotHappen" },
+              "rr:objectMap": {
+                "rr:column": "NonExistingColumnThatWillBeNullAndThusNotGenerateATriple",
+              },
+            };
+          default:
+            assertNever(pm);
+            return {
+              "rr:predicate": { "@id": "http://example.org/thisShouldNotHappen" },
+              "rr:objectMap": {
+                "rr:column": "NonExistingColumnThatWillBeNullAndThusNotGenerateATriple",
+              },
+            };
+        }
+      });
+      return {
+        "@id": mappingId,
+        "rml:logicalSource": {
+          "rml:source": {
+            "tim:rawCollectionUri": {
+              "@id": mapping.mainCollection.sourceCollection || "http://example.com/No-Source-Collection-Specified",
+            },
+            "tim:customField": customFields,
+          },
+        },
+        "rr:subjectMap": {
+          "rr:template":
+            mapping.mainCollection.subjectTemplate || "http://example.com/No-Subject-Template-Specified/{tim_id}",
+          "rr:class": rrClass,
+        },
+        "rr:predicateObjectMap": predObjMaps,
+      };
+    }),
+  };
 }

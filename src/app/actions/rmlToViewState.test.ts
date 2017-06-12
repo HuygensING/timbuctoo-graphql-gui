@@ -1,5 +1,5 @@
 import { Mapping, PredicateMap } from "../components/map.types";
-import { RmlJsonLd, rmlToView } from "./rmlToViewState";
+import { RmlJsonLd, rmlToView, viewToRml } from "./rmlToViewState";
 
 const userId = "DUMMY";
 const dataSetId = "dierikx_ontwikkelingssamenwerking";
@@ -8,7 +8,6 @@ export const dierikx: RmlJsonLd = {
     rr: "http://www.w3.org/ns/r2rml#",
     rml: "http://semweb.mmlab.be/ns/rml#",
     tim: "http://timbuctoo.huygens.knaw.nl/mapping#",
-    dataSet: "http://timbuctoo.huygens.knaw.nl/mapping/${userId}/",
   },
   "@graph": [
     {
@@ -162,7 +161,12 @@ export const dierikx: RmlJsonLd = {
 export default function(describe: any, it: any) {
   describe("rmlToViewState", function() {
     it("dierikx", function() {
-      console.log(rmlToView(dierikx));
+      console.groupCollapsed("first");
+      console.log(JSON.stringify(dierikx, undefined, 2));
+      console.groupEnd();
+      console.groupCollapsed("second");
+      console.log(JSON.stringify(viewToRml(rmlToView(dierikx)), undefined, 2));
+      console.groupEnd();
     });
   });
 }

@@ -2,6 +2,7 @@ import * as React from "react";
 import { DropdownButton, Form, FormControl, InputGroup, MenuItem, Nav, NavItem } from "react-bootstrap";
 import { Mention, MentionsInput } from "react-mentions";
 import { Actions } from "../actions";
+import { assertNever } from "../support/assertNever";
 import {
   Mapping,
   MappingProps,
@@ -16,10 +17,6 @@ const captions: { [key: string]: string } = {
   expression: "Programming code",
   constant: "Constant value",
 };
-
-function assertNever(action: never): void {
-  console.error("Unhandled case", action);
-}
 
 const types: { [key: string]: Array<{ uri: string; dataType: string }> } = {
   Person: [
