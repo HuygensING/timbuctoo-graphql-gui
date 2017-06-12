@@ -4,6 +4,7 @@ import { MappingProps, PredicateMap, RawDataCollections } from "../components/ma
 import { assertNever } from "../support/assertNever";
 
 type possiblePages = "default" | "mapping";
+const timbuctooPrefix = "https://data.anansi.clariah.nl/v5/rdfNamespace/";
 
 type Action =
   | {
@@ -153,6 +154,8 @@ function updateValue(fieldName: string, value: string, state: State) {
       )
       .toJS();
   } else if (fieldName === "sourceCollection") {
+    const rawMapping = state.pageSpecific.mapping.rawDataCollections[value];
+    const label = rawMapping ? "/" + rawMapping.label : "";
     return immState
       .setIn(
         [
@@ -164,6 +167,27 @@ function updateValue(fieldName: string, value: string, state: State) {
           "sourceCollection",
         ],
         value,
+      )
+      .setIn(
+        [
+          "pageSpecific",
+          "mapping",
+          "mappings",
+          immState.getIn(["pageSpecific", "mapping", "currentTab"]),
+          "collectionType",
+        ],
+        timbuctooPrefix + state.global.userId + "/" + state.global.dataSetId + label,
+      )
+      .setIn(
+        [
+          "pageSpecific",
+          "mapping",
+          "mappings",
+          immState.getIn(["pageSpecific", "mapping", "currentTab"]),
+          "mainCollection",
+          "subjectTemplate",
+        ],
+        timbuctooPrefix + state.global.userId + "/" + state.global.dataSetId + label + "/{tim_id}",
       )
       .toJS();
   } else if (fieldName === "collectionType") {

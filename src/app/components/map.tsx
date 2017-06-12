@@ -360,6 +360,7 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
   ) || { label: "", properties: [] };
   const mainCollection = curMap.mainCollection;
   const curType = curMap.type;
+  const newPropertyPrefix = curMap.collectionType || "http://example.org/";
   return (
     <div>
       <div className="row">
@@ -428,19 +429,19 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
             ? null
             : types[curType]
                 .map(predicate =>
-                  DefaultProp(currentTab || "", rawDataCollection, predicate, actions, curMap.predicateMaps),
+                  DefaultProp(newPropertyPrefix, rawDataCollection, predicate, actions, curMap.predicateMaps),
                 )
                 .reduce((prev, cur) => prev.concat(cur), [])}
           <h4>And we {curType != null && types[curType] != null ? "also " : ""}define...</h4>
           {curMap.predicateMaps
             .filter(pm => curType == null || !types[curType] || !types[curType].some(type => type.uri === pm.predicate))
-            .map(pm => renderPred(currentTab || "", rawDataCollection, pm, actions))}
+            .map(pm => renderPred(newPropertyPrefix, rawDataCollection, pm, actions))}
         </div>
       </div>
       <div className="row" style={{ marginTop: "2em" }}>
         <div className="col-md-12">
           <AddPredicateButton
-            newPropertyPrefix={currentTab || ""}
+            newPropertyPrefix={newPropertyPrefix}
             rawDataCollection={rawDataCollection}
             actions={actions}
             predicateMap={{
