@@ -221,7 +221,7 @@ export function rmlToView(rml: RmlJsonLd): { [key: string]: Mapping } {
         subjectTemplate: mapping["rr:subjectMap"]["rr:template"],
       },
       predicateMaps,
-      type: typeMap ? typeMap.map : undefined,
+      collectionType: typeMap ? typeMap.map : undefined,
     };
     retVal[mapping["@id"]] = resultMap;
   }

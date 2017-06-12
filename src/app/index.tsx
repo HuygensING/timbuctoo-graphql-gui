@@ -60,7 +60,6 @@ compact(
     rr: "http://www.w3.org/ns/r2rml#",
     rml: "http://semweb.mmlab.be/ns/rml#",
     tim: "http://timbuctoo.huygens.knaw.nl/mapping#",
-    dataSet: "http://timbuctoo.huygens.knaw.nl/mapping/${userId}/",
   },
   function(err: any, success: any) {
     store.dispatch({ type: "setRml", rml: success as any });

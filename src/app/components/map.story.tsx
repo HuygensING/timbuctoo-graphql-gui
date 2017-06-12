@@ -44,10 +44,12 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
               "http://collection": {
                 mainCollection: {},
                 predicateMaps: [],
+                collectionType: "http://example.org/persons",
               },
               "http://collection2": {
                 mainCollection: {},
                 predicateMaps: [],
+                collectionType: "http://example.org/books",
               },
             },
           }}
@@ -65,6 +67,7 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
               "http://collection": {
                 mainCollection: {},
                 predicateMaps: [],
+                collectionType: "http://example.org/books",
               },
               "http://collection2": {
                 mainCollection: {
@@ -72,6 +75,7 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
                   subjectTemplate: "http://example.com/{foo}",
                 },
                 predicateMaps: [],
+                collectionType: "http://example.org/persons",
               },
             },
           }}
@@ -89,12 +93,14 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
               "http://collection": {
                 mainCollection: {},
                 predicateMaps: [],
+                collectionType: "http://example.org/persons",
               },
               "http://collection2": {
                 mainCollection: {
                   sourceCollection: "http://example.com/myCollections/authors",
                   subjectTemplate: "http://example.com/{foo}",
                 },
+                collectionType: "http://example.org/persons",
                 predicateMaps: [
                   {
                     key: "1",

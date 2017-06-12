@@ -15,6 +15,7 @@ export interface Mapping {
     sourceCollection?: string;
   };
   predicateMaps: PredicateMap[];
+  collectionType: string | undefined;
 }
 
 export interface RawDataCollections {

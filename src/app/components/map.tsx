@@ -90,6 +90,7 @@ function AddPredicateButton(props: {
         {captions.constant}
       </MenuItem>
       <MenuItem divider />
+      <MenuItem header>Fields from your data:</MenuItem>
       {props.rawDataCollection.properties.map(
         prop =>
           prop.inUse
@@ -111,6 +112,12 @@ function TemplateInput(props: {
   rawDataCollection: RawDataCollection;
   onChange: (newValue: string) => void;
 }) {
+  const data = props.rawDataCollection.properties
+    .map(p => p.name)
+    .map(function(p) {
+      return { id: p };
+    })
+    .concat([{ id: "tim_id" }]);
   return (
     <MentionsInput
       style={{
@@ -157,17 +164,7 @@ function TemplateInput(props: {
         props.onChange((e.target as any).value);
       }}
     >
-      <Mention
-        trigger="{"
-        allowSpaceInQuery={true}
-        style={{ backgroundColor: "#cee4e5" }}
-        data={props.rawDataCollection.properties
-          .map(function(p) {
-            return { id: p.name };
-          })
-          .sort()
-          .concat([{ id: "tim_id" }])}
-      />
+      <Mention trigger="{" allowSpaceInQuery={true} style={{ backgroundColor: "#cee4e5" }} data={data} />
     </MentionsInput>
   );
 }
@@ -304,6 +301,10 @@ function DefaultProp(
   }
 }
 
+function getRawDataCollection(rawDataCollections: { [key: string]: RawDataCollection }, sourceCollection?: string) {
+  return sourceCollection && rawDataCollections[sourceCollection] ? rawDataCollections[sourceCollection] : undefined;
+}
+
 export function Map(props: { actions: Actions; state: MappingProps }) {
   function onChange(name: string) {
     return (e: any) => actions.mapping.setValue(name, e.target.value);
@@ -318,11 +319,12 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
     : {
         mainCollection: {},
         predicateMaps: [],
+        collectionType: undefined,
       };
-  const rawDataCollection: RawDataCollection = curMap.mainCollection.sourceCollection &&
-    rawDataCollections[curMap.mainCollection.sourceCollection]
-    ? rawDataCollections[curMap.mainCollection.sourceCollection]
-    : { label: "", properties: [] };
+  const rawDataCollection: RawDataCollection = getRawDataCollection(
+    rawDataCollections,
+    curMap.mainCollection.sourceCollection,
+  ) || { label: "", properties: [] };
   const mainCollection = curMap.mainCollection;
   const curType = curMap.type;
   return (
@@ -330,11 +332,15 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
       <div className="row">
         <div className="col-md-12">
           <Nav bsStyle="tabs" activeKey={currentTab || "add"}>
-            {Object.keys(mappings).map(type =>
-              <NavItem eventKey={type} onClick={() => actions.mapping.gotoTab(type)}>
-                {type}
-              </NavItem>,
-            )}
+            {Object.keys(mappings).map((key, i) => {
+              const mapping = mappings[key];
+              const rdc = getRawDataCollection(rawDataCollections, mapping.mainCollection.sourceCollection);
+              return (
+                <NavItem eventKey={key} onClick={() => actions.mapping.gotoTab(key)}>
+                  {rdc ? rdc.label : "(mapping " + i + ")"}
+                </NavItem>
+              );
+            })}
             <NavItem eventKey="add" onClick={() => actions.mapping.gotoTab(undefined)}>
               Add...
             </NavItem>
@@ -348,7 +354,9 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
             bsStyle="default"
             title={
               mainCollection.sourceCollection
-                ? rawDataCollections[mainCollection.sourceCollection].label
+                ? rawDataCollections[mainCollection.sourceCollection]
+                  ? rawDataCollections[mainCollection.sourceCollection].label
+                  : "Collection is not available"
                 : "collection..."
             }
             id="dropdown-no-s"
@@ -370,7 +378,7 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
         </div>
         <div className="col-md-6">
           <h4><small>(oh, and we'll name this collection):</small></h4>
-          <FormControl value={currentTab} onChange={onChange("collectionName")} />
+          <FormControl value={curMap.collectionType} onChange={onChange("collectionType")} />
           <h4><small>(and all items will get a nice unique identifier):</small></h4>
           <TemplateInput
             placeholder="A template for the entity URI"
@@ -380,42 +388,38 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
           />
         </div>
       </div>
-      {curType == null
-        ? null
-        : <div className="row" style={{ marginTop: "2em" }}>
-            <div className="col-md-12">
-              {types[curType] == null ? null : <h4>{curMap.type}s usually have a...</h4>}
-              {types[curType] == null
-                ? null
-                : types[curType]
-                    .map(predicate =>
-                      DefaultProp(currentTab || "", rawDataCollection, predicate, actions, curMap.predicateMaps),
-                    )
-                    .reduce((prev, cur) => prev.concat(cur), [])}
-              <h4>And we {types[curType] != null ? "also " : ""}define...</h4>
-              {curMap.predicateMaps
-                .filter(pm => !types[curType] || types[curType].indexOf(pm.predicate) === -1)
-                .map(pm => renderPred(currentTab || "", rawDataCollection, pm, actions))}
-            </div>
-          </div>}
-      {curType == null
-        ? null
-        : <div className="row" style={{ marginTop: "2em" }}>
-            <div className="col-md-12">
-              <AddPredicateButton
-                newPropertyPrefix={currentTab || ""}
-                rawDataCollection={rawDataCollection}
-                actions={actions}
-                predicateMap={{
-                  key: null,
-                  type: undefined,
-                  dataType: "string",
-                }}
-                caption="Add even more things!"
-                bsStyle="primary"
-              />
-            </div>
-          </div>}
+      <div className="row" style={{ marginTop: "2em" }}>
+        <div className="col-md-12">
+          {curType == null || types[curType] == null ? null : <h4>{curMap.type}s usually have a...</h4>}
+          {curType == null || types[curType] == null
+            ? null
+            : types[curType]
+                .map(predicate =>
+                  DefaultProp(currentTab || "", rawDataCollection, predicate, actions, curMap.predicateMaps),
+                )
+                .reduce((prev, cur) => prev.concat(cur), [])}
+          <h4>And we {curType != null && types[curType] != null ? "also " : ""}define...</h4>
+          {curMap.predicateMaps
+            .filter(pm => curType == null || !types[curType] || types[curType].indexOf(pm.predicate) === -1)
+            .map(pm => renderPred(currentTab || "", rawDataCollection, pm, actions))}
+        </div>
+      </div>
+      <div className="row" style={{ marginTop: "2em" }}>
+        <div className="col-md-12">
+          <AddPredicateButton
+            newPropertyPrefix={currentTab || ""}
+            rawDataCollection={rawDataCollection}
+            actions={actions}
+            predicateMap={{
+              key: null,
+              type: undefined,
+              dataType: "string",
+            }}
+            caption="Add something!"
+            bsStyle="primary"
+          />
+        </div>
+      </div>
     </div>
   );
 }

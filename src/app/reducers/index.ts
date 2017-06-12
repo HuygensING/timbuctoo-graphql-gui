@@ -57,6 +57,7 @@ export interface State {
   currentPage: possiblePages;
   global: {
     userId?: string;
+    dataSetId: string | undefined;
   };
   pageSpecific: {
     create: {};
@@ -81,6 +82,7 @@ export const defaultState: State = {
   currentPage: "default",
   global: {
     userId: "DUMMY",
+    dataSetId: "dierikx_ontwikkelingssamenwerking",
   },
   pageSpecific: {
     create: {},
@@ -116,65 +118,68 @@ function initMapping(dataSetId: string, state: State) {
 function updateValue(fieldName: string, value: string, state: State) {
   let immState = fromJS(state);
   const mappingState = state.pageSpecific.mapping;
-  if (fieldName === "collectionName") {
-    if (mappingState.currentTab === undefined) {
-      return immState
-        .setIn(["pageSpecific", "mapping", "currentTab"], value)
-        .setIn(["pageSpecific", "mapping", "mappings", value], fromJS({ mainCollection: {}, predicateMaps: [] }))
-        .toJS();
-    } else {
-      const oldTab = mappingState.currentTab;
-      return immState
-        .setIn(["pageSpecific", "mapping", "currentTab"], value)
-        .setIn(
-          ["pageSpecific", "mapping", "mappings", value],
-          immState.getIn(["pageSpecific", "mapping", "mappings", oldTab]),
-        )
-        .deleteIn(["pageSpecific", "mapping", "mappings", oldTab])
-        .toJS();
-    }
-  } else {
-    if (mappingState.currentTab === undefined) {
-      immState = immState
-        .setIn(["pageSpecific", "mapping", "currentTab"], "http://")
-        .setIn(["pageSpecific", "mapping", "mappings", "http://"], fromJS({ mainCollection: {}, predicateMaps: [] }));
-    }
-    if (fieldName === "targetType") {
-      return immState
-        .setIn(
-          ["pageSpecific", "mapping", "mappings", immState.getIn(["pageSpecific", "mapping", "currentTab"]), "type"],
-          value,
-        )
-        .toJS();
-    } else if (fieldName === "subjectTemplate") {
-      return immState
-        .setIn(
-          [
-            "pageSpecific",
-            "mapping",
-            "mappings",
-            immState.getIn(["pageSpecific", "mapping", "currentTab"]),
-            "mainCollection",
-            "subjectTemplate",
-          ],
-          value,
-        )
-        .toJS();
-    } else if (fieldName === "sourceCollection") {
-      return immState
-        .setIn(
-          [
-            "pageSpecific",
-            "mapping",
-            "mappings",
-            immState.getIn(["pageSpecific", "mapping", "currentTab"]),
-            "mainCollection",
-            "sourceCollection",
-          ],
-          value,
-        )
-        .toJS();
-    }
+
+  if (mappingState.currentTab === undefined) {
+    const mappingUri =
+      "http://timbuctoo.com/mappings/" +
+      state.global.userId +
+      "/" +
+      state.global.dataSetId +
+      "/" +
+      new Date().getTime();
+    immState = immState
+      .setIn(["pageSpecific", "mapping", "currentTab"], mappingUri)
+      .setIn(["pageSpecific", "mapping", "mappings", mappingUri], fromJS({ mainCollection: {}, predicateMaps: [] }));
+  }
+  if (fieldName === "targetType") {
+    return immState
+      .setIn(
+        ["pageSpecific", "mapping", "mappings", immState.getIn(["pageSpecific", "mapping", "currentTab"]), "type"],
+        value,
+      )
+      .toJS();
+  } else if (fieldName === "subjectTemplate") {
+    return immState
+      .setIn(
+        [
+          "pageSpecific",
+          "mapping",
+          "mappings",
+          immState.getIn(["pageSpecific", "mapping", "currentTab"]),
+          "mainCollection",
+          "subjectTemplate",
+        ],
+        value,
+      )
+      .toJS();
+  } else if (fieldName === "sourceCollection") {
+    return immState
+      .setIn(
+        [
+          "pageSpecific",
+          "mapping",
+          "mappings",
+          immState.getIn(["pageSpecific", "mapping", "currentTab"]),
+          "mainCollection",
+          "sourceCollection",
+        ],
+        value,
+      )
+      .toJS();
+  } else if (fieldName === "collectionType") {
+    return immState
+      .setIn(
+        [
+          "pageSpecific",
+          "mapping",
+          "mappings",
+          immState.getIn(["pageSpecific", "mapping", "currentTab"]),
+          "mainCollection",
+          "collectionType",
+        ],
+        value,
+      )
+      .toJS();
   }
   return state;
 }
@@ -365,9 +370,10 @@ export function reducer(state: State, action: Action): State {
       }
     case "setRml":
       const converted = rmlToView(action.rml);
+      const firstCollection = converted[Object.keys(converted)[0]];
       return fromJS(state)
         .setIn(["pageSpecific", "mapping", "mappings"], converted)
-        .setIn(["pageSpecific", "mapping", "currentTab"], converted[0].type)
+        .setIn(["pageSpecific", "mapping", "currentTab"], firstCollection ? firstCollection.type : undefined)
         .toJS();
     case "@@INIT":
     case "@@redux/INIT":
