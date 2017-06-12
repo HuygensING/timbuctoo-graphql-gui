@@ -1,18 +1,20 @@
+import config from "../config";
+
 export async function getRawCollections(userId: string, dataSetId: string) {
-  return await fetch("http://0.0.0.0:8080/v5/" + userId + "/" + dataSetId + "/graphql", {
+  return await fetch(config.apiUrl + "/v5/" + userId + "/" + dataSetId + "/graphql", {
     method: "post",
     headers: {
       accept: "application/json",
     },
     body: `
     {
-      http___timbuctoo_collectionList {
+      tim_collectionList {
         items {
           uri
-          http___rdfs_label { value }
-          http___timbuctoo_com_thing_ofCollection_inverse {
+          rdfs_label { value }
+          tim_ofCollection_inverse {
             items {
-              http___timpropname { value }
+              tim_timpropname { value }
             }
           }
         }

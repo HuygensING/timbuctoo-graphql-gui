@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DropdownButton, Form, FormControl, InputGroup, MenuItem, Nav, NavItem } from "react-bootstrap";
+import { Button, DropdownButton, Form, FormControl, InputGroup, MenuItem, Nav, NavItem } from "react-bootstrap";
 import { Mention, MentionsInput } from "react-mentions";
 import { Actions } from "../actions";
 import { assertNever } from "../support/assertNever";
@@ -454,6 +454,8 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
           />
         </div>
       </div>
+      <Button onClick={actions.mapping.execute} bsStyle="primary">execute</Button>
+      <Button onClick={actions.gotoGraphiql}>next</Button>
     </div>
   );
 }

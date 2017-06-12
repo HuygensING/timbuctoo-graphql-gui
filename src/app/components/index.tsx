@@ -7,6 +7,7 @@ import { Create } from "./create";
 import FirstUpload from "./firstUpload";
 import { Map } from "./map";
 import Page from "./page";
+import { Upload } from "./upload";
 
 export function Gui(props: { state: State; actions: Actions }) {
   const state = props.state;
@@ -40,6 +41,22 @@ export function Gui(props: { state: State; actions: Actions }) {
           actions={actions.create}
         />
       );
+      break;
+    case "upload":
+      if (!state.global.userId) {
+        window.location.hash = "/"; // redirect to home page
+        throw new Error("Not logged in!");
+      } else {
+        pageType = (
+          <Upload
+            state={{
+              ...state.pageSpecific.upload,
+              availableColors: ["#ce7060", "#92e3fc", "#fade8d", "#9ce479", "#e39061", "#d3b2d6", "#95cac4"],
+            }}
+            actions={{ ...actions.upload, next: () => actions.gotoMapping(state.global.dataSetId || "") }}
+          />
+        );
+      }
       break;
     default:
       assertNever(state.currentPage);

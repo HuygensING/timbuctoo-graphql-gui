@@ -4,10 +4,14 @@ import { MappingProps, PredicateMap, RawDataCollections } from "../components/ma
 import config from "../config";
 import { assertNever } from "../support/assertNever";
 
-type possiblePages = "default" | "mapping" | "create";
-const timbuctooPrefix = config.timbuctooPrefix;
+type possiblePages = "default" | "mapping" | "create" | "upload";
+const defaultUriPrefix = "http://timbuctoo.huygens.knaw.nl/v5/data/";
 
 type Action =
+  | {
+      type: "startFileUpload";
+      fileType: "xlsx" | "csv" | "mdb" | "dataperfect" | "rs" | undefined;
+    }
   | {
       type: "setDataSets";
       dataSets: { [key: string]: { [key: string]: string } };
@@ -73,6 +77,17 @@ type Action =
       type: "@@INIT";
     };
 
+interface UploadData {
+  title?: string;
+  fileIsBeingAdded?: "xlsx" | "csv" | "mdb" | "dataperfect" | "rs";
+  remoteSets: string[];
+  remoteUri?: string;
+  files: string[];
+  description?: string;
+  provenance?: string;
+  color?: string;
+}
+
 export interface State {
   currentPage: possiblePages;
   global: {
@@ -88,7 +103,7 @@ export interface State {
       title: string;
     };
     index: {};
-    upload: {};
+    upload: UploadData;
     mapping: MappingProps;
     mappingPrivate: {
       keyCounter: number;
@@ -107,13 +122,15 @@ const preloaded = {};
 export const defaultState: State = {
   currentPage: "default",
   global: {
-    userId: "DUMMY",
-    dataSetId: "dierikx_ontwikkelingssamenwerking",
+    dataSetId: undefined,
     dataSets: {},
   },
   pageSpecific: {
     index: {},
-    upload: {},
+    upload: {
+      remoteSets: [],
+      files: [],
+    },
     mapping: {
       currentTab: Object.keys(preloaded)[0],
       mappings: preloaded,
@@ -145,7 +162,19 @@ function slowPatch(state: State, override: RecursivePartial<Readonly<State>>) {
 
 function initMapping(dataSetId: string, state: State) {
   return slowPatch(state, {
+    global: {
+      dataSetId: dataSetId,
+    },
     currentPage: "mapping",
+  });
+}
+
+function initUpload(dataSetId: string, state: State) {
+  return slowPatch(state, {
+    global: {
+      dataSetId: dataSetId,
+    },
+    currentPage: "upload",
   });
 }
 
@@ -209,7 +238,7 @@ function updateValue(fieldName: string, value: string, state: State) {
           immState.getIn(["pageSpecific", "mapping", "currentTab"]),
           "collectionType",
         ],
-        timbuctooPrefix + state.global.userId + "/" + state.global.dataSetId + label,
+        defaultUriPrefix + state.global.userId + "/" + state.global.dataSetId + label,
       )
       .setIn(
         [
@@ -220,7 +249,7 @@ function updateValue(fieldName: string, value: string, state: State) {
           "mainCollection",
           "subjectTemplate",
         ],
-        timbuctooPrefix + state.global.userId + "/" + state.global.dataSetId + label + "/{tim_id}",
+        defaultUriPrefix + state.global.userId + "/" + state.global.dataSetId + label + "/{tim_id}",
       )
       .toJS();
   } else if (fieldName === "collectionType") {
@@ -350,18 +379,18 @@ function setPredicateValue(predicateMap: PredicateMap, property: string, value: 
 function setRawDataSets(rawDataSetsInput: any, state: State) {
   // const rawDataSetsEx = {
   //   data: {
-  //     http___timbuctoo_collectionList: {
+  //     tim_collectionList: {
   //       items: [
   //         {
   //           uri: "http://timbuctoo/props/dierikx_ontwikkelingssamenwerking/file/GeboortedagTEMP",
-  //           http___rdfs_label: {
+  //           rdfs_label: {
   //             value: "Blad1"
   //           },
-  //           http___timbuctoo_com_thing_ofCollection_inverse: {
+  //           tim_ofCollection_inverse: {
   //             items: [
   //               {
   //                 uri: "http://timbuctoo/props/dierikx_ontwikkelingssamenwerking/file/GeboortedagTEMP",
-  //                 http___timpropname: {
+  //                 tim_timpropname: {
   //                   value: "GeboortedagTEMP"
   //                 }
   //               }
@@ -373,14 +402,12 @@ function setRawDataSets(rawDataSetsInput: any, state: State) {
   //   }
   // };
   const rawDataSets: RawDataCollections = {};
-  for (const collection of rawDataSetsInput.data.http___timbuctoo_collectionList.items) {
+  for (const collection of rawDataSetsInput.data.tim_collectionList.items) {
     rawDataSets[collection.uri] = {
-      label: collection.http___rdfs_label.value,
-      properties: collection.http___timbuctoo_com_thing_ofCollection_inverse.items.map(function(item: {
-        http___timpropname: { value: string };
-      }) {
+      label: collection.rdfs_label.value,
+      properties: collection.tim_ofCollection_inverse.items.map(function(item: { tim_timpropname: { value: string } }) {
         return {
-          name: item.http___timpropname.value,
+          name: item.tim_timpropname.value,
           inUse: false,
         };
       }),
@@ -440,6 +467,14 @@ export function reducer(state: State, action: Action): State {
           },
         },
       });
+    case "startFileUpload":
+      return slowPatch(state, {
+        pageSpecific: {
+          upload: {
+            fileIsBeingAdded: action.fileType,
+          },
+        },
+      });
     case "newPage":
       switch (action.name) {
         case "default":
@@ -448,6 +483,8 @@ export function reducer(state: State, action: Action): State {
           return initMapping(action.args.dataSetId, state);
         case "create":
           return initCreate(state);
+        case "upload":
+          return initUpload(action.args.dataSetId, state);
         default:
           assertNever(action.name);
           return state;

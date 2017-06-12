@@ -14,6 +14,12 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             ...defaultValues,
             title: "Sheep across the ages",
           }}
+          actions={{
+            showModal: action("showModal"),
+            cancelModal: action("cancelModal"),
+            startUpload: action("startUpload"),
+            next: action("next"),
+          }}
         />
       </Page>,
     )
@@ -28,6 +34,12 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             provenance: lorem({ count: 10, units: "sentences" }),
             color: "#9ce479",
           }}
+          actions={{
+            showModal: action("showModal"),
+            cancelModal: action("cancelModal"),
+            startUpload: action("startUpload"),
+            next: action("next"),
+          }}
         />
       </Page>,
     )
@@ -39,6 +51,12 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             title: "Sheep across the ages",
             fileIsBeingAdded: "xlsx",
           }}
+          actions={{
+            showModal: action("showModal"),
+            cancelModal: action("cancelModal"),
+            startUpload: action("startUpload"),
+            next: action("next"),
+          }}
         />
       </Page>,
     )
@@ -49,6 +67,12 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             ...defaultValues,
             title: "Sheep across the ages",
             fileIsBeingAdded: "csv",
+          }}
+          actions={{
+            showModal: action("showModal"),
+            cancelModal: action("cancelModal"),
+            startUpload: action("startUpload"),
+            next: action("next"),
           }}
         />
       </Page>,
@@ -62,6 +86,12 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             fileIsBeingAdded: "mdb",
             files: ["some previous file.csv"],
           }}
+          actions={{
+            showModal: action("showModal"),
+            cancelModal: action("cancelModal"),
+            startUpload: action("startUpload"),
+            next: action("next"),
+          }}
         />
       </Page>,
     )
@@ -72,6 +102,12 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             ...defaultValues,
             title: "Sheep across the ages",
             fileIsBeingAdded: "rs",
+          }}
+          actions={{
+            showModal: action("showModal"),
+            cancelModal: action("cancelModal"),
+            startUpload: action("startUpload"),
+            next: action("next"),
           }}
         />
       </Page>,
@@ -84,6 +120,12 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             title: "Sheep across the ages",
             fileIsBeingAdded: "rs",
             remoteUri: "http://example.org",
+          }}
+          actions={{
+            showModal: action("showModal"),
+            cancelModal: action("cancelModal"),
+            startUpload: action("startUpload"),
+            next: action("next"),
           }}
         />
       </Page>,
@@ -98,6 +140,12 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             remoteSets: ["http://example.org/set/1", "http://example.org/set/2"],
             remoteUri: "http://example.org",
           }}
+          actions={{
+            showModal: action("showModal"),
+            cancelModal: action("cancelModal"),
+            startUpload: action("startUpload"),
+            next: action("next"),
+          }}
         />
       </Page>,
     )
@@ -108,6 +156,12 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             ...defaultValues,
             title: "Sheep across the ages",
             fileIsBeingAdded: "dataperfect",
+          }}
+          actions={{
+            showModal: action("showModal"),
+            cancelModal: action("cancelModal"),
+            startUpload: action("startUpload"),
+            next: action("next"),
           }}
         />
       </Page>,

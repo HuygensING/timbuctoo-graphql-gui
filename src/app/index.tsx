@@ -42,6 +42,7 @@ const router = new Router(
     routes: {
       default: "/",
       mapping: "/mapping/:dataSetId",
+      upload: "/upload/:dataSetId",
       create: "/create",
     },
   },
@@ -75,13 +76,18 @@ if (hsid) {
     .then(function(response) {
       return response.json();
     })
-    .then(function(userData: any) {
+    .then(async function(userData: any) {
       store.dispatch({
         type: "setLoginToken",
         hsid,
         persistentId: userData.persistentId,
         displayName: userData.displayName,
       });
+      const state = store.getState();
+      if (state.currentPage === "mapping" && state.global.dataSetId) {
+        const rawdataSets = await getRawCollections(userData.persistentId, state.global.dataSetId);
+        store.dispatch({ type: "setRawDataSets", rawDataSets: rawdataSets });
+      }
     });
 }
 

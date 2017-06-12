@@ -1,13 +1,17 @@
 import { PlaceHolderPredicateMap, PredicateMap } from "../components/map.types";
 import config from "../config";
 import { Store } from "../reducers";
+import { viewToRml } from "./rmlToViewState";
 
 export interface Actions {
   performLogin: () => void;
   gotoCreate: () => void;
   gotoUpload: (dataSetId: string) => void;
+  gotoMapping: (dataSetId: string) => void;
+  gotoGraphiql: () => void;
   loadDataSets: () => void;
   mapping: {
+    execute: () => void;
     gotoTab: (tabname: string | undefined) => void;
     setValue: (fieldName: string, value: string) => void;
     setPredicateMap: (predicateMap: PredicateMap) => void;
@@ -17,10 +21,15 @@ export interface Actions {
     onTitleChange: (newTitle: string) => void;
     onCreateClick: () => void;
   };
+  upload: {
+    showModal: (key: "xlsx" | "csv" | "mdb" | "dataperfect" | "rs") => void;
+    cancelModal: () => void;
+    startUpload: () => void;
+  };
 }
 
 export function actionsFactory(store: Store): Actions {
-  const actions = {
+  const actions: Actions = {
     performLogin() {
       post("https://secure.huygens.knaw.nl/saml2/login", {
         hsurl: window.location.href,
@@ -31,6 +40,13 @@ export function actionsFactory(store: Store): Actions {
     },
     gotoUpload(dataSetId: string) {
       window.location.hash = "/upload/" + dataSetId;
+    },
+    gotoMapping(dataSetId: string) {
+      window.location.hash = "/mapping/" + dataSetId;
+    },
+    gotoGraphiql() {
+      const state = store.getState();
+      window.location.href = config.apiUrl + "/static/graphiql#" + state.global.userId + "/" + state.global.dataSetId;
     },
     loadDataSets() {
       fetch(config.apiUrl + "/v5/dataSets/", {})
@@ -45,6 +61,34 @@ export function actionsFactory(store: Store): Actions {
         });
     },
     mapping: {
+      execute: () => {
+        const state = store.getState();
+        const userId = state.global.userId;
+        const dataSetId = state.global.dataSetId;
+        if (userId && dataSetId) {
+          const rml = viewToRml(state.pageSpecific.mapping.mappings);
+          console.log(JSON.stringify(rml, undefined, 2));
+          fetch(config.apiUrl + `/v5/${userId}/${dataSetId}/rml`, {
+            method: "post",
+            headers: {
+              Authorization: state.global.hsid,
+            },
+            body: JSON.stringify(rml),
+          })
+            .then(function(response) {
+              if (response.status < 300) {
+                alert("Mapping executed successfully!");
+              } else {
+                console.log(response);
+                alert("Something went wrong during the mapping");
+              }
+            })
+            .catch(function() {
+              console.log(arguments);
+              alert("Something went wrong during the mapping");
+            });
+        }
+      },
       gotoTab: (tabName: string | undefined) => store.dispatch({ type: "gotoTab", tabName }),
       setValue: (fieldName: string, value: string) => {
         store.dispatch({ type: "setValue", fieldName, value });
@@ -57,6 +101,48 @@ export function actionsFactory(store: Store): Actions {
           property,
           value,
         }),
+    },
+    upload: {
+      showModal: (action: "xlsx" | "csv" | "mdb" | "dataperfect" | "rs") => {
+        store.dispatch({ type: "startFileUpload", fileType: action });
+      },
+      cancelModal: () => {
+        console.log("cancel");
+        store.dispatch({ type: "startFileUpload", fileType: undefined });
+      },
+      startUpload: () => {
+        console.log("start");
+        const state = store.getState();
+        const userId = state.global.userId;
+        const dataSetId = state.global.dataSetId;
+        if (userId && dataSetId) {
+          const formData = new FormData();
+
+          formData.append("type", state.pageSpecific.upload.fileIsBeingAdded);
+          formData.append("file", (document.getElementById("TheFileInput") as any).files[0]);
+
+          fetch(config.apiUrl + `/v5/${userId}/${dataSetId}/upload/table`, {
+            method: "post",
+            headers: {
+              Authorization: state.global.hsid,
+            },
+            body: formData,
+          })
+            .then(function(response) {
+              if (response.status < 300) {
+                alert("File uploaded successfully!");
+              } else {
+                alert("Something went wrong during the upload");
+              }
+            })
+            .catch(function() {
+              console.log(arguments);
+              alert("Something went wrong during the upload");
+            });
+        } else {
+          window.location.hash = "/";
+        }
+      },
     },
     create: {
       onTitleChange: (newTitle: string) =>
@@ -94,8 +180,11 @@ export function fakeActionsFactory(dummy: (name: string) => (...args: any[]) => 
     performLogin: dummy("performLogin"),
     gotoCreate: dummy("gotoCreate"),
     gotoUpload: dummy("gotoUpload"),
+    gotoMapping: dummy("gotoMapping"),
+    gotoGraphiql: dummy("gotoMapping"),
     loadDataSets: dummy("loadDataSets"),
     mapping: {
+      execute: dummy("mapping.execute"),
       gotoTab: dummy("mapping.gotoTab"),
       setValue: dummy("mapping.setValue"),
       setPredicateMap: dummy("mapping.setPredicateMap"),
@@ -104,6 +193,11 @@ export function fakeActionsFactory(dummy: (name: string) => (...args: any[]) => 
     create: {
       onTitleChange: dummy("create.onTitleChange"),
       onCreateClick: dummy("create.onCreateClick"),
+    },
+    upload: {
+      showModal: dummy("upload.showModal"),
+      cancelModal: dummy("upload.cancelModal"),
+      startUpload: dummy("upload.startUpload"),
     },
   };
 }

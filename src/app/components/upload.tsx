@@ -10,6 +10,7 @@ function StyledFileInput(props: { accept: string }) {
     <label className="btn btn-primary">
       select file
       <input
+        id="TheFileInput"
         accept={props.accept}
         type="file"
         name="file"
@@ -25,7 +26,7 @@ function StyledFileInput(props: { accept: string }) {
   );
 }
 
-function UploadForm(props: { children?: any; title: string }) {
+function UploadForm(props: { children?: any; title: string; cancelModal: () => void; startUpload: () => void }) {
   return (
     <Modal show={true} onHide={() => {}}>
       <Modal.Header closeButton>
@@ -35,13 +36,13 @@ function UploadForm(props: { children?: any; title: string }) {
         {props.children}
       </Modal.Body>
       <Modal.Footer>
-        <Button>Cancel</Button>
-        <Button bsStyle="primary">Upload</Button>
+        <Button onClick={props.cancelModal}>Cancel</Button>
+        <Button onClick={props.startUpload} bsStyle="primary">Upload</Button>
       </Modal.Footer>
     </Modal>
   );
 }
-
+type AvailableFileTypes = "xlsx" | "csv" | "mdb" | "dataperfect" | "rs";
 export const defaultValues = {
   remoteSets: [],
   files: [],
@@ -53,7 +54,7 @@ export const defaultValues = {
 export function Upload(props: {
   state: {
     title?: string;
-    fileIsBeingAdded?: "xlsx" | "csv" | "mdb" | "dataperfect" | "rs";
+    fileIsBeingAdded?: AvailableFileTypes;
     remoteSets: string[];
     remoteUri?: string;
     files: string[];
@@ -61,6 +62,12 @@ export function Upload(props: {
     provenance?: string;
     color?: string;
     availableColors: string[];
+  };
+  actions: {
+    showModal: (key: AvailableFileTypes) => void;
+    cancelModal: () => void;
+    startUpload: () => void;
+    next: () => void;
   };
 }) {
   const {
@@ -79,35 +86,55 @@ export function Upload(props: {
     switch (fileIsBeingAdded) {
       case "xlsx":
         fileAddInfo = (
-          <UploadForm title="Upload Excel">
+          <UploadForm
+            title="Upload Excel"
+            cancelModal={props.actions.cancelModal}
+            startUpload={props.actions.startUpload}
+          >
             <StyledFileInput accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
           </UploadForm>
         );
         break;
       case "csv":
         fileAddInfo = (
-          <UploadForm title="Upload CSV">
+          <UploadForm
+            title="Upload CSV"
+            cancelModal={props.actions.cancelModal}
+            startUpload={props.actions.startUpload}
+          >
             <StyledFileInput accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
           </UploadForm>
         );
         break;
       case "mdb":
         fileAddInfo = (
-          <UploadForm title="Upload MS Access">
+          <UploadForm
+            title="Upload MS Access"
+            cancelModal={props.actions.cancelModal}
+            startUpload={props.actions.startUpload}
+          >
             <StyledFileInput accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
           </UploadForm>
         );
         break;
       case "dataperfect":
         fileAddInfo = (
-          <UploadForm title="Upload DataPerfect">
+          <UploadForm
+            title="Upload DataPerfect"
+            cancelModal={props.actions.cancelModal}
+            startUpload={props.actions.startUpload}
+          >
             <StyledFileInput accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
           </UploadForm>
         );
         break;
       case "rs":
         fileAddInfo = (
-          <UploadForm title="Import dataset via resource sync discovery">
+          <UploadForm
+            title="Import dataset via resource sync discovery"
+            cancelModal={props.actions.cancelModal}
+            startUpload={props.actions.cancelModal}
+          >
             <div>
               <div className="form-group">
                 <div className="input-group">
@@ -150,18 +177,20 @@ export function Upload(props: {
           {fileIsBeingAdded ? fileAddInfo : null}
           <DropdownButton bsStyle="primary" title="Add..." id="addFileButton">
             {" "}{/*onSelect*/}
-            <MenuItem eventKey="xlsx">MS Excel (*.xlsx)</MenuItem>
-            <MenuItem eventKey="csv">Comma separated values (*.csv)</MenuItem>
-            <MenuItem eventKey="mdb">MS Access (*.mdb)</MenuItem>
-            <MenuItem eventKey="dataperfect">
+            <MenuItem eventKey="xlsx" onClick={e => props.actions.showModal("xlsx")}>MS Excel (*.xlsx)</MenuItem>
+            <MenuItem eventKey="csv" onClick={e => props.actions.showModal("csv")}>
+              Comma separated values (*.csv)
+            </MenuItem>
+            <MenuItem eventKey="mdb" onClick={e => props.actions.showModal("mdb")}>MS Access (*.mdb)</MenuItem>
+            <MenuItem eventKey="dataperfect" onClick={e => props.actions.showModal("dataperfect")}>
               Dataperfect (a zip containing all the files)
             </MenuItem>
-            <MenuItem eventKey="rs">
+            <MenuItem eventKey="rs" onClick={e => props.actions.showModal("rs")}>
               Download dataset from a clariah server
             </MenuItem>
           </DropdownButton>
         </div>
-        <div className="col-md-6">
+        {/*<div className="col-md-6">
           <h4>Color</h4>
           {availableColors.map(colorCode =>
             <a
@@ -185,9 +214,9 @@ export function Upload(props: {
               />{" "}
             </a>,
           )}
-        </div>
+        </div>*/}
       </div>
-      <div className="row">
+      {/*<div className="row">
         <div className="col-md-6">
           <h4>Description: </h4>
           <textarea rows={10} className="form-control" placeholder="Enter a description..." value={description} />
@@ -201,10 +230,10 @@ export function Upload(props: {
             value={provenance}
           />
         </div>
-      </div>
+      </div>*/}
       <div className="row" style={{ marginTop: 15 }}>
         <div className="col-md-1 col-md-offset-11">
-          <Button bsStyle="primary">Save</Button>
+          <Button bsStyle="primary" onClick={props.actions.next}>next</Button>
         </div>
       </div>
     </div>

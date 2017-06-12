@@ -5,6 +5,7 @@
         "promise-function-async": true,
         "await-promise": true,
         "interface-name": [true, "never-prefix"],
+        "no-console": [false],
 
         //this stuff is handled by prettier
         "space-before-function-paren": [false],
