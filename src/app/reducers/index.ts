@@ -1,12 +1,31 @@
 import { fromJS, Map } from "immutable";
 import { RmlJsonLd, rmlToView } from "../actions/rmlToViewState";
 import { MappingProps, PredicateMap, RawDataCollections } from "../components/map.types";
+import config from "../config";
 import { assertNever } from "../support/assertNever";
 
-type possiblePages = "default" | "mapping";
-const timbuctooPrefix = "https://data.anansi.clariah.nl/v5/rdfNamespace/";
+type possiblePages = "default" | "mapping" | "create";
+const timbuctooPrefix = config.timbuctooPrefix;
 
 type Action =
+  | {
+      type: "setDataSets";
+      dataSets: { [key: string]: { [key: string]: string } };
+    }
+  | {
+      type: "setDataSetId";
+      dataSetId: string;
+    }
+  | {
+      type: "setCreateTitle";
+      newTitle: string;
+    }
+  | {
+      type: "setLoginToken";
+      hsid: string;
+      persistentId: string;
+      displayName: string;
+    }
   | {
       type: "setState";
       state: State;
@@ -57,11 +76,17 @@ type Action =
 export interface State {
   currentPage: possiblePages;
   global: {
+    hsid?: string;
     userId?: string;
     dataSetId: string | undefined;
+    displayName?: string;
+    dataSets: { [key: string]: { [key: string]: string } };
   };
   pageSpecific: {
-    create: {};
+    create?: {
+      dataSetId: string;
+      title: string;
+    };
     index: {};
     upload: {};
     mapping: MappingProps;
@@ -84,9 +109,9 @@ export const defaultState: State = {
   global: {
     userId: "DUMMY",
     dataSetId: "dierikx_ontwikkelingssamenwerking",
+    dataSets: {},
   },
   pageSpecific: {
-    create: {},
     index: {},
     upload: {},
     mapping: {
@@ -101,7 +126,15 @@ export const defaultState: State = {
 };
 
 function initIndex(state: State) {
-  return state;
+  return slowPatch(state, {
+    currentPage: "default",
+  });
+}
+
+function initCreate(state: State) {
+  return slowPatch(state, {
+    currentPage: "create",
+  });
 }
 
 type RecursivePartial<T> = { [P in keyof T]?: RecursivePartial<T[P]> };
@@ -359,6 +392,10 @@ function setRawDataSets(rawDataSetsInput: any, state: State) {
 
 export function reducer(state: State, action: Action): State {
   switch (action.type) {
+    case "setLoginToken":
+      return slowPatch(state, {
+        global: { hsid: action.hsid, userId: action.persistentId, displayName: action.displayName },
+      });
     case "404":
       alert("Page not found!");
       return state;
@@ -382,12 +419,35 @@ export function reducer(state: State, action: Action): State {
           },
         }),
       ).toJS();
+    case "setDataSetId":
+      return slowPatch(state, {
+        global: {
+          dataSetId: action.dataSetId,
+        },
+      });
+    case "setDataSets":
+      return slowPatch(state, {
+        global: {
+          dataSets: action.dataSets,
+        },
+      });
+    case "setCreateTitle":
+      return slowPatch(state, {
+        pageSpecific: {
+          create: {
+            title: action.newTitle,
+            dataSetId: action.newTitle.replace(/[^a-zA-Z0-9_-]+/g, "-").toLowerCase(),
+          },
+        },
+      });
     case "newPage":
       switch (action.name) {
         case "default":
           return initIndex(state);
         case "mapping":
           return initMapping(action.args.dataSetId, state);
+        case "create":
+          return initCreate(state);
         default:
           assertNever(action.name);
           return state;

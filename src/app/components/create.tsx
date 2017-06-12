@@ -55,6 +55,10 @@ export function Create(props: {
     baseUri: string;
     dataSetId?: string;
   };
+  actions: {
+    onTitleChange: (newTitle: string) => void;
+    onCreateClick: () => void;
+  };
 }) {
   const { title, titleIsDuplicate, userId, baseUri, dataSetId } = props.state;
   const datasetUrl = baseUri + userId + "/" + dataSetId + "/";
@@ -71,7 +75,13 @@ export function Create(props: {
             <label className="control-label">Title: </label>
             <div className="input-group">
               <span className="input-group-addon">{userId}/</span>
-              <input className="form-control" type="text" placeholder="the title of your dataset" value={title} />
+              <input
+                onChange={e => props.actions.onTitleChange(e.target.value)}
+                className="form-control"
+                type="text"
+                placeholder="the title of your dataset"
+                value={title}
+              />
               {titleIsDuplicate
                 ? <span className="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" />
                 : null}
@@ -90,7 +100,12 @@ export function Create(props: {
                 </span>
               : null}
           </fieldset>
-          <Button bsStyle="success" className="pull-right" disabled={title == null}>
+          <Button
+            onClick={props.actions.onCreateClick}
+            bsStyle="success"
+            className="pull-right"
+            disabled={title == null}
+          >
             create
           </Button>
         </div>

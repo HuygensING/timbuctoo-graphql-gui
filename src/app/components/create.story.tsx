@@ -13,6 +13,10 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
           state={{
             ...defaultValues,
           }}
+          actions={{
+            onTitleChange: action("onTitleChange"),
+            onCreateClick: action("onCreateClick"),
+          }}
         />
       </Page>,
     )
@@ -24,6 +28,10 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             title: "Sheep across the ages",
             dataSetId: "sheep-across-the-ages",
             titleIsDuplicate: true,
+          }}
+          actions={{
+            onTitleChange: action("onTitleChange"),
+            onCreateClick: action("onCreateClick"),
           }}
         />
       </Page>,
@@ -37,6 +45,10 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             dataSetId: "sheep-across-the-ages",
             titleIsDuplicate: false,
           }}
+          actions={{
+            onTitleChange: action("onTitleChange"),
+            onCreateClick: action("onCreateClick"),
+          }}
         />
       </Page>,
     )
@@ -48,6 +60,10 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             title: 'Sheep across "the ages"',
             dataSetId: "sheep-across-the-ages",
             titleIsDuplicate: false,
+          }}
+          actions={{
+            onTitleChange: action("onTitleChange"),
+            onCreateClick: action("onCreateClick"),
           }}
         />
       </Page>,

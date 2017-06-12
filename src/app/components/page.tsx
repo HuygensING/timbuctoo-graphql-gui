@@ -8,7 +8,7 @@ function Page(props: { username?: string; userlocation?: string; children?: any 
           <div className="container">
             <div className="navbar-header">
               {" "}
-              <a className="navbar-brand" href="#">
+              <a className="navbar-brand" href="#/">
                 <img src="images/page/logo-timbuctoo.svg" className="logo" alt="timbuctoo" />
               </a>{" "}
             </div>

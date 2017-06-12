@@ -30,35 +30,38 @@ export class Router<T, Routes extends { [key in keyof T]: string }, State> {
   }
 
   public onUrl(url: string) {
-    if (url in this.storedState && this.storedState[url].state !== undefined) {
-      const storedState = this.storedState[url];
-      // make typescript happy
-      if (storedState.state === undefined) {
-        throw new Error("This cannot happen. We check for it two lines above.");
-      }
-      this.config.onNavigateAgain(storedState.name, storedState.state);
-      this.currentUrl = url;
-    } else {
-      let matchedRoute: {
-        name: keyof Routes;
-        routeMatch: { [i: string]: string };
-      } | null = null;
-      for (const routeHandler of this.routes) {
-        const routeMatch = routeHandler.route.match(url);
-        if (typeof routeMatch !== "boolean") {
-          matchedRoute = { name: routeHandler.name, routeMatch };
-          break;
-        }
-      }
-      if (matchedRoute !== null) {
-        this.config.onNavigateNew(matchedRoute.name, matchedRoute.routeMatch);
-        this.storedState[url] = { name: matchedRoute.name, state: undefined };
-        this.currentUrl = url;
-      } else {
-        this.config.onNoMatchFound(url);
-        this.currentUrl = undefined;
+    if (url === "") {
+      url = "/";
+    }
+    // if (url in this.storedState && this.storedState[url].state !== undefined) {
+    //   const storedState = this.storedState[url];
+    //   // make typescript happy
+    //   if (storedState.state === undefined) {
+    //     throw new Error("This cannot happen. We check for it two lines above.");
+    //   }
+    //   this.config.onNavigateAgain(storedState.name, storedState.state);
+    //   this.currentUrl = url;
+    // } else {
+    let matchedRoute: {
+      name: keyof Routes;
+      routeMatch: { [i: string]: string };
+    } | null = null;
+    for (const routeHandler of this.routes) {
+      const routeMatch = routeHandler.route.match(url);
+      if (typeof routeMatch !== "boolean") {
+        matchedRoute = { name: routeHandler.name, routeMatch };
+        break;
       }
     }
+    if (matchedRoute !== null) {
+      this.config.onNavigateNew(matchedRoute.name, matchedRoute.routeMatch);
+      this.storedState[url] = { name: matchedRoute.name, state: undefined };
+      this.currentUrl = url;
+    } else {
+      this.config.onNoMatchFound(url);
+      this.currentUrl = undefined;
+    }
+    // }
   }
 
   public saveState(state: State) {

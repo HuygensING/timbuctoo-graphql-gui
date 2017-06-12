@@ -6,11 +6,19 @@ import { Router } from "../_external/router";
 import { actionsFactory } from "./actions";
 import { dierikx } from "./actions/rmlToViewState.test";
 import { Gui } from "./components";
+import config from "./config";
 import { getRawCollections } from "./datafetchers/rawCollections";
 import { defaultState, reducer, Store } from "./reducers";
 
-if (location.hash === "") {
-  location.hash = "/";
+function getQueryVariable(variable: string, location: Location) {
+  const query = location.search.substring(1);
+  const vars = query.split("&");
+  for (const param of vars) {
+    const pair = param.split("=");
+    if (decodeURIComponent(pair[0]) === variable) {
+      return decodeURIComponent(pair[1]);
+    }
+  }
 }
 
 const store: Store = createStore(
@@ -20,7 +28,9 @@ const store: Store = createStore(
 );
 const router = new Router(
   {
-    onNavigateAgain: (name, state) => store.dispatch({ type: "setState", state }),
+    onNavigateAgain: (name, state) => {
+      store.dispatch({ type: "setState", state });
+    },
     onNavigateNew: async function(name, args) {
       store.dispatch({ type: "newPage", name, args });
       if (name === "mapping") {
@@ -32,6 +42,7 @@ const router = new Router(
     routes: {
       default: "/",
       mapping: "/mapping/:dataSetId",
+      create: "/create",
     },
   },
   location.hash.substr(1),
@@ -54,14 +65,24 @@ store.subscribe(function() {
 
 ReactDom.render(<Gui state={store.getState()} actions={actions} />, document.getElementById("main"));
 
-compact(
-  dierikx as any,
-  {
-    rr: "http://www.w3.org/ns/r2rml#",
-    rml: "http://semweb.mmlab.be/ns/rml#",
-    tim: "http://timbuctoo.huygens.knaw.nl/mapping#",
-  },
-  function(err: any, success: any) {
-    store.dispatch({ type: "setRml", rml: success as any });
-  },
-);
+const hsid = getQueryVariable("hsid", window.location);
+if (hsid) {
+  fetch(config.apiUrl + "/v2.1/system/users/me", {
+    headers: {
+      Authorization: hsid,
+    },
+  })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(userData: any) {
+      store.dispatch({
+        type: "setLoginToken",
+        hsid,
+        persistentId: userData.persistentId,
+        displayName: userData.displayName,
+      });
+    });
+}
+
+actions.loadDataSets();
