@@ -11,6 +11,12 @@ import {
   RawDataCollection,
 } from "./map.types";
 
+const captions: { [key: string]: string } = {
+  template: "Combine fields",
+  expression: "Programming code",
+  constant: "Constant value",
+};
+
 function assertNever(action: never): void {
   console.error("Unhandled case", action);
 }
@@ -75,13 +81,13 @@ function AddPredicateButton(props: {
   return (
     <DropdownButton bsStyle={props.bsStyle} id="input-dropdown-addon" title={props.caption || "Select..."}>
       <MenuItem key="template" onClick={() => addMap("template")}>
-        template
+        {captions.template}
       </MenuItem>
       <MenuItem key="expression" onClick={() => addMap("expression")}>
-        expression
+        {captions.expression}
       </MenuItem>
       <MenuItem key="constant" onClick={() => addMap("constant")}>
-        constant
+        {captions.constant}
       </MenuItem>
       <MenuItem divider />
       {props.rawDataCollection.properties.map(
@@ -150,7 +156,7 @@ function renderPred(
           singleLine={true}
           displayTransform={(id: any, display: any, type: any) => "{" + id + "}"}
           value={implementation.template}
-          placeholder="You can type a text that contains data fields. To add a datafield enclose it's name in { and }."
+          placeholder="To add a datafield enclose it's name in { and }."
           onChange={(e: any) => {
             actions.mapping.setPredicateValue(implementation, "template", (e.target as any).value);
           }}
@@ -203,7 +209,7 @@ function renderPred(
 
   return (
     <div className="row" style={{ paddingTop: 15 }}>
-      <div className="col-sm-2 col-xs-8">
+      <div className="col-sm-2 col-xs-7">
         {disableNameChange
           ? <b>{implementation.predicate}</b>
           : <FormControl
@@ -212,20 +218,24 @@ function renderPred(
               onChange={e => actions.mapping.setPredicateValue(implementation, "predicate", (e.target as any).value)}
             />}
       </div>
-      <div className="col-sm-1 col-xs-3">
+      <div className="col-sm-2 col-xs-4">
         <AddPredicateButton
           newPropertyPrefix={newPropertyPrefix}
           actions={actions}
           predicateMap={implementation}
           rawDataCollection={rawDataCollection}
-          caption={implementation.type === "property" ? implementation.propertyName : implementation.type}
+          caption={
+            implementation.type === "property"
+              ? implementation.propertyName
+              : implementation.type ? captions[implementation.type] : ""
+          }
         />
       </div>
       <div className="col-sm-6 col-xs-9">
         {typeSpecificPart}
       </div>
       {typeSpecificPart
-        ? <div className="col-sm-3 col-xs-3">
+        ? <div className="col-sm-2 col-xs-3">
             <DropdownButton
               componentClass={InputGroup.Button}
               id="input-dropdown-addon"
@@ -314,17 +324,7 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
       </div>
       <div className="row">
         <div className="col-md-6">
-          <h4>We'll name this collection:</h4>
-          <FormControl value={currentTab} onChange={onChange("collectionName")} />
-          <h4>We'll give the items the following (unique) identifier:</h4>
-          <FormControl
-            placeholder="A template for the entity URI"
-            onChange={onChange("subjectTemplate")}
-            value={curMap.mainCollection.subjectTemplate}
-          />
-        </div>
-        <div className="col-md-6">
-          <h4>The data that we're going to turn into rdf is located at...</h4>
+          <h4>1. We're going to convert data from...</h4>
           <DropdownButton
             bsStyle="default"
             title={mainCollection.sourceCollection || "collection..."}
@@ -336,7 +336,7 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
               </MenuItem>,
             )}
           </DropdownButton>{" "}
-          <h4>And the items look a bit like a</h4>
+          <h4>2. And the items look a bit like a</h4>
           <DropdownButton bsStyle="default" title={curMap.type} id="dropdown-no-s">
             {Object.keys(types).map(type =>
               <MenuItem eventKey={type} onClick={onChangeV("targetType", type)}>
@@ -344,6 +344,16 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
               </MenuItem>,
             )}
           </DropdownButton>{" "}
+        </div>
+        <div className="col-md-6">
+          <h4><small>(oh, and we'll name this collection):</small></h4>
+          <FormControl value={currentTab} onChange={onChange("collectionName")} />
+          <h4><small>(and give it a nice unique identifier):</small></h4>
+          <FormControl
+            placeholder="A template for the entity URI"
+            onChange={onChange("subjectTemplate")}
+            value={curMap.mainCollection.subjectTemplate}
+          />
         </div>
       </div>
       {curType == null
