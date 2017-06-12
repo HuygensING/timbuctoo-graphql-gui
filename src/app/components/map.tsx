@@ -1,5 +1,6 @@
 import * as React from "react";
 import { DropdownButton, Form, FormControl, InputGroup, MenuItem, Nav, NavItem } from "react-bootstrap";
+import { Mention, MentionsInput } from "react-mentions";
 import { Actions } from "../actions";
 import {
   Mapping,
@@ -47,6 +48,15 @@ function AddPredicateButton(props: {
         dataType: predicateMap.dataType,
       });
     }
+    if (type === "constant") {
+      props.actions.mapping.setPredicateMap({
+        type,
+        key: predicateMap.key,
+        predicate: predicateMap.predicate || "",
+        constant: (predicateMap as any).template || "",
+        dataType: predicateMap.dataType,
+      });
+    }
   }
   function addPropMap(propertyName: string) {
     const predicateMap = props.predicateMap;
@@ -69,6 +79,9 @@ function AddPredicateButton(props: {
       </MenuItem>
       <MenuItem key="expression" onClick={() => addMap("expression")}>
         expression
+      </MenuItem>
+      <MenuItem key="constant" onClick={() => addMap("constant")}>
+        constant
       </MenuItem>
       <MenuItem divider />
       {props.rawDataCollection.properties.map(
@@ -121,6 +134,16 @@ function renderPred(
     case "property":
       typeSpecificPart = <span />;
       break;
+    case "constant":
+      typeSpecificPart = (
+        <FormControl
+          type="text"
+          value={implementation.constant}
+          placeholder="Type something here"
+          onChange={e => actions.mapping.setPredicateValue(implementation, "constant", (e.target as any).value)}
+        />
+      );
+      break;
     case undefined:
       typeSpecificPart = null;
       break;
@@ -129,6 +152,7 @@ function renderPred(
       typeSpecificPart = <div />;
       break;
   }
+
   return (
     <div className="row" style={{ paddingTop: 15 }}>
       <div className="col-sm-2 col-xs-8">
@@ -218,7 +242,8 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
         mainCollection: {},
         predicateMaps: [],
       };
-  const rawDataCollection: RawDataCollection = curMap.mainCollection.sourceCollection
+  const rawDataCollection: RawDataCollection = curMap.mainCollection.sourceCollection &&
+    rawDataCollections[curMap.mainCollection.sourceCollection]
     ? rawDataCollections[curMap.mainCollection.sourceCollection]
     : { properties: [] };
   const mainCollection = curMap.mainCollection;
@@ -277,15 +302,17 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
         ? null
         : <div className="row" style={{ marginTop: "2em" }}>
             <div className="col-md-12">
-              <h4>{curMap.type}s usually have a...</h4>
-              {types[curType]
-                .map(predicate =>
-                  DefaultProp(currentTab || "", rawDataCollection, predicate, actions, curMap.predicateMaps),
-                )
-                .reduce((prev, cur) => prev.concat(cur), [])}
-              <h4>And we also define...</h4>
+              {types[curType] == null ? null : <h4>{curMap.type}s usually have a...</h4>}
+              {types[curType] == null
+                ? null
+                : types[curType]
+                    .map(predicate =>
+                      DefaultProp(currentTab || "", rawDataCollection, predicate, actions, curMap.predicateMaps),
+                    )
+                    .reduce((prev, cur) => prev.concat(cur), [])}
+              <h4>And we {types[curType] != null ? "also " : ""}define...</h4>
               {curMap.predicateMaps
-                .filter(pm => types[curType].indexOf(pm.predicate) === -1)
+                .filter(pm => !types[curType] || types[curType].indexOf(pm.predicate) === -1)
                 .map(pm => renderPred(currentTab || "", rawDataCollection, pm, actions))}
             </div>
           </div>}

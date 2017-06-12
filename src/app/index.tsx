@@ -1,8 +1,10 @@
+import { compact } from "jsonld";
 import * as React from "react";
 import * as ReactDom from "react-dom";
 import { applyMiddleware, combineReducers, createStore } from "redux";
 import { Router } from "../_external/router";
 import { actionsFactory } from "./actions";
+import { dierikx } from "./actions/rmlToViewState.test";
 import { Gui } from "./components";
 import { getRawCollections } from "./datafetchers/rawCollections";
 import { defaultState, reducer, Store } from "./reducers";
@@ -51,3 +53,16 @@ store.subscribe(function() {
 });
 
 ReactDom.render(<Gui state={store.getState()} actions={actions} />, document.getElementById("main"));
+
+compact(
+  dierikx as any,
+  {
+    rr: "http://www.w3.org/ns/r2rml#",
+    rml: "http://semweb.mmlab.be/ns/rml#",
+    tim: "http://timbuctoo.huygens.knaw.nl/mapping#",
+    dataSet: "http://timbuctoo.huygens.knaw.nl/mapping/${userId}/",
+  },
+  function(err: any, success: any) {
+    store.dispatch({ type: "setRml", rml: success as any });
+  },
+);

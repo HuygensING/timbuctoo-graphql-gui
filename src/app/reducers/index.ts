@@ -1,4 +1,5 @@
 import { fromJS, Map } from "immutable";
+import { RmlJsonLd, rmlToView } from "../actions/rmlToViewState";
 import { MappingProps, PredicateMap, RawDataCollections } from "../components/map.types";
 import { assertNever } from "../support/assertNever";
 
@@ -32,6 +33,10 @@ type Action =
       predicateMap: PredicateMap;
       property: string;
       value: string;
+    }
+  | {
+      type: "setRml";
+      rml: RmlJsonLd;
     }
   | {
       type: "setRawDataSets";
@@ -70,6 +75,8 @@ export interface Store {
   subscribe: (subscription: () => void) => void;
 }
 
+const preloaded = {};
+
 export const defaultState: State = {
   currentPage: "default",
   global: {
@@ -80,7 +87,8 @@ export const defaultState: State = {
     index: {},
     upload: {},
     mapping: {
-      mappings: {},
+      currentTab: Object.keys(preloaded)[0],
+      mappings: preloaded,
       rawDataCollections: {},
     },
     mappingPrivate: {
@@ -187,6 +195,8 @@ function markPropertiesInUse(predicateMap: PredicateMap, state: any) {
     case "template":
       break;
     case "expression":
+      break;
+    case "constant":
       break;
     case "join":
       break;
@@ -347,7 +357,14 @@ export function reducer(state: State, action: Action): State {
           return initMapping(action.args.dataSetId, state);
         default:
           assertNever(action.name);
+          return state;
       }
+    case "setRml":
+      const converted = rmlToView(action.rml);
+      return fromJS(state)
+        .setIn(["pageSpecific", "mapping", "mappings"], converted)
+        .setIn(["pageSpecific", "mapping", "currentTab"], converted[0].type)
+        .toJS();
     case "@@INIT":
     case "@@redux/INIT":
       return state;

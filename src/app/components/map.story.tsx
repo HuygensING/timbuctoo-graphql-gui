@@ -66,7 +66,7 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
               },
               "http://collection2": {
                 mainCollection: {
-                  uri: "http://example.com/myCollections/authors",
+                  sourceCollection: "http://example.com/myCollections/authors",
                   subjectTemplate: "http://example.com/{foo}",
                 },
                 predicateMaps: [],
@@ -90,7 +90,7 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
               },
               "http://collection2": {
                 mainCollection: {
-                  uri: "http://example.com/myCollections/authors",
+                  sourceCollection: "http://example.com/myCollections/authors",
                   subjectTemplate: "http://example.com/{foo}",
                 },
                 predicateMaps: [

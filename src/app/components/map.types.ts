@@ -1,4 +1,32 @@
-export type PredicateMapTypes = "template" | "expression" | "join" | "property";
+export type PredicateMapTypes = "template" | "expression" | "join" | "property" | "constant";
+
+export interface MappingProps {
+  currentTab?: string;
+  mappings: {
+    [key: string]: Mapping;
+  };
+  rawDataCollections: RawDataCollections;
+}
+
+export interface Mapping {
+  type?: string;
+  mainCollection: {
+    subjectTemplate?: string;
+    sourceCollection?: string;
+  };
+  predicateMaps: PredicateMap[];
+}
+
+export interface RawDataCollections {
+  [key: string]: RawDataCollection;
+}
+
+export interface RawDataCollection {
+  properties: Array<{
+    name: string;
+    inUse: boolean;
+  }>;
+}
 
 export type PredicateMap =
   | {
@@ -24,6 +52,13 @@ export type PredicateMap =
   | {
       key: string | null;
       predicate: string;
+      type: "constant";
+      dataType: string;
+      constant: string;
+    }
+  | {
+      key: string | null;
+      predicate: string;
       type: "property";
       dataType: string;
       propertyName: string;
@@ -35,33 +70,4 @@ export interface PlaceHolderPredicateMap {
   predicate?: string;
   type: undefined;
   dataType: string;
-}
-
-export interface Mapping {
-  type?: string;
-  mainCollection: {
-    uri?: string;
-    subjectTemplate?: string;
-    sourceCollection?: string;
-  };
-  predicateMaps: PredicateMap[];
-}
-
-export interface RawDataCollection {
-  properties: Array<{
-    name: string;
-    inUse: boolean;
-  }>;
-}
-
-export interface RawDataCollections {
-  [key: string]: RawDataCollection;
-}
-
-export interface MappingProps {
-  currentTab?: string;
-  mappings: {
-    [key: string]: Mapping;
-  };
-  rawDataCollections: RawDataCollections;
 }
