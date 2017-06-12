@@ -21,10 +21,37 @@ function assertNever(action: never): void {
   console.error("Unhandled case", action);
 }
 
-const types: { [key: string]: string[] } = {
-  Person: ["http://timbuctoo.com/name", "http://timbuctoo.com/birthPlace"],
-  Place: ["http://timbuctoo.com/name"],
+const types: { [key: string]: Array<{ uri: string; dataType: string }> } = {
+  Person: [
+    { uri: "http://schema.org/givenName", dataType: "http://www.w3.org/2001/XMLSchema#string" },
+    { uri: "http://schema.org/familyName", dataType: "http://www.w3.org/2001/XMLSchema#string" },
+    { uri: "http://schema.org/birthDate", dataType: "http://www.w3.org/2001/XMLSchema#date" },
+    { uri: "http://schema.org/birthPlace", dataType: "http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri" },
+    { uri: "http://schema.org/deathDate", dataType: "http://www.w3.org/2001/XMLSchema#date" },
+    { uri: "http://schema.org/deathPlace", dataType: "http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri" },
+    { uri: "http://www.w3.org/2002/07/owl#sameAs", dataType: "http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri" },
+  ],
+  Place: [
+    { uri: "http://schema.org/name", dataType: "http://www.w3.org/2001/XMLSchema#string" },
+    { uri: "http://schema.org/latitude", dataType: "http://www.w3.org/2001/XMLSchema#decimal" },
+    { uri: "http://schema.org/longitude", dataType: "http://www.w3.org/2001/XMLSchema#decimal" },
+    { uri: "http://www.w3.org/2002/07/owl#sameAs", dataType: "http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri" },
+  ],
 };
+
+const dataTypes = [
+  { label: "uncertain date-time (EDTF)", uri: "https://www.loc.gov/standards/datetime/pre-submission.html" },
+  { label: "date", uri: "http://www.w3.org/2001/XMLSchema#date" },
+  { label: "time", uri: "http://www.w3.org/2001/XMLSchema#time" },
+  { label: "date & time", uri: "http://www.w3.org/2001/XMLSchema#dateTime" },
+  { label: "number (no decimal places)", uri: "http://www.w3.org/2001/XMLSchema#integer" },
+  { label: "number with decimals behind a .", uri: "http://www.w3.org/2001/XMLSchema#decimal" },
+  { label: "text", uri: "http://www.w3.org/2001/XMLSchema#string" },
+];
+const dataTypesLookup: { [key: string]: string } = {
+  "http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri": "a link (a URI)",
+};
+dataTypes.forEach(type => (dataTypesLookup[type.uri] = type.label));
 
 function AddPredicateButton(props: {
   actions: Actions;
@@ -114,6 +141,7 @@ function TemplateInput(props: {
 }) {
   const data = props.rawDataCollection.properties
     .map(p => p.name)
+    .sort()
     .map(function(p) {
       return { id: p };
     })
@@ -255,20 +283,28 @@ function renderPred(
             <DropdownButton
               componentClass={InputGroup.Button}
               id="input-dropdown-addon"
-              title={implementation.dataType}
+              title={dataTypesLookup[implementation.dataType] || implementation.dataType}
             >
               <MenuItem
-                key="number"
-                onClick={e => actions.mapping.setPredicateValue(implementation, "dataType", "number")}
+                key="http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri"
+                onClick={e =>
+                  actions.mapping.setPredicateValue(
+                    implementation,
+                    "dataType",
+                    "http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri",
+                  )}
               >
-                number
+                {dataTypesLookup["http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri"]}
               </MenuItem>
-              <MenuItem
-                key="string"
-                onClick={e => actions.mapping.setPredicateValue(implementation, "dataType", "string")}
-              >
-                string
-              </MenuItem>
+              <MenuItem divider />
+              {dataTypes.map(type =>
+                <MenuItem
+                  key={type.uri}
+                  onClick={e => actions.mapping.setPredicateValue(implementation, "dataType", type.uri)}
+                >
+                  {type.label}
+                </MenuItem>,
+              )}
             </DropdownButton>
           </div>
         : null}
@@ -279,11 +315,11 @@ function renderPred(
 function DefaultProp(
   newPropertyPrefix: string,
   rawDataCollection: RawDataCollection,
-  predicate: string,
+  predicate: { uri: string; dataType: string },
   actions: Actions,
   mappedPredicates: PredicateMap[],
 ) {
-  const implementations = mappedPredicates.filter(mp => mp.predicate === predicate);
+  const implementations = mappedPredicates.filter(mp => mp.predicate === predicate.uri);
   if (implementations.length > 0) {
     return implementations.map(function(implementation) {
       return renderPred(newPropertyPrefix, rawDataCollection, implementation, actions, true);
@@ -293,7 +329,7 @@ function DefaultProp(
       renderPred(
         newPropertyPrefix,
         rawDataCollection,
-        { predicate, type: undefined, key: null, dataType: "string" },
+        { predicate: predicate.uri, type: undefined, key: null, dataType: predicate.dataType },
         actions,
         true,
       ),
@@ -400,7 +436,7 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
                 .reduce((prev, cur) => prev.concat(cur), [])}
           <h4>And we {curType != null && types[curType] != null ? "also " : ""}define...</h4>
           {curMap.predicateMaps
-            .filter(pm => curType == null || !types[curType] || types[curType].indexOf(pm.predicate) === -1)
+            .filter(pm => curType == null || !types[curType] || !types[curType].some(type => type.uri === pm.predicate))
             .map(pm => renderPred(currentTab || "", rawDataCollection, pm, actions))}
         </div>
       </div>

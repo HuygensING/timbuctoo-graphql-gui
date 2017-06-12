@@ -96,13 +96,13 @@ function getDataType(termType?: TermType, datatype?: Uri) {
     if (datatype) {
       return "http://www.w3.org/2001/XMLSchema#string";
     } else {
-      return "http://timbuctoo.com/uri";
+      return "http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri";
     }
   } else {
     if (termType["@id"] === "rr:BlankNode") {
-      return "http://timbuctoo.com/uri";
+      return "http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri";
     } else if (termType["@id"] === "rr:IRI") {
-      return "http://timbuctoo.com/uri";
+      return "http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri";
     } else if (termType["@id"] === "rr:Literal") {
       return datatype ? datatype["@id"] : "http://www.w3.org/2001/XMLSchema#string";
     }
@@ -195,7 +195,7 @@ export function rmlToView(rml: RmlJsonLd): { [key: string]: Mapping } {
                 predicate: getUriValue(map["rr:predicate"]),
                 type: "expression",
                 dataType: termtype && termtype["@id"] === "rr:IRI"
-                  ? "http://timbuctoo.com/uri"
+                  ? "http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri"
                   : dataType ? getUriValue(dataType) : "http://www.w3.org/2001/XMLSchema#string",
                 expression: customFields[objMap["rr:column"]].expression,
               };
@@ -205,7 +205,7 @@ export function rmlToView(rml: RmlJsonLd): { [key: string]: Mapping } {
                 predicate: getUriValue(map["rr:predicate"]),
                 type: "property",
                 dataType: termtype && termtype["@id"] === "rr:IRI"
-                  ? "http://timbuctoo.com/uri"
+                  ? "http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri"
                   : dataType ? getUriValue(dataType) : "http://www.w3.org/2001/XMLSchema#string",
                 propertyName: objMap["rr:column"],
               };
