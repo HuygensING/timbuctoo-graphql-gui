@@ -158,8 +158,8 @@ export function rmlToView(rml: RmlJsonLd): { [key: string]: Mapping } {
     const predicateMaps: any = mapping["rr:predicateObjectMap"]
       .filter((map, index) => typeMap && index !== typeMap.index)
       .map(map => {
+        key--;
         if (isConstant(map)) {
-          key--;
           return {
             key: key + "",
             predicate: getUriValue(map["rr:predicate"]),
