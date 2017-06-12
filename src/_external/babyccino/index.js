@@ -21,7 +21,7 @@ function babyccino(testResultElement) {
     require.context(babyccinoPath, true, babyccinoRegex),
     tests,
     testResults,
-    failedTests,
+    failedTests
   );
 
   window.rerun = function(n) {
@@ -40,9 +40,9 @@ function babyccino(testResultElement) {
           require.context(babyccinoPath, true, babyccinoRegex),
           tests,
           testResults,
-          failedTests,
+          failedTests
         );
-      },
+      }
     );
   }
 }
@@ -102,7 +102,7 @@ function runChangedTests(
   newTests,
   loadedTests,
   testResults,
-  failedTests,
+  failedTests
 ) {
   failedTests.splice(0, failedTests.length);
   newTests.keys().map(function(key) {

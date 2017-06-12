@@ -26,10 +26,10 @@ function it(ctx, text, f) {
             log(
               ctx,
               text + "\n" + "promise rejected with a non error argument",
-              arguments,
+              arguments
             );
           }
-        },
+        }
       );
     } else {
       ctx.tests.push(undefined);
