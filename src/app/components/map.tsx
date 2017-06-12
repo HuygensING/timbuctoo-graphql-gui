@@ -105,6 +105,73 @@ function AddPredicateButton(props: {
   );
 }
 
+function TemplateInput(props: {
+  value: string | undefined;
+  placeholder: string;
+  rawDataCollection: RawDataCollection;
+  onChange: (newValue: string) => void;
+}) {
+  return (
+    <MentionsInput
+      style={{
+        input: {
+          display: "block",
+          width: "100%",
+          height: "36px",
+          padding: "6px 12px",
+          "font-size": "16px",
+          "line-height": "1.42857143",
+          color: "#555555",
+          "background-color": "#ffffff",
+          "background-image": "none",
+          border: "1px solid #e6e6e6",
+          "border-radius": "2px",
+          "-webkit-box-shadow": "inset 0 1px 1px rgba(0, 0, 0, 0.075)",
+          "box-shadow": "inset 0 1px 1px rgba(0, 0, 0, 0.075)",
+          "-webkit-transition": "border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s",
+          "-o-transition": "border-color ease-in-out .15s, box-shadow ease-in-out .15s",
+          transition: "border-color ease-in-out .15s, box-shadow ease-in-out .15s",
+        },
+        suggestions: {
+          list: {
+            backgroundColor: "white",
+            border: "1px solid rgba(0,0,0,0.15)",
+            fontSize: 10,
+          },
+          item: {
+            padding: "5px 15px",
+            borderBottom: "1px solid rgba(0,0,0,0.15)",
+
+            "&focused": {
+              backgroundColor: "#cee4e5",
+            },
+          },
+        },
+      }}
+      markup="{__id__}"
+      singleLine={true}
+      displayTransform={(id: any, display: any, type: any) => "{" + id + "}"}
+      value={props.value}
+      placeholder={props.placeholder}
+      onChange={(e: any) => {
+        props.onChange((e.target as any).value);
+      }}
+    >
+      <Mention
+        trigger="{"
+        allowSpaceInQuery={true}
+        style={{ backgroundColor: "#cee4e5" }}
+        data={props.rawDataCollection.properties
+          .map(function(p) {
+            return { id: p.name };
+          })
+          .sort()
+          .concat([{ id: "tim_id" }])}
+      />
+    </MentionsInput>
+  );
+}
+
 function renderPred(
   newPropertyPrefix: string,
   rawDataCollection: RawDataCollection,
@@ -116,60 +183,12 @@ function renderPred(
   switch (implementation.type) {
     case "template":
       typeSpecificPart = (
-        <MentionsInput
-          style={{
-            input: {
-              display: "block",
-              width: "100%",
-              height: "36px",
-              padding: "6px 12px",
-              "font-size": "16px",
-              "line-height": "1.42857143",
-              color: "#555555",
-              "background-color": "#ffffff",
-              "background-image": "none",
-              border: "1px solid #e6e6e6",
-              "border-radius": "2px",
-              "-webkit-box-shadow": "inset 0 1px 1px rgba(0, 0, 0, 0.075)",
-              "box-shadow": "inset 0 1px 1px rgba(0, 0, 0, 0.075)",
-              "-webkit-transition": "border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s",
-              "-o-transition": "border-color ease-in-out .15s, box-shadow ease-in-out .15s",
-              transition: "border-color ease-in-out .15s, box-shadow ease-in-out .15s",
-            },
-            suggestions: {
-              list: {
-                backgroundColor: "white",
-                border: "1px solid rgba(0,0,0,0.15)",
-                fontSize: 10,
-              },
-              item: {
-                padding: "5px 15px",
-                borderBottom: "1px solid rgba(0,0,0,0.15)",
-
-                "&focused": {
-                  backgroundColor: "#cee4e5",
-                },
-              },
-            },
-          }}
-          markup="{__id__}"
-          singleLine={true}
-          displayTransform={(id: any, display: any, type: any) => "{" + id + "}"}
-          value={implementation.template}
+        <TemplateInput
           placeholder="To add a datafield enclose it's name in { and }."
-          onChange={(e: any) => {
-            actions.mapping.setPredicateValue(implementation, "template", (e.target as any).value);
-          }}
-        >
-          <Mention
-            trigger="{"
-            allowSpaceInQuery={true}
-            style={{ backgroundColor: "#cee4e5" }}
-            data={rawDataCollection.properties.map(function(p) {
-              return { id: p.name };
-            })}
-          />
-        </MentionsInput>
+          value={implementation.template}
+          onChange={value => actions.mapping.setPredicateValue(implementation, "template", value)}
+          rawDataCollection={rawDataCollection}
+        />
       );
       break;
     case "expression":
@@ -303,7 +322,7 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
   const rawDataCollection: RawDataCollection = curMap.mainCollection.sourceCollection &&
     rawDataCollections[curMap.mainCollection.sourceCollection]
     ? rawDataCollections[curMap.mainCollection.sourceCollection]
-    : { properties: [] };
+    : { label: "", properties: [] };
   const mainCollection = curMap.mainCollection;
   const curType = curMap.type;
   return (
@@ -327,12 +346,16 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
           <h4>1. We're going to convert data from...</h4>
           <DropdownButton
             bsStyle="default"
-            title={mainCollection.sourceCollection || "collection..."}
+            title={
+              mainCollection.sourceCollection
+                ? rawDataCollections[mainCollection.sourceCollection].label
+                : "collection..."
+            }
             id="dropdown-no-s"
           >
             {Object.keys(rawDataCollections).map(rawCollection =>
               <MenuItem eventKey={rawCollection} onClick={onChangeV("sourceCollection", rawCollection)}>
-                {rawCollection}
+                {rawDataCollections[rawCollection].label}
               </MenuItem>,
             )}
           </DropdownButton>{" "}
@@ -348,11 +371,12 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
         <div className="col-md-6">
           <h4><small>(oh, and we'll name this collection):</small></h4>
           <FormControl value={currentTab} onChange={onChange("collectionName")} />
-          <h4><small>(and give it a nice unique identifier):</small></h4>
-          <FormControl
+          <h4><small>(and all items will get a nice unique identifier):</small></h4>
+          <TemplateInput
             placeholder="A template for the entity URI"
-            onChange={onChange("subjectTemplate")}
             value={curMap.mainCollection.subjectTemplate}
+            onChange={value => actions.mapping.setValue("subjectTemplate", value)}
+            rawDataCollection={rawDataCollection}
           />
         </div>
       </div>

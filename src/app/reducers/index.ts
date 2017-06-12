@@ -292,6 +292,9 @@ function setRawDataSets(rawDataSetsInput: any, state: State) {
   //       items: [
   //         {
   //           uri: "http://timbuctoo/props/dierikx_ontwikkelingssamenwerking/file/GeboortedagTEMP",
+  //           http___rdfs_label: {
+  //             value: "Blad1"
+  //           },
   //           http___timbuctoo_com_thing_ofCollection_inverse: {
   //             items: [
   //               {
@@ -310,6 +313,7 @@ function setRawDataSets(rawDataSetsInput: any, state: State) {
   const rawDataSets: RawDataCollections = {};
   for (const collection of rawDataSetsInput.data.http___timbuctoo_collectionList.items) {
     rawDataSets[collection.uri] = {
+      label: collection.http___rdfs_label.value,
       properties: collection.http___timbuctoo_com_thing_ofCollection_inverse.items.map(function(item: {
         http___timpropname: { value: string };
       }) {

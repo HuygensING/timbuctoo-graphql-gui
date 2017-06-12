@@ -9,6 +9,7 @@ export async function getRawCollections(userId: string, dataSetId: string) {
       http___timbuctoo_collectionList {
         items {
           uri
+          http___rdfs_label { value }
           http___timbuctoo_com_thing_ofCollection_inverse {
             items {
               http___timpropname { value }

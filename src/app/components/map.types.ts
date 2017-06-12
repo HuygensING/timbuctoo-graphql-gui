@@ -22,6 +22,7 @@ export interface RawDataCollections {
 }
 
 export interface RawDataCollection {
+  label: string;
   properties: Array<{
     name: string;
     inUse: boolean;

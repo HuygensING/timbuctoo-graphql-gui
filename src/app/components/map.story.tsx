@@ -11,9 +11,11 @@ const storyDefaults = {
   mappings: {},
   rawDataCollections: {
     "http://example.com/myCollections/authors": {
+      label: "authors",
       properties: [{ name: "Names", inUse: true }, { name: "birth place", inUse: false }],
     },
     "http://example.com/myCollections/books": {
+      label: "books",
       properties: [{ name: "title", inUse: false }, { name: "publisher", inUse: false }],
     },
   },
