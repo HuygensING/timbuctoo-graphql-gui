@@ -110,12 +110,60 @@ function renderPred(
   switch (implementation.type) {
     case "template":
       typeSpecificPart = (
-        <FormControl
-          type="text"
+        <MentionsInput
+          style={{
+            input: {
+              display: "block",
+              width: "100%",
+              height: "36px",
+              padding: "6px 12px",
+              "font-size": "16px",
+              "line-height": "1.42857143",
+              color: "#555555",
+              "background-color": "#ffffff",
+              "background-image": "none",
+              border: "1px solid #e6e6e6",
+              "border-radius": "2px",
+              "-webkit-box-shadow": "inset 0 1px 1px rgba(0, 0, 0, 0.075)",
+              "box-shadow": "inset 0 1px 1px rgba(0, 0, 0, 0.075)",
+              "-webkit-transition": "border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s",
+              "-o-transition": "border-color ease-in-out .15s, box-shadow ease-in-out .15s",
+              transition: "border-color ease-in-out .15s, box-shadow ease-in-out .15s",
+            },
+            suggestions: {
+              list: {
+                backgroundColor: "white",
+                border: "1px solid rgba(0,0,0,0.15)",
+                fontSize: 10,
+              },
+              item: {
+                padding: "5px 15px",
+                borderBottom: "1px solid rgba(0,0,0,0.15)",
+
+                "&focused": {
+                  backgroundColor: "#cee4e5",
+                },
+              },
+            },
+          }}
+          markup="{__id__}"
+          singleLine={true}
+          displayTransform={(id: any, display: any, type: any) => "{" + id + "}"}
           value={implementation.template}
-          placeholder="You can type anyting you want. To insert a column, place it's name between {}."
-          onChange={e => actions.mapping.setPredicateValue(implementation, "template", (e.target as any).value)}
-        />
+          placeholder="You can type a text that contains data fields. To add a datafield enclose it's name in { and }."
+          onChange={(e: any) => {
+            actions.mapping.setPredicateValue(implementation, "template", (e.target as any).value);
+          }}
+        >
+          <Mention
+            trigger="{"
+            allowSpaceInQuery={true}
+            style={{ backgroundColor: "#cee4e5" }}
+            data={rawDataCollection.properties.map(function(p) {
+              return { id: p.name };
+            })}
+          />
+        </MentionsInput>
       );
       break;
     case "expression":
