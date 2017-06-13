@@ -20,10 +20,21 @@ function getQueryVariable(variable: string, location: Location) {
     }
   }
 }
+let state = defaultState;
+console.log(localStorage["store"]);
+if (localStorage["store"]) {
+  try {
+    state = JSON.parse(localStorage["store"]);
+  } catch (e) {
+    const curDate = new Date();
+    localStorage["store backup_" + curDate.getTime()] = localStorage["store"];
+    console.error("Could not load state", localStorage["store"]);
+  }
+}
 
 const store: Store = createStore(
   reducer,
-  defaultState,
+  state,
   (window as any).__REDUX_DEVTOOLS_EXTENSION__ && (window as any).__REDUX_DEVTOOLS_EXTENSION__(),
 );
 const router = new Router(
@@ -59,6 +70,8 @@ addEventListener(
 );
 
 store.subscribe(function() {
+  localStorage["store"] = JSON.stringify(store.getState());
+  console.log(JSON.stringify(store.getState()));
   const curState = store.getState();
   router.saveState(curState);
   ReactDom.render(<Gui state={curState} actions={actions} />, document.getElementById("main"));
