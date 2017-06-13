@@ -6,6 +6,14 @@ import { defaultValues, Upload } from "./upload";
 declare const module: any; // when webpack compiles it provides a module variable
 
 export default function({ storiesOf, action, linkTo, knobs }: any) {
+  const actions = {
+    showModal: action("showModal"),
+    cancelModal: action("cancelModal"),
+    startUpload: action("startUpload"),
+    next: action("next"),
+    getResourceSyncData: action("getResourceSyncData"),
+    downloadRsFile: action("getResourceSyncData"),
+  };
   storiesOf("Upload", module)
     .add("No data entered", () =>
       <Page>
@@ -14,12 +22,7 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             ...defaultValues,
             title: "Sheep across the ages",
           }}
-          actions={{
-            showModal: action("showModal"),
-            cancelModal: action("cancelModal"),
-            startUpload: action("startUpload"),
-            next: action("next"),
-          }}
+          actions={actions}
         />
       </Page>,
     )
@@ -34,12 +37,7 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             provenance: lorem({ count: 10, units: "sentences" }),
             color: "#9ce479",
           }}
-          actions={{
-            showModal: action("showModal"),
-            cancelModal: action("cancelModal"),
-            startUpload: action("startUpload"),
-            next: action("next"),
-          }}
+          actions={actions}
         />
       </Page>,
     )
@@ -51,12 +49,7 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             title: "Sheep across the ages",
             fileIsBeingAdded: "xlsx",
           }}
-          actions={{
-            showModal: action("showModal"),
-            cancelModal: action("cancelModal"),
-            startUpload: action("startUpload"),
-            next: action("next"),
-          }}
+          actions={actions}
         />
       </Page>,
     )
@@ -68,12 +61,7 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             title: "Sheep across the ages",
             fileIsBeingAdded: "csv",
           }}
-          actions={{
-            showModal: action("showModal"),
-            cancelModal: action("cancelModal"),
-            startUpload: action("startUpload"),
-            next: action("next"),
-          }}
+          actions={actions}
         />
       </Page>,
     )
@@ -86,12 +74,7 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             fileIsBeingAdded: "mdb",
             files: ["some previous file.csv"],
           }}
-          actions={{
-            showModal: action("showModal"),
-            cancelModal: action("cancelModal"),
-            startUpload: action("startUpload"),
-            next: action("next"),
-          }}
+          actions={actions}
         />
       </Page>,
     )
@@ -103,12 +86,7 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             title: "Sheep across the ages",
             fileIsBeingAdded: "rs",
           }}
-          actions={{
-            showModal: action("showModal"),
-            cancelModal: action("cancelModal"),
-            startUpload: action("startUpload"),
-            next: action("next"),
-          }}
+          actions={actions}
         />
       </Page>,
     )
@@ -121,12 +99,7 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             fileIsBeingAdded: "rs",
             remoteUri: "http://example.org",
           }}
-          actions={{
-            showModal: action("showModal"),
-            cancelModal: action("cancelModal"),
-            startUpload: action("startUpload"),
-            next: action("next"),
-          }}
+          actions={actions}
         />
       </Page>,
     )
@@ -140,12 +113,7 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             remoteSets: ["http://example.org/set/1", "http://example.org/set/2"],
             remoteUri: "http://example.org",
           }}
-          actions={{
-            showModal: action("showModal"),
-            cancelModal: action("cancelModal"),
-            startUpload: action("startUpload"),
-            next: action("next"),
-          }}
+          actions={actions}
         />
       </Page>,
     )
@@ -157,12 +125,7 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
             title: "Sheep across the ages",
             fileIsBeingAdded: "dataperfect",
           }}
-          actions={{
-            showModal: action("showModal"),
-            cancelModal: action("cancelModal"),
-            startUpload: action("startUpload"),
-            next: action("next"),
-          }}
+          actions={actions}
         />
       </Page>,
     );

@@ -9,6 +9,10 @@ const defaultUriPrefix = "http://timbuctoo.huygens.knaw.nl/v5/data/";
 
 type Action =
   | {
+      type: "setRsResources";
+      setDetails: Array<{ name: string }>;
+    }
+  | {
       type: "startFileUpload";
       fileType: "xlsx" | "csv" | "mdb" | "dataperfect" | "rs" | undefined;
     }
@@ -419,6 +423,14 @@ function setRawDataSets(rawDataSetsInput: any, state: State) {
 
 export function reducer(state: State, action: Action): State {
   switch (action.type) {
+    case "setRsResources":
+      return slowPatch(state, {
+        pageSpecific: {
+          upload: {
+            remoteSets: action.setDetails.map(x => x.name),
+          },
+        },
+      });
     case "setLoginToken":
       return slowPatch(state, {
         global: { hsid: action.hsid, userId: action.persistentId, displayName: action.displayName },

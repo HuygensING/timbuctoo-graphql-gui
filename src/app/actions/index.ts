@@ -25,6 +25,8 @@ export interface Actions {
     showModal: (key: "xlsx" | "csv" | "mdb" | "dataperfect" | "rs") => void;
     cancelModal: () => void;
     startUpload: () => void;
+    getResourceSyncData: (url: string) => void;
+    downloadRsFile: (url: string) => void;
   };
 }
 
@@ -103,11 +105,58 @@ export function actionsFactory(store: Store): Actions {
         }),
     },
     upload: {
+      downloadRsFile: (uri: string) => {
+        const state = store.getState();
+        const userId = state.global.userId;
+        const dataSetId = state.global.dataSetId;
+        if (userId && dataSetId) {
+          actions.upload.cancelModal();
+          fetch(config.apiUrl + `/v2.1/remote/rs/import`, {
+            method: "post",
+            headers: {
+              Authorization: state.global.hsid,
+              "content-type": "application/json",
+            },
+            body: JSON.stringify({
+              source: uri,
+              userId: userId,
+              dataSetId: dataSetId,
+            }),
+          })
+            .then(function(response) {
+              if (response.status !== 200) {
+                alert("something went wrong while getting the list of resources");
+              } else {
+                alert("import succeeded!");
+              }
+            })
+            .catch(function() {
+              console.log(arguments);
+              alert("something went wrong while getting the list of resources");
+            });
+        }
+      },
+      getResourceSyncData: (uri: string) => {
+        fetch(config.apiUrl + `/v2.1/remote/rs/discover/listgraphs/${encodeURIComponent(uri)}`)
+          .then(function(response) {
+            if (response.status !== 200) {
+              alert("something went wrong while getting the list of resources");
+            } else {
+              return response.json();
+            }
+          })
+          .then(function(json) {
+            store.dispatch({ type: "setRsResources", setDetails: json.setDetails });
+          })
+          .catch(function() {
+            console.log(arguments);
+            alert("something went wrong while getting the list of resources");
+          });
+      },
       showModal: (action: "xlsx" | "csv" | "mdb" | "dataperfect" | "rs") => {
         store.dispatch({ type: "startFileUpload", fileType: action });
       },
       cancelModal: () => {
-        console.log("cancel");
         store.dispatch({ type: "startFileUpload", fileType: undefined });
       },
       startUpload: () => {
@@ -118,7 +167,7 @@ export function actionsFactory(store: Store): Actions {
         if (userId && dataSetId) {
           const formData = new FormData();
 
-          formData.append("type", state.pageSpecific.upload.fileIsBeingAdded);
+          formData.append("type", state.pageSpecific.upload.fileIsBeingAdded || "");
           formData.append("file", (document.getElementById("TheFileInput") as any).files[0]);
 
           fetch(config.apiUrl + `/v5/${userId}/${dataSetId}/upload/table`, {
@@ -198,6 +247,8 @@ export function fakeActionsFactory(dummy: (name: string) => (...args: any[]) => 
       showModal: dummy("upload.showModal"),
       cancelModal: dummy("upload.cancelModal"),
       startUpload: dummy("upload.startUpload"),
+      getResourceSyncData: dummy("upload.getResourceSyncData"),
+      downloadRsFile: dummy("upload.downloadRsFile"),
     },
   };
 }

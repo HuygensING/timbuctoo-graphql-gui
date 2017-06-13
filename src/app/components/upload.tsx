@@ -68,6 +68,8 @@ export function Upload(props: {
     cancelModal: () => void;
     startUpload: () => void;
     next: () => void;
+    getResourceSyncData: (url: string) => void;
+    downloadRsFile: (url: string) => void;
   };
 }) {
   const {
@@ -102,7 +104,7 @@ export function Upload(props: {
             cancelModal={props.actions.cancelModal}
             startUpload={props.actions.startUpload}
           >
-            <StyledFileInput accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+            <StyledFileInput accept="application/csv" />
           </UploadForm>
         );
         break;
@@ -113,7 +115,7 @@ export function Upload(props: {
             cancelModal={props.actions.cancelModal}
             startUpload={props.actions.startUpload}
           >
-            <StyledFileInput accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+            <StyledFileInput accept="application/msaccess" />
           </UploadForm>
         );
         break;
@@ -124,7 +126,8 @@ export function Upload(props: {
             cancelModal={props.actions.cancelModal}
             startUpload={props.actions.startUpload}
           >
-            <StyledFileInput accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+            Please create a .zip file of the dataperfect files and upload that here.
+            <StyledFileInput accept="application/zip" />
           </UploadForm>
         );
         break;
@@ -138,9 +141,16 @@ export function Upload(props: {
             <div>
               <div className="form-group">
                 <div className="input-group">
-                  <input type="text" value={remoteUri} className="form-control" placeholder="Enter discovery url" />
+                  <input type="text" id="resourceSyncUri" className="form-control" placeholder="Enter discovery url" />
                   <span className="input-group-btn">
-                    <button className="btn btn-default" type="button">
+                    <button
+                      className="btn btn-default"
+                      type="button"
+                      onClick={e => {
+                        const data = (document.getElementById("resourceSyncUri") as any).value;
+                        props.actions.getResourceSyncData(data);
+                      }}
+                    >
                       <span className="glyphicon glyphicon-search" aria-hidden="true" />
                     </button>
                   </span>
@@ -148,7 +158,12 @@ export function Upload(props: {
               </div>
               <div className="list-group">
                 {remoteSets.map((remoteUrl, i) =>
-                  <button type="button" className="list-group-item" key={remoteUrl}>
+                  <button
+                    type="button"
+                    className="list-group-item"
+                    key={remoteUrl}
+                    onClick={() => props.actions.downloadRsFile(remoteUrl)}
+                  >
                     {remoteUrl}
                   </button>,
                 )}
