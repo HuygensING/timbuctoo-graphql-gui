@@ -46,27 +46,31 @@ function FirstUpload(props: Props) {
         {isLoggedIn ? uploadButton : loginButton}
       </div>
       <div className="row">
-        {dataSets.map(dataSet =>
-          <div className="card-dataset" style={{ height: "120px" }}>
-            <a
-              className="card-dataset btn btn-default explore"
-              title={dataSet.dataSetId}
-              href={dataSet.userId === props.userId ? "#/upload/" + dataSet.dataSetId : undefined}
-            >
-              <strong
-                style={{
-                  display: "inline-block",
-                  overflow: "hidden",
-                  width: "90%",
-                  whiteSpace: "nowrap",
-                  textOverflow: "ellipsis",
-                }}
+        {dataSets.map(dataSet => {
+          const ownDataSet = dataSet.userId === props.userId;
+          return (
+            <div className="card-dataset" style={{ height: "120px" }}>
+              <a
+                className={"card-dataset btn btn-default explore" + (ownDataSet ? " hi-Green" : "")}
+                style={{ color: ownDataSet ? "white" : undefined }}
+                title={dataSet.dataSetId}
+                href={ownDataSet ? "#/upload/" + dataSet.dataSetId : undefined}
               >
-                {dataSet.dataSetId.replace(/-+/, " ")}
-              </strong>
-            </a>
-          </div>,
-        )}
+                <strong
+                  style={{
+                    display: "inline-block",
+                    overflow: "hidden",
+                    width: "90%",
+                    whiteSpace: "nowrap",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {dataSet.dataSetId.replace(/-+/, " ")}
+                </strong>
+              </a>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
