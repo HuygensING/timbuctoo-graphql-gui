@@ -20,11 +20,10 @@ function getQueryVariable(variable: string, location: Location) {
     }
   }
 }
-let state = defaultState;
-console.log(localStorage["store"]);
+let initState = defaultState;
 if (localStorage["store"]) {
   try {
-    state = JSON.parse(localStorage["store"]);
+    initState = JSON.parse(localStorage["store"]);
   } catch (e) {
     const curDate = new Date();
     localStorage["store backup_" + curDate.getTime()] = localStorage["store"];
@@ -34,7 +33,7 @@ if (localStorage["store"]) {
 
 const store: Store = createStore(
   reducer,
-  state,
+  initState,
   (window as any).__REDUX_DEVTOOLS_EXTENSION__ && (window as any).__REDUX_DEVTOOLS_EXTENSION__(),
 );
 const router = new Router(
@@ -71,7 +70,6 @@ addEventListener(
 
 store.subscribe(function() {
   localStorage["store"] = JSON.stringify(store.getState());
-  console.log(JSON.stringify(store.getState()));
   const curState = store.getState();
   router.saveState(curState);
   ReactDom.render(<Gui state={curState} actions={actions} />, document.getElementById("main"));
@@ -87,7 +85,14 @@ if (hsid) {
     },
   })
     .then(function(response) {
-      return response.json();
+      if (response.status === 200) {
+        return response.json();
+      } else {
+        return {
+          persistentId: undefined,
+          displayName: undefined,
+        };
+      }
     })
     .then(async function(userData: any) {
       store.dispatch({
