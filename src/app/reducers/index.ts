@@ -1,6 +1,6 @@
 import { fromJS, Map } from "immutable";
 import { RmlJsonLd, rmlToView } from "../actions/rmlToViewState";
-import { MappingProps, PredicateMap, RawDataCollections } from "../components/map.types";
+import { Mapping, MappingProps, PredicateMap, RawDataCollections } from "../components/map.types";
 import config from "../config";
 import { assertNever } from "../support/assertNever";
 
@@ -8,6 +8,12 @@ type possiblePages = "default" | "mapping" | "create" | "upload";
 const defaultUriPrefix = "http://timbuctoo.huygens.knaw.nl/v5/data/";
 
 type Action =
+  | {
+      type: "SET_DATASETS";
+      mapping: {
+        [key: string]: Mapping;
+      };
+    }
   | {
       type: "setRsResources";
       setDetails: Array<{ name: string }>;
@@ -484,6 +490,14 @@ export function reducer(state: State, action: Action): State {
         pageSpecific: {
           upload: {
             fileIsBeingAdded: action.fileType,
+          },
+        },
+      });
+    case "SET_DATASETS":
+      return slowPatch(state, {
+        pageSpecific: {
+          mapping: {
+            mappings: action.mapping,
           },
         },
       });

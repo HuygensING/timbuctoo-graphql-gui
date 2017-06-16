@@ -16,6 +16,7 @@ export interface Actions {
     setValue: (fieldName: string, value: string) => void;
     setPredicateMap: (predicateMap: PredicateMap) => void;
     setPredicateValue: (predicateMap: PredicateMap | PlaceHolderPredicateMap, property: string, value: string) => void;
+    loadMappings: (mappings: string) => void;
   };
   create: {
     onTitleChange: (newTitle: string) => void;
@@ -63,6 +64,16 @@ export function actionsFactory(store: Store): Actions {
         });
     },
     mapping: {
+      loadMappings: (mapping: string) => {
+        try {
+          store.dispatch({ type: "SET_DATASETS", mapping: JSON.parse(mapping) });
+        } catch (e) {
+          console.error(e);
+          alert(
+            "Loading the mapping failed because it does not seem to be valid json. Did you copy-paste the whole text?",
+          );
+        }
+      },
       execute: () => {
         const state = store.getState();
         const userId = state.global.userId;
@@ -238,6 +249,7 @@ export function fakeActionsFactory(dummy: (name: string) => (...args: any[]) => 
       setValue: dummy("mapping.setValue"),
       setPredicateMap: dummy("mapping.setPredicateMap"),
       setPredicateValue: dummy("mapping.setPredicateValue"),
+      loadMappings: dummy("mapping.loadMappings"),
     },
     create: {
       onTitleChange: dummy("create.onTitleChange"),

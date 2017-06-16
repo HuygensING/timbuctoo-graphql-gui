@@ -456,6 +456,25 @@ export function Map(props: { actions: Actions; state: MappingProps }) {
       </div>
       <Button onClick={actions.mapping.execute} bsStyle="primary">execute</Button>
       <Button onClick={actions.gotoGraphiql}>next</Button>
+      <Button
+        onClick={() =>
+          prompt(
+            "Kopieer de tekst uit het vakje hieronder naar een tekst bestandje",
+            JSON.stringify(props.state.mappings),
+          )}
+      >
+        save
+      </Button>
+      <Button
+        onClick={() => {
+          const input = prompt("plak de tekst die je hebt opgeslagen hieronder");
+          if (input && input.length > 0) {
+            props.actions.mapping.loadMappings(input);
+          }
+        }}
+      >
+        load
+      </Button>
     </div>
   );
 }
