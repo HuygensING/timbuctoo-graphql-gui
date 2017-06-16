@@ -125,7 +125,7 @@ export default function({ storiesOf, action, linkTo, knobs }: any) {
                   },
                   {
                     key: "4",
-                    predicate: "http://timbuctoo.com/custom",
+                    predicate: "http://timbuctoo.huygens.knaw.nl/v5/vocabulary#custom",
                     type: "template",
                     dataType: "string",
                     template: "",

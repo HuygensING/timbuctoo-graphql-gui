@@ -17,15 +17,27 @@ const captions: { [key: string]: string } = {
   expression: "Programming code",
   constant: "Constant value",
 };
-
 const types: { [key: string]: Array<{ uri: string; dataType: string }> } = {
   Person: [
     { uri: "http://schema.org/givenName", dataType: "http://www.w3.org/2001/XMLSchema#string" },
+    {
+      uri: "http://timbuctoo.huygens.knaw.nl/v5/vocabulary#intraposition",
+      dataType: "http://www.w3.org/2001/XMLSchema#string",
+    },
     { uri: "http://schema.org/familyName", dataType: "http://www.w3.org/2001/XMLSchema#string" },
+    {
+      uri: "http://timbuctoo.huygens.knaw.nl/v5/vocabulary#postposition",
+      dataType: "http://www.w3.org/2001/XMLSchema#string",
+    },
     { uri: "http://schema.org/birthDate", dataType: "http://www.w3.org/2001/XMLSchema#date" },
     { uri: "http://schema.org/birthPlace", dataType: "http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri" },
     { uri: "http://schema.org/deathDate", dataType: "http://www.w3.org/2001/XMLSchema#date" },
     { uri: "http://schema.org/deathPlace", dataType: "http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri" },
+    { uri: "http://schema.org/gender", dataType: "http://www.w3.org/2001/XMLSchema#string" },
+    {
+      uri: "http://timbuctoo.huygens.knaw.nl/v5/vocabulary#dataSetName",
+      dataType: "http://www.w3.org/2001/XMLSchema#string",
+    },
     { uri: "http://www.w3.org/2002/07/owl#sameAs", dataType: "http://timbuctoo.huygens.knaw.nu/v5/vocabulary#uri" },
   ],
   Place: [
@@ -252,7 +264,18 @@ function renderPred(
     <div className="row" style={{ paddingTop: 15 }}>
       <div className="col-sm-2 col-xs-7">
         {disableNameChange
-          ? <b>{implementation.predicate}</b>
+          ? <b
+              title={implementation.predicate}
+              style={{
+                overflow: "hidden",
+                display: "inline-block",
+                width: "100%",
+                direction: "rtl",
+                "text-overflow": "ellipsis",
+              }}
+            >
+              {implementation.predicate}
+            </b>
           : <FormControl
               type="text"
               value={implementation.predicate}
