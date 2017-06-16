@@ -270,7 +270,6 @@ function updateValue(fieldName: string, value: string, state: State) {
           "mapping",
           "mappings",
           immState.getIn(["pageSpecific", "mapping", "currentTab"]),
-          "mainCollection",
           "collectionType",
         ],
         value,
