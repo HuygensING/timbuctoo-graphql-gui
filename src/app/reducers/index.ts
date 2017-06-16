@@ -35,6 +35,9 @@ type Action =
       newTitle: string;
     }
   | {
+      type: "clearLoginToken";
+    }
+  | {
       type: "setLoginToken";
       hsid: string;
       persistentId: string;
@@ -439,6 +442,10 @@ export function reducer(state: State, action: Action): State {
     case "setLoginToken":
       return slowPatch(state, {
         global: { hsid: action.hsid, userId: action.persistentId, displayName: action.displayName },
+      });
+    case "clearLoginToken":
+      return slowPatch(state, {
+        global: { hsid: undefined, userId: undefined, displayName: undefined },
       });
     case "404":
       alert("Page not found!");

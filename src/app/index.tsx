@@ -77,7 +77,7 @@ store.subscribe(function() {
 
 ReactDom.render(<Gui state={store.getState()} actions={actions} />, document.getElementById("main"));
 
-const hsid = getQueryVariable("hsid", window.location);
+const hsid = getQueryVariable("hsid", window.location) || store.getState().global.hsid;
 if (hsid) {
   fetch(config.apiUrl + "/v2.1/system/users/me", {
     headers: {
@@ -88,25 +88,32 @@ if (hsid) {
       if (response.status === 200) {
         return response.json();
       } else {
-        return {
-          persistentId: undefined,
-          displayName: undefined,
-        };
+        return undefined;
       }
     })
     .then(async function(userData: any) {
-      store.dispatch({
-        type: "setLoginToken",
-        hsid,
-        persistentId: userData.persistentId,
-        displayName: userData.displayName,
-      });
-      const state = store.getState();
-      if (state.currentPage === "mapping" && state.global.dataSetId) {
-        const rawdataSets = await getRawCollections(userData.persistentId, state.global.dataSetId);
-        store.dispatch({ type: "setRawDataSets", rawDataSets: rawdataSets });
+      if (userData) {
+        store.dispatch({
+          type: "setLoginToken",
+          hsid,
+          persistentId: userData.persistentId,
+          displayName: userData.displayName,
+        });
+        const state = store.getState();
+        if (state.currentPage === "mapping" && state.global.dataSetId) {
+          const rawdataSets = await getRawCollections(userData.persistentId, state.global.dataSetId);
+          store.dispatch({ type: "setRawDataSets", rawDataSets: rawdataSets });
+        }
+      } else {
+        store.dispatch({
+          type: "clearLoginToken",
+        });
       }
     });
+} else {
+  store.dispatch({
+    type: "clearLoginToken",
+  });
 }
 
 actions.loadDataSets();
